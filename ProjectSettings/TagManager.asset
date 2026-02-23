@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - Enemy
+  - Tower
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - Ground
+  - Units_Alive
+  - Units_Dead
+  - Projectile
+  - Tower
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Layer 1
+    uniqueID: 3778764253
+    locked: 0
+  - name: Units_Dead
+    uniqueID: 799205419
+    locked: 0
+  - name: Units_Alive
+    uniqueID: 500341947
+    locked: 0
+  - name: Layer 2
+    uniqueID: 4285942083
+    locked: 0
+  - name: Projectiles
+    uniqueID: 1411873953
+    locked: 0
+  - name: Effects
+    uniqueID: 1981946305
+    locked: 0
+  m_RenderingLayers:
+  - Default

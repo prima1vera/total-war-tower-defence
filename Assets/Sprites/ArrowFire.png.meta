@@ -1,0 +1,202 @@
+fileFormatVersion: 2
+guid: 4a08d422d0153b3489ac0b9e45c438e7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8596460125075745981
+    second: ArrowFire_0
+  - first:
+      213: 3517834096653213928
+    second: ArrowFire_1
+  - first:
+      213: -7247026914687562883
+    second: ArrowFire_2
+  - first:
+      213: 100048441909017723
+    second: ArrowFire_3
+  - first:
+      213: 2648338677463632392
+    second: ArrowFire_4
+  - first:
+      213: 841323947701169173
+    second: ArrowFire_5
+  - first:
+      213: 1254537010303299088
+    second: ArrowFire_6
+  - first:
+      213: 5289281811648773945
+    second: ArrowFire_7
+  - first:
+      213: -1613345440856556913
+    second: ArrowFire_8
+  - first:
+      213: -1663871919233374766
+    second: ArrowFire_9
+  - first:
+      213: 6499667487558620004
+    second: ArrowFire_10
+  - first:
+      213: 7099528800533476725
+    second: ArrowFire_11
+  - first:
+      213: -5941962032297928818
+    second: ArrowFire_12
+  - first:
+      213: 2223147526886579675
+    second: ArrowFire_13
+  - first:
+      213: -4500315317163961597
+    second: ArrowFire_14
+  - first:
+      213: -2734195664609242180
+    second: ArrowFire_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 30, y: 44, z: 26, w: 48}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ArrowFire_0
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 169
+        width: 268
+        height: 77
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51ce1c34cabfcab00800000000000000
+      internalID: 841323947701169173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: cd6def1eec7eec44ea869c67b0bf55d7
+    internalID: -695995953
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ArrowFire_0: 841323947701169173
+      ArrowFire_1: 3517834096653213928
+      ArrowFire_10: 6499667487558620004
+      ArrowFire_11: 7099528800533476725
+      ArrowFire_12: -5941962032297928818
+      ArrowFire_13: 2223147526886579675
+      ArrowFire_14: -4500315317163961597
+      ArrowFire_15: -2734195664609242180
+      ArrowFire_2: -7247026914687562883
+      ArrowFire_3: 100048441909017723
+      ArrowFire_4: 2648338677463632392
+      ArrowFire_6: 1254537010303299088
+      ArrowFire_7: 5289281811648773945
+      ArrowFire_8: -1613345440856556913
+      ArrowFire_9: -1663871919233374766
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
