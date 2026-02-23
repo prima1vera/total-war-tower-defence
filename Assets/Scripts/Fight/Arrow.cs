@@ -23,11 +23,20 @@ public class Arrow : MonoBehaviour
 
     private int pierceCount = 0;
     private List<UnitHealth> hitUnits = new List<UnitHealth>();
+    private ArrowPool ownerPool;
 
     public void Launch(Vector2 target)
     {
         startPos = transform.position;
         targetPos = target;
+        timer = 0f;
+        hasImpacted = false;
+        pierceCount = 0;
+        hitUnits.Clear();
+    }
+    public void SetPool(ArrowPool pool)
+    {
+        ownerPool = pool;
     }
 
     void Update()
@@ -118,6 +127,12 @@ public class Arrow : MonoBehaviour
             if (health == null) continue;
 
             ApplyDamage(health);
+        }
+
+        if (ownerPool != null)
+        {
+            ownerPool.Despawn(this);
+            return;
         }
 
         Destroy(gameObject);

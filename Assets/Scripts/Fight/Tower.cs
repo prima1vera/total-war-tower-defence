@@ -7,8 +7,12 @@ public class Tower : MonoBehaviour
     public float fireRate = 1f;
     public Transform firePoint;
 
+    [SerializeField] private float targetRefreshInterval = 0.15f;
+    [SerializeField] private ArrowPool arrowPool;
+
     private Transform currentTarget;
     private float fireCountdown = 0f;
+    private float targetRefreshTimer = 0f;
     private Animator animator;
 
     void Start()
@@ -19,16 +23,18 @@ public class Tower : MonoBehaviour
     void Update()
     {
         fireCountdown -= Time.deltaTime;
+        targetRefreshTimer -= Time.deltaTime;
 
         Transform target = FindTarget();
 
-        if (target == null)
+        if (targetRefreshTimer <= 0f)
         {
-            currentTarget = null;
-            return;
+            currentTarget = FindTarget();
+            targetRefreshTimer = targetRefreshInterval;
         }
 
-        currentTarget = target;
+        if (currentTarget == null)
+            return;
 
         if (fireCountdown <= 0f)
         {
@@ -64,19 +70,29 @@ public class Tower : MonoBehaviour
     {
         if (currentTarget == null) return;
 
-        GameObject arrowGO = Instantiate(
-            arrowPrefab,
-            firePoint.position,
-            Quaternion.identity
-        );
+        Arrow arrow = null;
 
-        Arrow arrow = arrowGO.GetComponent<Arrow>();
-        if (arrow != null)
+        if (arrowPool != null)
         {
-            Vector2 randomOffset = Random.insideUnitCircle * 0.5f;
-            Vector2 targetPoint = (Vector2)currentTarget.position + randomOffset;
-
-            arrow.Launch(targetPoint);
+            arrow = arrowPool.Spawn(firePoint.position, Quaternion.identity);
         }
+        else if (arrowPrefab != null)
+        {
+            GameObject arrowGO = Instantiate(
+                arrowPrefab,
+                firePoint.position,
+                Quaternion.identity
+            );
+
+            arrow = arrowGO.GetComponent<Arrow>();
+        }
+
+        if (arrow == null)
+            return;
+
+        Vector2 randomOffset = Random.insideUnitCircle * 0.5f;
+        Vector2 targetPoint = (Vector2)currentTarget.position + randomOffset;
+
+        arrow.Launch(targetPoint);
     }
 }
