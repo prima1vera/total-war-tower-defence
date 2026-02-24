@@ -75,7 +75,7 @@ public class UnitHealth : MonoBehaviour
 
         CurrentState = newState;
     }
-
+    
     void Die()
     {
         EnemyRegistry.Unregister(this);
@@ -94,22 +94,20 @@ public class UnitHealth : MonoBehaviour
         }
 
 
-        if (bloodPoolPrefab != null)
+        if (bloodPoolPrefab != null && col != null)
         {
             Vector3 bloodPos = col != null ? col.bounds.min : transform.position;
             bloodPos.z = 0f;
 
             GameObject blood = Instantiate(bloodPoolPrefab, bloodPos, Quaternion.identity);
 
-            // Сразу задаём сортировку для крови (под трупом)
             var bloodSR = blood.GetComponent<SpriteRenderer>();
             if (bloodSR != null)
             {
                 bloodSR.sortingLayerName = "Units_Dead"; 
-                bloodSR.sortingOrder = -1;               // чтобы кровь была ПОД трупом
+                bloodSR.sortingOrder = -1;               // Г·ГІГ®ГЎГ» ГЄГ°Г®ГўГј ГЎГ»Г«Г  ГЏГЋГ„ ГІГ°ГіГЇГ®Г¬
             }
 
-            // Финальный "радиус" лужи
             float targetScale = UnityEngine.Random.Range(0.35f, 1.05f);
 
             StartCoroutine(AnimateBloodPoolAAA(blood.transform, bloodSR, targetScale));
@@ -184,7 +182,7 @@ public class UnitHealth : MonoBehaviour
             settleT += Time.deltaTime;
             float k = Mathf.Clamp01(settleT / settlePhase);
 
-            // чуть более мягко
+            // Г·ГіГІГј ГЎГ®Г«ГҐГҐ Г¬ГїГЈГЄГ®
             k = Mathf.SmoothStep(0f, 1f, k);
 
             blood.localScale = Vector3.Lerp(overScale, endScale, k);

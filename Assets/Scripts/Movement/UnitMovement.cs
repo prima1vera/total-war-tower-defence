@@ -11,9 +11,14 @@ public class UnitMovement : MonoBehaviour
     private Vector2 knockbackVelocity;
     private float knockbackTimer;
     private float speedMultiplier = 1f;
+
     public float separationRadius = 0.1f;
     public float separationForce = 2f;
 
+    [SerializeField] private LayerMask separationLayerMask = ~0;
+    [SerializeField] private int maxSeparationColliders = 16;
+
+    private Collider2D[] separationBuffer;
 
     public void ApplyKnockback(Vector2 direction, float force)
     {
@@ -26,7 +31,13 @@ public class UnitMovement : MonoBehaviour
         speedMultiplier = value;
     }
 
-    void Start() 
+    void Awake()
+    {
+        int bufferSize = Mathf.Max(4, maxSeparationColliders);
+        separationBuffer = new Collider2D[bufferSize];
+    }
+
+    void Start()
     {
         unitHealth = GetComponent<UnitHealth>();
         animator = GetComponent<Animator>();
@@ -52,7 +63,6 @@ public class UnitMovement : MonoBehaviour
             return;
         }
 
-
         Transform target = path[waypointIndex];
         Vector3 dir = target.position - transform.position;
 
@@ -61,7 +71,6 @@ public class UnitMovement : MonoBehaviour
 
         transform.Translate(movement, Space.World);
 
-        //UPDATE PARAMS FOR BLEND TREE
         if (animator != null)
         {
             Vector2 direction = dir.normalized;
@@ -78,19 +87,36 @@ public class UnitMovement : MonoBehaviour
             }
         }
     }
+
     Vector2 CalculateSeparation()
     {
-        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, separationRadius);
+        if (separationBuffer == null || separationBuffer.Length == 0)
+            return Vector2.zero;
+
+        int hitCount = Physics2D.OverlapCircleNonAlloc(
+            transform.position,
+            separationRadius,
+            separationBuffer,
+            separationLayerMask
+        );
 
         Vector2 separation = Vector2.zero;
 
-        foreach (Collider2D neighbor in neighbors)
+        for (int i = 0; i < hitCount; i++)
         {
-            if (neighbor.gameObject != gameObject && neighbor.CompareTag("Enemy"))
-            {
-                Vector2 diff = (Vector2)(transform.position - neighbor.transform.position);
-                separation += diff.normalized / diff.magnitude;
-            }
+            Collider2D neighbor = separationBuffer[i];
+            if (neighbor == null)
+                continue;
+
+            if (neighbor.gameObject == gameObject || !neighbor.CompareTag("Enemy"))
+                continue;
+
+            Vector2 diff = (Vector2)(transform.position - neighbor.transform.position);
+            float distSqr = diff.sqrMagnitude;
+            if (distSqr <= 0.0001f)
+                continue;
+
+            separation += diff.normalized / Mathf.Sqrt(distSqr);
         }
 
         return separation * separationForce;
