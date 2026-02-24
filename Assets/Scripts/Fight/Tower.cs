@@ -13,6 +13,7 @@ public class Tower : MonoBehaviour
     private Transform currentTarget;
     private float fireCountdown = 0f;
     private float targetRefreshTimer = 0f;
+    private int lastKnownEnemyRegistryVersion = -1;
     private Animator animator;
 
     void Start()
@@ -25,12 +26,14 @@ public class Tower : MonoBehaviour
         fireCountdown -= Time.deltaTime;
         targetRefreshTimer -= Time.deltaTime;
 
-        Transform target = FindTarget();
+        bool registryChanged = lastKnownEnemyRegistryVersion != EnemyRegistry.Version;
+        bool needsRetarget = targetRefreshTimer <= 0f || registryChanged || !IsCurrentTargetValid();
 
-        if (targetRefreshTimer <= 0f)
+        if (needsRetarget)
         {
-            currentTarget = FindTarget();
+            RefreshTarget();
             targetRefreshTimer = targetRefreshInterval;
+            lastKnownEnemyRegistryVersion = EnemyRegistry.Version;
         }
 
         if (currentTarget == null)
@@ -38,32 +41,28 @@ public class Tower : MonoBehaviour
 
         if (fireCountdown <= 0f)
         {
-            animator.SetTrigger("Shoot");
+            if (animator != null)
+            {
+                animator.SetTrigger("Shoot");
+            }
+
             fireCountdown = 1f / fireRate;
         }
     }
 
-    Transform FindTarget()
+    private bool IsCurrentTargetValid()
     {
-        var enemies = EnemyRegistry.Enemies;
-        Transform nearest = null;
-        float shortest = Mathf.Infinity;
+        if (currentTarget == null)
+            return false;
 
-        for (int i = 0; i < enemies.Count; i++)
-        {
-            UnitHealth health = enemies[i];
-            if (health == null || health.CurrentState == UnitState.Dead)
-                continue;
+        float rangeSqr = range * range;
+        float distSqr = (currentTarget.position - transform.position).sqrMagnitude;
+        return distSqr <= rangeSqr;
+    }
 
-            float dist = Vector3.Distance(transform.position, health.transform.position);
-            if (dist < shortest && dist <= range)
-            {
-                shortest = dist;
-                nearest = health.transform;
-            }
-        }
-
-        return nearest;
+    private void RefreshTarget()
+    {
+        EnemyRegistry.TryGetNearestEnemy(transform.position, range, out currentTarget);
     }
 
     public void ShootArrow()
