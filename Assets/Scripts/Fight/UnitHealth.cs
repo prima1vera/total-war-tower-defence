@@ -105,7 +105,7 @@ public class UnitHealth : MonoBehaviour
             if (bloodSR != null)
             {
                 bloodSR.sortingLayerName = "Units_Dead"; 
-                bloodSR.sortingOrder = -1;               // ÷òîáû êðîâü áûëà ÏÎÄ òðóïîì
+                bloodSR.sortingOrder = -1;           
             }
 
             float targetScale = UnityEngine.Random.Range(0.35f, 1.05f);

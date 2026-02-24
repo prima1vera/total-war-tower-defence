@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2404369416373103768}
@@ -604,7 +604,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 1
-    maxNumParticles: 20
+    maxNumParticles: 50
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -4858,7 +4858,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2404369416373103768}
@@ -9741,7 +9741,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
   m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: -1475835697, guid: 2332ebc498d480c4bb1bd00fbb93d0e4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -9842,7 +9842,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitHealth
   maxHealth: 15
   bloodPoolPrefab: {fileID: 7924102300927368246, guid: e1c4e45aef445cd42818a3f188478c49, type: 3}
-  bloodSplashPrefab: {fileID: 6567675628769267437, guid: bcdc8edaa307d5941a4f80c7fd13bf4f, type: 3}
+  bloodSplashPrefab: {fileID: 6567675628769267437, guid: 626575ed6b0b8764db5d804dbe61ff9c, type: 3}
 --- !u!114 &-6560936230222391820
 MonoBehaviour:
   m_ObjectHideFlags: 0
