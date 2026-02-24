@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -11,8 +10,21 @@ public class UnitHealth : MonoBehaviour
 
     private Animator animator;
     private Collider2D col;
+    private UnitMovement movement;
+    private SpriteRenderer spriteRenderer;
+    private TopDownSorter topDownSorter;
+
     public GameObject bloodPoolPrefab;
     public GameObject bloodSplashPrefab;
+
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+        col = GetComponent<Collider2D>();
+        movement = GetComponent<UnitMovement>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        topDownSorter = GetComponent<TopDownSorter>();
+    }
 
     void OnEnable()
     {
@@ -27,8 +39,6 @@ public class UnitHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-        animator = GetComponent<Animator>();
-        col = GetComponent<Collider2D>();
     }
 
     public void TakeDamage(int dmg, DamageType type, Vector2 hitDirection, float knockbackForce)
@@ -37,7 +47,10 @@ public class UnitHealth : MonoBehaviour
 
         currentHealth -= dmg;
 
-        GetComponent<UnitMovement>().ApplyKnockback(hitDirection, knockbackForce);
+        if (movement != null)
+        {
+            movement.ApplyKnockback(hitDirection, knockbackForce);
+        }
 
         if (currentHealth <= 0)
         {
@@ -55,7 +68,6 @@ public class UnitHealth : MonoBehaviour
             Die();
     }
 
-
     void Die()
     {
         EnemyRegistry.Unregister(this);
@@ -68,27 +80,28 @@ public class UnitHealth : MonoBehaviour
             animator.SetBool("isDead", true);
         }
 
-        Instantiate(bloodSplashPrefab, transform.position, Quaternion.identity);
+        if (bloodSplashPrefab != null)
+        {
+            Instantiate(bloodSplashPrefab, transform.position, Quaternion.identity);
+        }
 
-        if (bloodPoolPrefab != null)
+        if (bloodPoolPrefab != null && col != null)
         {
             Vector3 bloodPos = col.bounds.min;
             GameObject blood = Instantiate(bloodPoolPrefab, bloodPos, Quaternion.identity);
 
-            float scale = UnityEngine.Random.Range(0.3f, 1.0f);
+            float scale = Random.Range(0.3f, 1.0f);
             blood.transform.localScale = Vector3.one * scale;
         }
 
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
+        if (spriteRenderer != null)
         {
-            sr.sortingLayerName = "Units_Dead";
-            sr.sortingOrder = 0;
+            spriteRenderer.sortingLayerName = "Units_Dead";
+            spriteRenderer.sortingOrder = 0;
         }
 
-        TopDownSorter sorter = GetComponent<TopDownSorter>();
-        if (sorter != null)
-            sorter.enabled = false;
+        if (topDownSorter != null)
+            topDownSorter.enabled = false;
 
         if (col != null)
             col.enabled = false;
