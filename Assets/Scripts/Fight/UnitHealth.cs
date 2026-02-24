@@ -99,8 +99,8 @@ public class UnitHealth : MonoBehaviour
 
             GameObject blood = Instantiate(bloodPoolPrefab, bloodPos, Quaternion.identity);
 
-            StartCoroutine(AnimateBloodPool(blood.transform, targetScale));
             float targetScale = UnityEngine.Random.Range(0.3f, 1f);
+            StartCoroutine(AnimateBloodPool(blood.transform, targetScale));
         }
 
         if (spriteRenderer != null)
