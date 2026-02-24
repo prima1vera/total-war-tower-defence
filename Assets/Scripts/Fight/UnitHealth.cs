@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -68,6 +69,13 @@ public class UnitHealth : MonoBehaviour
             Die();
     }
 
+    public void SetState(UnitState newState)
+    {
+        if (CurrentState == UnitState.Dead) return;
+
+        CurrentState = newState;
+    }
+    
     void Die()
     {
         EnemyRegistry.Unregister(this);
@@ -85,13 +93,24 @@ public class UnitHealth : MonoBehaviour
             Instantiate(bloodSplashPrefab, transform.position, Quaternion.identity);
         }
 
+
         if (bloodPoolPrefab != null && col != null)
         {
-            Vector3 bloodPos = col.bounds.min;
+            Vector3 bloodPos = col != null ? col.bounds.min : transform.position;
+            bloodPos.z = 0f;
+
             GameObject blood = Instantiate(bloodPoolPrefab, bloodPos, Quaternion.identity);
 
-            float scale = Random.Range(0.3f, 1.0f);
-            blood.transform.localScale = Vector3.one * scale;
+            var bloodSR = blood.GetComponent<SpriteRenderer>();
+            if (bloodSR != null)
+            {
+                bloodSR.sortingLayerName = "Units_Dead"; 
+                bloodSR.sortingOrder = -1;               // ÷òîáû êðîâü áûëà ÏÎÄ òðóïîì
+            }
+
+            float targetScale = UnityEngine.Random.Range(0.35f, 1.05f);
+
+            StartCoroutine(AnimateBloodPoolAAA(blood.transform, bloodSR, targetScale));
         }
 
         if (spriteRenderer != null)
@@ -107,10 +126,75 @@ public class UnitHealth : MonoBehaviour
             col.enabled = false;
     }
 
-    public void SetState(UnitState newState)
-    {
-        if (CurrentState == UnitState.Dead) return;
 
-        CurrentState = newState;
+    IEnumerator AnimateBloodPoolAAA(Transform blood, SpriteRenderer sr, float targetScale)
+    {
+        float startUniform = UnityEngine.Random.Range(0.05f, 0.15f);
+
+        Vector3 startScale = new Vector3(startUniform, startUniform, 1f);
+        Vector3 endScale = new Vector3(targetScale, targetScale, 1f);
+
+        float duration = Mathf.Lerp(0.25f, 0.95f, Mathf.InverseLerp(0.35f, 1.05f, targetScale));
+        duration *= UnityEngine.Random.Range(1.9f, 3.25f);
+
+        float overshoot = UnityEngine.Random.Range(1.05f, 1.1f);
+        Vector3 overScale = endScale * overshoot;
+
+        float startAlpha = 0f;
+        float endAlpha = UnityEngine.Random.Range(0.8f, 1f);
+
+        if (sr != null)
+        {
+            var c = sr.color;
+            c.a = startAlpha;
+            sr.color = c;
+        }
+
+        blood.localScale = startScale;
+
+        float t = 0f;
+
+        float growPhase = duration * 0.75f;
+        while (t < growPhase)
+        {
+            t += Time.deltaTime;
+            float k = Mathf.Clamp01(t / growPhase);
+
+            // smoothstep
+            k = k * k * (3f - 2f * k);
+
+            blood.localScale = Vector3.Lerp(startScale, overScale, k);
+
+            if (sr != null)
+            {
+                var c = sr.color;
+                c.a = Mathf.Lerp(startAlpha, endAlpha, k);
+                sr.color = c;
+            }
+
+            yield return null;
+        }
+
+        float settleT = 0f;
+        float settlePhase = duration * 0.25f;
+        while (settleT < settlePhase)
+        {
+            settleT += Time.deltaTime;
+            float k = Mathf.Clamp01(settleT / settlePhase);
+
+            // ÷óòü áîëåå ìÿãêî
+            k = Mathf.SmoothStep(0f, 1f, k);
+
+            blood.localScale = Vector3.Lerp(overScale, endScale, k);
+            yield return null;
+        }
+
+        blood.localScale = endScale;
+        if (sr != null)
+        {
+            var c = sr.color;
+            c.r *= 0.9f; c.g *= 0.85f; c.b *= 0.85f;
+            sr.color = c;
+        }
     }
 }
