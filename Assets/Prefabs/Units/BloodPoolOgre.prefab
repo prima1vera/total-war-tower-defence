@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6240155433358810469}
   - component: {fileID: 2399932143579446690}
-  m_Layer: 22
+  m_Layer: 20
   m_Name: BloodPoolOgre
   m_TagString: Untagged
   m_Icon: {fileID: 0}

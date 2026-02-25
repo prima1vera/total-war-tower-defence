@@ -105,11 +105,6 @@ public class UnitHealth : MonoBehaviour
             GameObject blood = Instantiate(bloodPoolPrefab, bloodPos, Quaternion.identity);
 
             var bloodSR = blood.GetComponent<SpriteRenderer>();
-            if (bloodSR != null)
-            {
-                bloodSR.sortingLayerName = "Units_Dead"; 
-                bloodSR.sortingOrder = -1;           
-            }
 
             float targetScale = UnityEngine.Random.Range(0.35f, 1.05f);
 
@@ -118,10 +113,12 @@ public class UnitHealth : MonoBehaviour
 
         if (spriteRenderer != null)
         {
-            spriteRenderer.sortingLayerName = "Units_Dead";
-            spriteRenderer.sortingOrder = 0;
-        }
+            float y = (col != null) ? col.bounds.min.y : transform.position.y;
+            int deadOrder = Mathf.RoundToInt(-y * 100f) + Random.Range(-1, 2);
 
+            spriteRenderer.sortingLayerName = "Units_Dead";
+            spriteRenderer.sortingOrder = deadOrder;
+        }
         if (topDownSorter != null)
             topDownSorter.enabled = false;
 
@@ -140,8 +137,7 @@ public class UnitHealth : MonoBehaviour
         float duration = Mathf.Lerp(0.25f, 0.95f, Mathf.InverseLerp(0.35f, 1.05f, targetScale));
         duration *= UnityEngine.Random.Range(1.9f, 3.25f);
 
-        float overshoot = UnityEngine.Random.Range(1.05f, 1.1f);
-        Vector3 overScale = endScale * overshoot;
+        Vector3 overScale = endScale;
 
         float startAlpha = 0f;
         float endAlpha = UnityEngine.Random.Range(0.8f, 1f);
@@ -185,7 +181,6 @@ public class UnitHealth : MonoBehaviour
             settleT += Time.deltaTime;
             float k = Mathf.Clamp01(settleT / settlePhase);
 
-            // ÷óòü áîëåå ìÿãêî
             k = Mathf.SmoothStep(0f, 1f, k);
 
             blood.localScale = Vector3.Lerp(overScale, endScale, k);
