@@ -37,10 +37,25 @@ public class UnitMovement : MonoBehaviour
         separationBuffer = new Collider2D[bufferSize];
     }
 
+    void OnEnable()
+    {
+        waypointIndex = 0;
+        knockbackVelocity = Vector2.zero;
+        knockbackTimer = 0f;
+        speedMultiplier = 1f;
+    }
+
     void Start()
     {
         unitHealth = GetComponent<UnitHealth>();
         animator = GetComponent<Animator>();
+
+        if (Waypoints.AllPaths == null || Waypoints.AllPaths.Length == 0)
+        {
+            Debug.LogWarning($"{name}: Waypoints.AllPaths is not initialized. UnitMovement disabled.", this);
+            enabled = false;
+            return;
+        }
 
         int pathIndex = Random.Range(0, Waypoints.AllPaths.Length);
         path = Waypoints.AllPaths[pathIndex];
