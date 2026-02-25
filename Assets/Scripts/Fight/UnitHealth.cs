@@ -15,6 +15,8 @@ public class UnitHealth : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private TopDownSorter topDownSorter;
 
+    public StatusEffectHandler StatusEffectHandler { get; private set; }
+
     public GameObject bloodPoolPrefab;
     public GameObject bloodSplashPrefab;
 
@@ -25,6 +27,7 @@ public class UnitHealth : MonoBehaviour
         movement = GetComponent<UnitMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         topDownSorter = GetComponent<TopDownSorter>();
+        StatusEffectHandler = GetComponent<StatusEffectHandler>();
     }
 
     void OnEnable()
