@@ -14,6 +14,8 @@ public class Arrow : MonoBehaviour
     public float impactRadius = 1.5f;
     public LayerMask unitLayer;
 
+    [SerializeField] private int maxHitColliders = 32;
+
     public GameObject dustPrefab;
 
     private Vector2 startPos;
@@ -22,8 +24,15 @@ public class Arrow : MonoBehaviour
     private bool hasImpacted = false;
 
     private int pierceCount = 0;
-    private List<UnitHealth> hitUnits = new List<UnitHealth>();
+    private readonly HashSet<UnitHealth> hitUnits = new HashSet<UnitHealth>();
     private ArrowPool ownerPool;
+    private Collider2D[] hitBuffer;
+
+    void Awake()
+    {
+        int bufferSize = Mathf.Max(8, maxHitColliders);
+        hitBuffer = new Collider2D[bufferSize];
+    }
 
     public void Launch(Vector2 target)
     {
@@ -34,6 +43,7 @@ public class Arrow : MonoBehaviour
         pierceCount = 0;
         hitUnits.Clear();
     }
+
     public void SetPool(ArrowPool pool)
     {
         ownerPool = pool;
@@ -71,18 +81,25 @@ public class Arrow : MonoBehaviour
 
     void CheckUnits()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 0.3f, unitLayer);
+        if (hitBuffer == null || hitBuffer.Length == 0)
+            return;
 
-        foreach (Collider2D hit in hits)
+        int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, 0.3f, hitBuffer, unitLayer);
+
+        for (int i = 0; i < hitCount; i++)
         {
+            Collider2D hit = hitBuffer[i];
+            if (hit == null)
+                continue;
+
             UnitHealth health = hit.GetComponent<UnitHealth>();
-            if (health == null) continue;
+            if (health == null)
+                continue;
 
-            if (hitUnits.Contains(health)) continue;
+            if (!hitUnits.Add(health))
+                continue;
 
-            hitUnits.Add(health);
             pierceCount++;
-
             ApplyDamage(health);
 
             if (pierceCount >= maxPierce)
@@ -99,7 +116,7 @@ public class Arrow : MonoBehaviour
 
         health.TakeDamage(damage, damageType, forceDir, knockbackForce);
 
-        StatusEffectHandler status = health.GetComponent<StatusEffectHandler>();
+        StatusEffectHandler status = health.StatusEffectHandler;
 
         if (status != null)
         {
@@ -119,15 +136,7 @@ public class Arrow : MonoBehaviour
         if (dustPrefab != null)
             Instantiate(dustPrefab, transform.position, Quaternion.identity);
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, impactRadius, unitLayer);
-
-        foreach (Collider2D hit in hits)
-        {
-            UnitHealth health = hit.GetComponent<UnitHealth>();
-            if (health == null) continue;
-
-            ApplyDamage(health);
-        }
+        ExplodeAreaDamage();
 
         if (ownerPool != null)
         {
@@ -136,5 +145,26 @@ public class Arrow : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    private void ExplodeAreaDamage()
+    {
+        if (hitBuffer == null || hitBuffer.Length == 0)
+            return;
+
+        int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, impactRadius, hitBuffer, unitLayer);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            Collider2D hit = hitBuffer[i];
+            if (hit == null)
+                continue;
+
+            UnitHealth health = hit.GetComponent<UnitHealth>();
+            if (health == null)
+                continue;
+
+            ApplyDamage(health);
+        }
     }
 }

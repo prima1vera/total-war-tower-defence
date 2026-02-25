@@ -78,7 +78,7 @@ public class UnitMovement : MonoBehaviour
             animator.SetFloat("moveY", direction.y);
         }
 
-        if (Vector3.Distance(transform.position, target.position) < 0.1f)
+        if ((transform.position - target.position).sqrMagnitude < 0.01f)
         {
             waypointIndex++;
             if (waypointIndex >= path.Length)
