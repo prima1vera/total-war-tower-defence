@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class StatusEffectHandler : MonoBehaviour
 {
@@ -18,6 +17,11 @@ public class StatusEffectHandler : MonoBehaviour
         visuals = GetComponent<UnitEffects>();
     }
 
+    void OnDisable()
+    {
+        StopAllEffects();
+    }
+
     public void StopAllEffects()
     {
         if (burnRoutine != null)
@@ -29,7 +33,8 @@ public class StatusEffectHandler : MonoBehaviour
         visuals?.SetFireVisual(false);
         visuals?.SetFreezeVisual(false);
 
-        movement.SetSpeedMultiplier(1f);
+        if (movement != null)
+            movement.SetSpeedMultiplier(1f);
     }
 
     // FIRE
@@ -69,11 +74,15 @@ public class StatusEffectHandler : MonoBehaviour
     IEnumerator Freeze(float duration, float slowMultiplier)
     {
         visuals?.SetFreezeVisual(true);
-        movement.SetSpeedMultiplier(slowMultiplier);
+
+        if (movement != null)
+            movement.SetSpeedMultiplier(slowMultiplier);
 
         yield return new WaitForSeconds(duration);
 
-        movement.SetSpeedMultiplier(1f);
+        if (movement != null)
+            movement.SetSpeedMultiplier(1f);
+
         visuals?.SetFreezeVisual(false);
     }
 }
