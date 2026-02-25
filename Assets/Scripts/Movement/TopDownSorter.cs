@@ -2,11 +2,13 @@ using UnityEngine;
 
 public class TopDownSorter : MonoBehaviour
 {
+    private Collider2D col;
     private SpriteRenderer sr;
     private UnitHealth unitHealth;
 
     void Awake()
     {
+        col = GetComponent<Collider2D>();
         sr = GetComponent<SpriteRenderer>();
         unitHealth = GetComponent<UnitHealth>();
     }
@@ -19,6 +21,7 @@ public class TopDownSorter : MonoBehaviour
         if (unitHealth.CurrentState == UnitState.Dead)
             return;
 
-        sr.sortingOrder = Mathf.RoundToInt(-transform.position.y * 100);
+        float y = (col != null) ? col.bounds.min.y : transform.position.y;
+        sr.sortingOrder = Mathf.RoundToInt(-y * 100f);
     }
 }
