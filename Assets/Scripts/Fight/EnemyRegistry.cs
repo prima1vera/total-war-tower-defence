@@ -8,6 +8,12 @@ public static class EnemyRegistry
     public static IReadOnlyList<UnitHealth> Enemies => AliveEnemies;
     public static int Version { get; private set; }
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void Initialize()
+    {
+        Clear();
+    }
+
     public static void Register(UnitHealth unit)
     {
         if (unit == null) return;
@@ -25,6 +31,15 @@ public static class EnemyRegistry
         {
             Version++;
         }
+    }
+
+    public static void Clear()
+    {
+        if (AliveEnemies.Count == 0)
+            return;
+
+        AliveEnemies.Clear();
+        Version++;
     }
 
     public static bool TryGetNearestEnemy(Vector3 origin, float range, out Transform nearest)
