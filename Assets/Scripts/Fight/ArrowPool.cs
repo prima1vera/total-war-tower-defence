@@ -39,7 +39,9 @@ public class ArrowPool : MonoBehaviour
         if (arrowPrefab == null)
             return;
 
-        for (int i = 0; i < prewarmCount; i++)
+        int count = Mathf.Max(0, prewarmCount);
+
+        for (int i = 0; i < count; i++)
         {
             Arrow arrow = CreateArrow();
             arrow.gameObject.SetActive(false);

@@ -19,6 +19,12 @@ public class Tower : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+
+        if (firePoint == null)
+        {
+            firePoint = transform;
+            Debug.LogWarning($"{name}: firePoint is not assigned, fallback to tower transform.", this);
+        }
     }
 
     void Update()
@@ -71,15 +77,17 @@ public class Tower : MonoBehaviour
 
         Arrow arrow = null;
 
+        Vector3 spawnPosition = firePoint != null ? firePoint.position : transform.position;
+
         if (arrowPool != null)
         {
-            arrow = arrowPool.Spawn(firePoint.position, Quaternion.identity);
+            arrow = arrowPool.Spawn(spawnPosition, Quaternion.identity);
         }
         else if (arrowPrefab != null)
         {
             GameObject arrowGO = Instantiate(
                 arrowPrefab,
-                firePoint.position,
+                spawnPosition,
                 Quaternion.identity
             );
 
