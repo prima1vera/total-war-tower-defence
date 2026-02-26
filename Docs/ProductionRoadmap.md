@@ -94,3 +94,4 @@
 ## Execution log
 
 - Iteration 1: Added `UnitHealthLookupCache` and switched projectile hit resolution to cached collider->`UnitHealth` lookup to reduce repeated `GetComponent` calls in combat hot paths.
+- Iteration 2: Added `EnemyRuntimeEvents.EnemyReachedGoal` and updated `UnitMovement` to publish a goal-reached event before enemy teardown. Added `destroyOnGoalReached` toggle to support future pooled despawn flow without breaking current gameplay.
