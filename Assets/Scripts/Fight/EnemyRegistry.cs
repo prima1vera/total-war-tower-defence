@@ -67,6 +67,7 @@ public static class EnemyRegistry
         float nearestDistSqr = float.MaxValue;
 
         nearest = null;
+        bool removedNullEntries = false;
 
         for (int i = AliveEnemies.Count - 1; i >= 0; i--)
         {
@@ -75,8 +76,7 @@ public static class EnemyRegistry
             if (enemy == null)
             {
                 AliveEnemies.RemoveAt(i);
-                RebuildEnemySet();
-                Version++;
+                removedNullEntries = true;
                 continue;
             }
 
@@ -91,6 +91,12 @@ public static class EnemyRegistry
 
             nearestDistSqr = distSqr;
             nearest = enemy.transform;
+        }
+
+        if (removedNullEntries)
+        {
+            RebuildEnemySet();
+            Version++;
         }
 
         return nearest != null;
