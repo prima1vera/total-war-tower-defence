@@ -17,6 +17,7 @@ public class UnitMovement : MonoBehaviour
 
     [SerializeField] private LayerMask separationLayerMask = ~0;
     [SerializeField] private int maxSeparationColliders = 16;
+    [SerializeField] private bool destroyOnGoalReached = true;
 
     private Collider2D[] separationBuffer;
 
@@ -98,7 +99,12 @@ public class UnitMovement : MonoBehaviour
             waypointIndex++;
             if (waypointIndex >= path.Length)
             {
-                Destroy(gameObject);
+                EnemyRuntimeEvents.RaiseEnemyReachedGoal(unitHealth);
+
+                if (destroyOnGoalReached)
+                    Destroy(gameObject);
+                else
+                    gameObject.SetActive(false);
             }
         }
     }
