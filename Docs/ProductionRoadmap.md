@@ -50,6 +50,19 @@
 3. Gate new subsystems behind interfaces (`IAdsService`, `IIapService`, `IAnalyticsService`, `ISaveService`).
 4. Add simple scene wiring checklists for every system addition to avoid prefab regressions.
 
+
+## Phase 1 Definition of Done (ship-readiness gates)
+
+- Architecture
+  - Gameplay logic does not call Ads/IAP/Analytics SDKs directly.
+  - Core runtime services are accessed through interfaces in `Assets/Scripts/Services`.
+- Performance
+  - No per-frame `Find*` lookups in combat flow.
+  - Projectile/enemy/tower critical paths are free from avoidable allocations in PlayMode profile samples.
+- Production hygiene
+  - Every new runtime system includes scene wiring notes and rollback-safe defaults.
+  - Android build is reproducible with documented versioning and signing steps.
+
 ## 30–45 day delivery plan
 
 ### Week 1 — Foundation and architecture hardening
@@ -57,6 +70,7 @@
 - Introduce `Services` interfaces (`IAnalyticsService`, `IAdsService`, `IIapService`, `ISaveService`).
 - Add bootstrap/composition root for scene startup.
 - Add profiler baseline (Android device + Editor deep profile samples).
+- **Acceptance criteria:** services compile behind interfaces and one startup scene runs through composition root without direct SDK calls.
 
 ### Week 2 — Data-driven gameplay and progression scaffold
 - Move tower/enemy/wave parameters into ScriptableObjects.
@@ -72,6 +86,7 @@
 - Rewarded ad placements (continue/reward currency) and interstitial pacing rules.
 - Optional IAP (`remove ads`, starter pack).
 - Analytics event map: funnel, economy sinks/sources, ad impressions/rewards, retention markers.
+- **Acceptance criteria:** ad/IAP flows work in sandbox mode and required analytics events are visible in debug/event stream validation.
 
 ### Week 5 — Content, balancing, and optimization
 - Expand to 5–10 levels with difficulty ramp.
