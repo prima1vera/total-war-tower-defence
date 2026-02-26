@@ -112,6 +112,12 @@ public class UnitHealth : MonoBehaviour
             StartCoroutine(AnimateBloodPoolAAA(blood.transform, bloodSR, targetScale));
         }
 
+        if (topDownSorter != null)
+            topDownSorter.enabled = false;
+
+        if (col != null)
+            col.enabled = false;
+
         if (spriteRenderer != null)
         {
             float y = (col != null) ? col.bounds.min.y : transform.position.y;
@@ -120,11 +126,6 @@ public class UnitHealth : MonoBehaviour
             spriteRenderer.sortingLayerName = "Units_Dead";
             spriteRenderer.sortingOrder = deadOrder;
         }
-        if (topDownSorter != null)
-            topDownSorter.enabled = false;
-
-        if (col != null)
-            col.enabled = false;
     }
 
 
