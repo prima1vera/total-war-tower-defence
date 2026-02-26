@@ -20,6 +20,7 @@ public class UnitMovement : MonoBehaviour
     [SerializeField] private bool destroyOnGoalReached = true;
 
     private Collider2D[] separationBuffer;
+    private Transform cachedTransform;
 
     public void ApplyKnockback(Vector2 direction, float force)
     {
@@ -34,6 +35,8 @@ public class UnitMovement : MonoBehaviour
 
     void Awake()
     {
+        cachedTransform = transform;
+
         int bufferSize = Mathf.Max(4, maxSeparationColliders);
         separationBuffer = new Collider2D[bufferSize];
     }
@@ -62,7 +65,7 @@ public class UnitMovement : MonoBehaviour
         path = Waypoints.AllPaths[pathIndex];
 
         float yOffset = Random.Range(-5f, 5f);
-        transform.position += new Vector3(0, yOffset, 0);
+        cachedTransform.position += new Vector3(0, yOffset, 0);
     }
 
     void Update()
@@ -74,18 +77,18 @@ public class UnitMovement : MonoBehaviour
 
         if (knockbackTimer > 0)
         {
-            transform.Translate(knockbackVelocity * Time.deltaTime, Space.World);
+            cachedTransform.Translate(knockbackVelocity * Time.deltaTime, Space.World);
             knockbackTimer -= Time.deltaTime;
             return;
         }
 
         Transform target = path[waypointIndex];
-        Vector3 dir = target.position - transform.position;
+        Vector3 dir = target.position - cachedTransform.position;
 
         Vector2 separation = CalculateSeparation();
         Vector3 movement = (dir.normalized + (Vector3)separation) * speed * speedMultiplier * Time.deltaTime;
 
-        transform.Translate(movement, Space.World);
+        cachedTransform.Translate(movement, Space.World);
 
         if (animator != null)
         {
@@ -94,7 +97,7 @@ public class UnitMovement : MonoBehaviour
             animator.SetFloat("moveY", direction.y);
         }
 
-        if ((transform.position - target.position).sqrMagnitude < 0.01f)
+        if ((cachedTransform.position - target.position).sqrMagnitude < 0.01f)
         {
             waypointIndex++;
             if (waypointIndex >= path.Length)
@@ -115,7 +118,7 @@ public class UnitMovement : MonoBehaviour
             return Vector2.zero;
 
         int hitCount = Physics2D.OverlapCircleNonAlloc(
-            transform.position,
+            cachedTransform.position,
             separationRadius,
             separationBuffer,
             separationLayerMask
@@ -132,7 +135,7 @@ public class UnitMovement : MonoBehaviour
             if (neighbor.gameObject == gameObject || !neighbor.CompareTag("Enemy"))
                 continue;
 
-            Vector2 diff = (Vector2)(transform.position - neighbor.transform.position);
+            Vector2 diff = (Vector2)(cachedTransform.position - neighbor.transform.position);
             float distSqr = diff.sqrMagnitude;
             if (distSqr <= 0.0001f)
                 continue;
