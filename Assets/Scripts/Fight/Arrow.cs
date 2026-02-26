@@ -92,7 +92,7 @@ public class Arrow : MonoBehaviour
             if (hit == null)
                 continue;
 
-            UnitHealth health = hit.GetComponent<UnitHealth>();
+            UnitHealth health = UnitHealthLookupCache.Resolve(hit);
             if (health == null)
                 continue;
 
@@ -160,7 +160,7 @@ public class Arrow : MonoBehaviour
             if (hit == null)
                 continue;
 
-            UnitHealth health = hit.GetComponent<UnitHealth>();
+            UnitHealth health = UnitHealthLookupCache.Resolve(hit);
             if (health == null)
                 continue;
 
