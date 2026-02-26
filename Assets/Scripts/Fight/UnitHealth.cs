@@ -38,6 +38,7 @@ public class UnitHealth : MonoBehaviour
     void OnDisable()
     {
         EnemyRegistry.Unregister(this);
+        UnitHealthLookupCache.Remove(col);
     }
 
     void Start()

@@ -25,6 +25,31 @@
 3. High-frequency Animator parameter writes and per-unit update loops need profiling budget and throttling strategy.
 4. Mobile memory pressure risk from sprite/material duplication and unbounded pooled object growth.
 
+
+## Target production-oriented structure (Unity)
+
+- `Assets/Scripts/Core`
+  - App bootstrapping, scene composition root, shared event bus, game loop state.
+- `Assets/Scripts/Gameplay`
+  - Pure gameplay domain: towers, enemies, projectiles, waves, combat rules.
+- `Assets/Scripts/Systems`
+  - Cross-cutting runtime systems: save/progression, economy, upgrade pipeline, level runtime orchestration.
+- `Assets/Scripts/Services`
+  - External adapters: ads, IAP, analytics, remote config, crash reporting.
+- `Assets/Scripts/UI`
+  - Presentation only: HUD/menu/view models; no combat decisions.
+- `Assets/Scripts/ScriptableObjects`
+  - Data definitions: tower/enemy/wave configs, economy tables, live-tuning presets.
+- `Assets/Scripts/Tools`
+  - Editor validation tools, build scripts, profiling helpers.
+
+## Immediate architecture actions (Phase 1)
+
+1. Keep gameplay stable while introducing low-risk, high-impact optimizations.
+2. Move hot-path lookups to cached/registry-driven access patterns.
+3. Gate new subsystems behind interfaces (`IAdsService`, `IIapService`, `IAnalyticsService`, `ISaveService`).
+4. Add simple scene wiring checklists for every system addition to avoid prefab regressions.
+
 ## 30–45 day delivery plan
 
 ### Week 1 — Foundation and architecture hardening
@@ -64,3 +89,9 @@
 2. Extract enemy spawn/despawn lifecycle into a pooled enemy spawner.
 3. Introduce ScriptableObject configs for Tower and Enemy stats.
 4. Add `GameSession` service for run state, currency, and result events.
+
+
+## Execution log
+
+- Iteration 1: Added `UnitHealthLookupCache` and switched projectile hit resolution to cached collider->`UnitHealth` lookup to reduce repeated `GetComponent` calls in combat hot paths.
+- Iteration 2: Added `EnemyRuntimeEvents.EnemyReachedGoal` and updated `UnitMovement` to publish a goal-reached event before enemy teardown. Added `destroyOnGoalReached` toggle to support future pooled despawn flow without breaking current gameplay.
