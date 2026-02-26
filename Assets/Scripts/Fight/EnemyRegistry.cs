@@ -61,7 +61,7 @@ public static class EnemyRegistry
         }
     }
 
-    public static bool TryGetNearestEnemy(Vector3 origin, float range, out Transform nearest)
+    public static bool TryGetNearestEnemy(Vector3 origin, float range, out UnitHealth nearest)
     {
         float rangeSqr = range * range;
         float nearestDistSqr = float.MaxValue;
@@ -90,7 +90,7 @@ public static class EnemyRegistry
                 continue;
 
             nearestDistSqr = distSqr;
-            nearest = enemy.transform;
+            nearest = enemy;
         }
 
         if (removedNullEntries)
@@ -100,5 +100,12 @@ public static class EnemyRegistry
         }
 
         return nearest != null;
+    }
+
+    public static bool TryGetNearestEnemy(Vector3 origin, float range, out Transform nearest)
+    {
+        bool found = TryGetNearestEnemy(origin, range, out UnitHealth nearestUnit);
+        nearest = found ? nearestUnit.transform : null;
+        return found;
     }
 }

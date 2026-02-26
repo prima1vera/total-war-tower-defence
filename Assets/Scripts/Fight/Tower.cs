@@ -10,7 +10,7 @@ public class Tower : MonoBehaviour
     [SerializeField] private float targetRefreshInterval = 0.15f;
     [SerializeField] private ArrowPool arrowPool;
 
-    private Transform currentTarget;
+    private UnitHealth currentTarget;
     private float fireCountdown = 0f;
     private float targetRefreshTimer = 0f;
     private int lastKnownEnemyRegistryVersion = -1;
@@ -62,7 +62,10 @@ public class Tower : MonoBehaviour
             return false;
 
         float rangeSqr = range * range;
-        float distSqr = (currentTarget.position - transform.position).sqrMagnitude;
+        if (currentTarget.CurrentState == UnitState.Dead)
+            return false;
+
+        float distSqr = (currentTarget.transform.position - transform.position).sqrMagnitude;
         return distSqr <= rangeSqr;
     }
 
@@ -98,7 +101,7 @@ public class Tower : MonoBehaviour
             return;
 
         Vector2 randomOffset = Random.insideUnitCircle * 0.5f;
-        Vector2 targetPoint = (Vector2)currentTarget.position + randomOffset;
+        Vector2 targetPoint = (Vector2)currentTarget.transform.position + randomOffset;
 
         arrow.Launch(targetPoint);
     }

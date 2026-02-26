@@ -110,3 +110,4 @@
 
 - Iteration 1: Added `UnitHealthLookupCache` and switched projectile hit resolution to cached collider->`UnitHealth` lookup to reduce repeated `GetComponent` calls in combat hot paths.
 - Iteration 2: Added `EnemyRuntimeEvents.EnemyReachedGoal` and updated `UnitMovement` to publish a goal-reached event before enemy teardown. Added `destroyOnGoalReached` toggle to support future pooled despawn flow without breaking current gameplay.
+- Iteration 3: Added `EnemyRegistry.TryGetNearestEnemy(..., out UnitHealth)` overload and updated `Tower` to cache `UnitHealth` targets directly for safer state validation and less transform-only coupling in targeting logic. Existing transform overload remains for backwards compatibility.
