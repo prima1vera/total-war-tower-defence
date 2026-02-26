@@ -83,7 +83,8 @@ public static class EnemyRegistry
             if (enemy.CurrentState == UnitState.Dead)
                 continue;
 
-            Vector3 delta = enemy.transform.position - origin;
+            Transform enemyTransform = enemy.transform;
+            Vector3 delta = enemyTransform.position - origin;
             float distSqr = delta.sqrMagnitude;
 
             if (distSqr > rangeSqr || distSqr >= nearestDistSqr)

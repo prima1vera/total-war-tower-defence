@@ -27,16 +27,19 @@ public class Arrow : MonoBehaviour
     private readonly HashSet<UnitHealth> hitUnits = new HashSet<UnitHealth>();
     private ArrowPool ownerPool;
     private Collider2D[] hitBuffer;
+    private Transform cachedTransform;
 
     void Awake()
     {
+        cachedTransform = transform;
+
         int bufferSize = Mathf.Max(8, maxHitColliders);
         hitBuffer = new Collider2D[bufferSize];
     }
 
     public void Launch(Vector2 target)
     {
-        startPos = transform.position;
+        startPos = cachedTransform.position;
         targetPos = target;
         timer = 0f;
         hasImpacted = false;
@@ -67,14 +70,14 @@ public class Arrow : MonoBehaviour
         float height = Mathf.Sin(t * Mathf.PI) * arcHeight;
         currentPos.y += height;
 
-        Vector2 velocity = currentPos - (Vector2)transform.position;
+        Vector2 velocity = currentPos - (Vector2)cachedTransform.position;
         if (velocity.sqrMagnitude > 0.001f)
         {
             float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            cachedTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
 
-        transform.position = currentPos;
+        cachedTransform.position = currentPos;
 
         CheckUnits();
     }
@@ -84,7 +87,7 @@ public class Arrow : MonoBehaviour
         if (hitBuffer == null || hitBuffer.Length == 0)
             return;
 
-        int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, 0.3f, hitBuffer, unitLayer);
+        int hitCount = Physics2D.OverlapCircleNonAlloc(cachedTransform.position, 0.3f, hitBuffer, unitLayer);
 
         for (int i = 0; i < hitCount; i++)
         {
@@ -112,7 +115,7 @@ public class Arrow : MonoBehaviour
 
     void ApplyDamage(UnitHealth health)
     {
-        Vector2 forceDir = (health.transform.position - transform.position).normalized;
+        Vector2 forceDir = (health.transform.position - cachedTransform.position).normalized;
 
         health.TakeDamage(damage, damageType, forceDir, knockbackForce);
 
@@ -134,7 +137,7 @@ public class Arrow : MonoBehaviour
         hasImpacted = true;
 
         if (dustPrefab != null)
-            Instantiate(dustPrefab, transform.position, Quaternion.identity);
+            Instantiate(dustPrefab, cachedTransform.position, Quaternion.identity);
 
         ExplodeAreaDamage();
 
@@ -152,7 +155,7 @@ public class Arrow : MonoBehaviour
         if (hitBuffer == null || hitBuffer.Length == 0)
             return;
 
-        int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, impactRadius, hitBuffer, unitLayer);
+        int hitCount = Physics2D.OverlapCircleNonAlloc(cachedTransform.position, impactRadius, hitBuffer, unitLayer);
 
         for (int i = 0; i < hitCount; i++)
         {
