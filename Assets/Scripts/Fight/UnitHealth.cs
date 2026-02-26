@@ -87,7 +87,7 @@ public class UnitHealth : MonoBehaviour
 
         if (animator != null)
         {
-            int randomDeath = Random.Range(0, 5);
+            int randomDeath = Random.Range(0, 4);
             animator.SetInteger("deathIndex", randomDeath);
             animator.SetBool("isDead", true);
         }

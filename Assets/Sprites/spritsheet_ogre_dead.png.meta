@@ -48,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 84
+  spritePixelsToUnits: 80
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_0
+      name: spritsheet_ogre_dead_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 19
-        width: 50
-        height: 61
+        x: 0
+        y: 0
+        width: 62
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1b1436a2dbd5f7e4eb4724619a60b4b9
-      internalID: -1475835697
+      spriteID: 9c934252a17c6d54097b5c4e64885e32
+      internalID: -38586991
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_1
+      name: spritsheet_ogre_dead_1
       rect:
         serializedVersion: 2
-        x: 102
-        y: 19
-        width: 50
-        height: 61
+        x: 96
+        y: 0
+        width: 61
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,20 +145,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a949f39d858969047923704c42259638
-      internalID: -226313419
+      spriteID: ef409d35d5a21ee4d955f437ad307de3
+      internalID: 1441881888
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_2
+      name: spritsheet_ogre_dead_2
       rect:
         serializedVersion: 2
-        x: 198
-        y: 19
-        width: 50
-        height: 61
+        x: 192
+        y: 0
+        width: 61
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,20 +166,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a7ceb19e1a53dd049a6a83be7abe125c
-      internalID: -1396277919
+      spriteID: 035c794922b9aaf4a8e00a4d15fc779b
+      internalID: -131282319
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_3
+      name: spritsheet_ogre_dead_3
       rect:
         serializedVersion: 2
-        x: 294
-        y: 19
-        width: 50
-        height: 61
+        x: 288
+        y: 0
+        width: 63
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -187,20 +187,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bee8a71d13d08d348969ad7d7e5b2c4d
-      internalID: -1048953311
+      spriteID: c4ad69fd8bad3e541a981aed54fda16c
+      internalID: -1125806348
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_4
+      name: spritsheet_ogre_dead_4
       rect:
         serializedVersion: 2
-        x: 390
-        y: 19
-        width: 50
-        height: 61
+        x: 384
+        y: 0
+        width: 64
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -208,20 +208,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: db2a33ceb623ab249bfb5afdfdfcde78
-      internalID: 923062152
+      spriteID: b76c9db2b64c84b43a4cb66bef3231eb
+      internalID: 1224843333
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_5
+      name: spritsheet_ogre_dead_5
       rect:
         serializedVersion: 2
-        x: 485
-        y: 18
-        width: 51
-        height: 59
+        x: 480
+        y: 0
+        width: 63
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -229,20 +229,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: caf1c6f84c1817542acbe8da4f016bdd
-      internalID: -1093705082
+      spriteID: d9120b7de00b9b5428f455cba0d605bf
+      internalID: -816167425
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_6
+      name: spritsheet_ogre_dead_6
       rect:
         serializedVersion: 2
-        x: 579
-        y: 19
-        width: 53
-        height: 48
+        x: 576
+        y: 0
+        width: 60
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -250,20 +250,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ecf9cd8c2959f5349af9ebfdab1bd07f
-      internalID: 539808803
+      spriteID: 31d17009d6eac35428828d5170a9020d
+      internalID: -773173097
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_7
+      name: spritsheet_ogre_dead_7
       rect:
         serializedVersion: 2
-        x: 675
-        y: 19
-        width: 53
-        height: 48
+        x: 672
+        y: 0
+        width: 60
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -271,20 +271,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 98233f2ee6351f548a48459bdefdd791
-      internalID: -1810544282
+      spriteID: efb1fe66a4ffa0347bdf8c8f945f7f9e
+      internalID: -837366714
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_8
+      name: spritsheet_ogre_dead_8
       rect:
         serializedVersion: 2
-        x: 772
-        y: 19
-        width: 52
-        height: 51
+        x: 768
+        y: 0
+        width: 63
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -292,20 +292,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 14c897b393e1f474996305c62236831e
-      internalID: -2133154437
+      spriteID: 593e5a66cd375cf49a619d80e997f661
+      internalID: -2024080674
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_9
+      name: spritsheet_ogre_dead_9
       rect:
         serializedVersion: 2
-        x: 870
-        y: 19
-        width: 50
-        height: 54
+        x: 863
+        y: 0
+        width: 64
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -313,20 +313,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3f598daf479c19642b1ed39b32d4af33
-      internalID: 2042176338
+      spriteID: 8bea227a6da3b04468a679aa6150c186
+      internalID: -1695397146
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_10
+      name: spritsheet_ogre_dead_10
       rect:
         serializedVersion: 2
-        x: 967
-        y: 20
-        width: 49
-        height: 53
+        x: 960
+        y: 0
+        width: 65
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -334,20 +334,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 03acbaebf7118414abe400ac101598ba
-      internalID: -304506588
+      spriteID: 2bdf96e90867ec84c85417c49a07099e
+      internalID: 1242856607
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_11
+      name: spritsheet_ogre_dead_11
       rect:
         serializedVersion: 2
-        x: 1067
-        y: 19
-        width: 47
-        height: 56
+        x: 1056
+        y: 0
+        width: 64
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -355,20 +355,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e66c95b18e51e17468e76a88c01ab013
-      internalID: -1646230420
+      spriteID: ec6098d13b340ba4b97abf6feefa2823
+      internalID: 1054508988
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_12
+      name: spritsheet_ogre_dead_12
       rect:
         serializedVersion: 2
-        x: 1168
-        y: 19
-        width: 43
-        height: 58
+        x: 1152
+        y: 0
+        width: 70
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -376,20 +376,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8040ae54da177b646b9d804484ef286c
-      internalID: -125460989
+      spriteID: aaf6e6d8d926ee2429ec7dea0e4c0fd3
+      internalID: 1647971021
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_13
+      name: spritsheet_ogre_dead_13
       rect:
         serializedVersion: 2
-        x: 1268
-        y: 20
-        width: 42
-        height: 57
+        x: 1248
+        y: 0
+        width: 71
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -397,20 +397,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed2038da7979fb8428bc8de57d35c132
-      internalID: -2073911484
+      spriteID: b0050cd0648438649b0dd9de29210589
+      internalID: 560489870
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_14
+      name: spritsheet_ogre_dead_14
       rect:
         serializedVersion: 2
-        x: 1365
-        y: 20
-        width: 46
-        height: 56
+        x: 1352
+        y: 0
+        width: 69
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -418,20 +418,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: de767a1b020eb7948ba5fcf14efb5350
-      internalID: -1027913299
+      spriteID: 205dddcd3f3ebdf4594cbe84ccc834b4
+      internalID: 1025037580
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_15
+      name: spritsheet_ogre_dead_15
       rect:
         serializedVersion: 2
-        x: 1469
-        y: 22
-        width: 50
-        height: 51
+        x: 1452
+        y: 0
+        width: 80
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -439,20 +439,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aee1deb0d6ad6d44fa965828e2b7bc81
-      internalID: 517488210
+      spriteID: 083aacca2ba40c041a2af9b344194666
+      internalID: 1915721195
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_16
+      name: spritsheet_ogre_dead_16
       rect:
         serializedVersion: 2
-        x: 1570
-        y: 25
-        width: 54
-        height: 41
+        x: 1560
+        y: 0
+        width: 72
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -460,20 +460,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 764dd14e0d8a7ee4183107619d5a4bb8
-      internalID: 1017692239
+      spriteID: 913f9f3b33acc7741910a54b77b6f106
+      internalID: -2115941164
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_17
+      name: spritsheet_ogre_dead_17
       rect:
         serializedVersion: 2
-        x: 1672
-        y: 21
-        width: 54
-        height: 53
+        x: 1666
+        y: 0
+        width: 62
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -481,20 +481,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2ae3172c847706444a63b888cb08c8f7
-      internalID: -635567574
+      spriteID: eadb759d5c2708148a18695e3b223350
+      internalID: -1272800416
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_18
+      name: spritsheet_ogre_dead_18
       rect:
         serializedVersion: 2
-        x: 1767
-        y: 19
-        width: 52
-        height: 49
+        x: 1761
+        y: 0
+        width: 63
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -502,20 +502,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a383dbebb4a5f0444867057cb8edfaa8
-      internalID: 934185958
+      spriteID: d2995ce4e73971449a7a04247f0308bf
+      internalID: -1324711411
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_dead_19
+      name: spritsheet_ogre_dead_19
       rect:
         serializedVersion: 2
-        x: 1860
-        y: 18
-        width: 55
-        height: 43
+        x: 1846
+        y: 0
+        width: 74
+        height: 96
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -523,8 +523,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e73e47990f6cc074cba285abafc643df
-      internalID: 371287616
+      spriteID: f56823fb54e42f643a2ab567f42542fc
+      internalID: -484281770
       vertices: []
       indices: 
       edges: []
@@ -540,26 +540,26 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      spritsheet_ogre_walk_dead_0: -1475835697
-      spritsheet_ogre_walk_dead_1: -226313419
-      spritsheet_ogre_walk_dead_10: -304506588
-      spritsheet_ogre_walk_dead_11: -1646230420
-      spritsheet_ogre_walk_dead_12: -125460989
-      spritsheet_ogre_walk_dead_13: -2073911484
-      spritsheet_ogre_walk_dead_14: -1027913299
-      spritsheet_ogre_walk_dead_15: 517488210
-      spritsheet_ogre_walk_dead_16: 1017692239
-      spritsheet_ogre_walk_dead_17: -635567574
-      spritsheet_ogre_walk_dead_18: 934185958
-      spritsheet_ogre_walk_dead_19: 371287616
-      spritsheet_ogre_walk_dead_2: -1396277919
-      spritsheet_ogre_walk_dead_3: -1048953311
-      spritsheet_ogre_walk_dead_4: 923062152
-      spritsheet_ogre_walk_dead_5: -1093705082
-      spritsheet_ogre_walk_dead_6: 539808803
-      spritsheet_ogre_walk_dead_7: -1810544282
-      spritsheet_ogre_walk_dead_8: -2133154437
-      spritsheet_ogre_walk_dead_9: 2042176338
+      spritsheet_ogre_dead_0: -38586991
+      spritsheet_ogre_dead_1: 1441881888
+      spritsheet_ogre_dead_10: 1242856607
+      spritsheet_ogre_dead_11: 1054508988
+      spritsheet_ogre_dead_12: 1647971021
+      spritsheet_ogre_dead_13: 560489870
+      spritsheet_ogre_dead_14: 1025037580
+      spritsheet_ogre_dead_15: 1915721195
+      spritsheet_ogre_dead_16: -2115941164
+      spritsheet_ogre_dead_17: -1272800416
+      spritsheet_ogre_dead_18: -1324711411
+      spritsheet_ogre_dead_19: -484281770
+      spritsheet_ogre_dead_2: -131282319
+      spritsheet_ogre_dead_3: -1125806348
+      spritsheet_ogre_dead_4: 1224843333
+      spritsheet_ogre_dead_5: -816167425
+      spritsheet_ogre_dead_6: -773173097
+      spritsheet_ogre_dead_7: -837366714
+      spritsheet_ogre_dead_8: -2024080674
+      spritsheet_ogre_dead_9: -1695397146
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
