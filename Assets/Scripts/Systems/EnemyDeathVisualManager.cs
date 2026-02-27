@@ -9,6 +9,11 @@ public class EnemyDeathVisualManager : MonoBehaviour
     private static EnemyDeathVisualManager instance;
 
     [SerializeField] private int maxTrackedDeaths = 80;
+    [SerializeField] private float corpseToRemainsDelay = 6f;
+    [SerializeField] private float remainsLifetime = 18f;
+    [SerializeField] private Sprite remainsSpriteOverride;
+    [SerializeField, Range(0.05f, 1f)] private float remainsAlpha = 0.3f;
+    [SerializeField, Range(0.3f, 1.2f)] private float remainsScaleMultiplier = 0.75f;
 
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
 
@@ -49,6 +54,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
             corpseRenderer.flipX = corpseFlipX;
             corpseRenderer.sortingLayerName = "Units_Dead";
             corpseRenderer.sortingOrder = corpseSortingOrder;
+
+            StartCoroutine(TransitionCorpseToRemains(corpseObject.transform, corpseRenderer, corpseSortingOrder));
         }
 
         GameObject bloodObject = null;
@@ -61,6 +68,42 @@ public class EnemyDeathVisualManager : MonoBehaviour
         }
 
         activeVisuals.Enqueue(new DeathVisualEntry(corpseObject, bloodObject));
+
+        float lifeTime = Mathf.Max(0f, corpseToRemainsDelay) + Mathf.Max(0f, remainsLifetime);
+        if (lifeTime > 0f)
+            StartCoroutine(DestroyDeathVisualsAfterDelay(corpseObject, bloodObject, lifeTime));
+    }
+
+    private IEnumerator TransitionCorpseToRemains(Transform corpseTransform, SpriteRenderer corpseRenderer, int corpseSortingOrder)
+    {
+        float transitionDelay = Mathf.Max(0f, corpseToRemainsDelay);
+        if (transitionDelay > 0f)
+            yield return new WaitForSeconds(transitionDelay);
+
+        if (corpseTransform == null || corpseRenderer == null)
+            yield break;
+
+        if (remainsSpriteOverride != null)
+            corpseRenderer.sprite = remainsSpriteOverride;
+
+        Vector3 remainsScale = corpseTransform.localScale * Mathf.Max(0.01f, remainsScaleMultiplier);
+        corpseTransform.localScale = remainsScale;
+
+        Color color = corpseRenderer.color;
+        color.a = Mathf.Clamp01(remainsAlpha);
+        corpseRenderer.color = color;
+        corpseRenderer.sortingOrder = corpseSortingOrder - 1;
+    }
+
+    private IEnumerator DestroyDeathVisualsAfterDelay(GameObject corpseObject, GameObject bloodObject, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (corpseObject != null)
+            Destroy(corpseObject);
+
+        if (bloodObject != null)
+            Destroy(bloodObject);
     }
 
     private void EnforceCap()
