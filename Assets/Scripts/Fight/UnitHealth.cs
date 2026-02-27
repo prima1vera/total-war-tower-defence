@@ -22,7 +22,7 @@ public class UnitHealth : MonoBehaviour
 
     public GameObject bloodPoolPrefab;
     public GameObject bloodSplashPrefab;
-    [SerializeField] private float despawnToPoolDelay = 1.15f;
+    [SerializeField] private float despawnToPoolDelay = 2f;
 
     void Awake()
     {
@@ -128,11 +128,12 @@ public class UnitHealth : MonoBehaviour
         if (topDownSorter != null)
             topDownSorter.enabled = false;
 
+        Vector3 colBounds = (col != null) ? col.bounds.min : transform.position;
+
         if (col != null)
             col.enabled = false;
 
-        float y = (col != null) ? col.bounds.min.y : transform.position.y;
-        int deadOrder = Mathf.RoundToInt(-y * 100f) + Random.Range(-1, 2);
+        int deadOrder = Mathf.RoundToInt(-colBounds.y * 100f) + Random.Range(-1, 2);
 
         if (spriteRenderer != null)
         {
@@ -140,15 +141,15 @@ public class UnitHealth : MonoBehaviour
             spriteRenderer.sortingOrder = deadOrder;
         }
 
-        StartCoroutine(DespawnToPoolAfterDelay(deadOrder));
+        StartCoroutine(DespawnToPoolAfterDelay(deadOrder, colBounds));
+
     }
 
-    private IEnumerator DespawnToPoolAfterDelay(int deadOrder)
+    private IEnumerator DespawnToPoolAfterDelay(int deadOrder,Vector3 colBloodPos)
     {
         yield return new WaitForSeconds(Mathf.Max(0f, despawnToPoolDelay));
 
-        Vector3 bloodPos = col != null ? col.bounds.min : transform.position;
-        bloodPos.z = 0f;
+        colBloodPos.z = 0f;
 
         EnemyDeathVisualManager.Instance.SpawnDeathVisuals(
             spriteRenderer != null ? spriteRenderer.sprite : null,
@@ -157,7 +158,7 @@ public class UnitHealth : MonoBehaviour
             transform.localScale,
             deadOrder,
             bloodPoolPrefab,
-            bloodPos
+            colBloodPos
         );
 
         if (enemyPoolMember != null && enemyPoolMember.TryDespawnToPool())
