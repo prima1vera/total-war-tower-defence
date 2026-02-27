@@ -140,6 +140,13 @@ public class UnitHealth : MonoBehaviour
             spriteRenderer.sortingOrder = deadOrder;
         }
 
+        StartCoroutine(DespawnToPoolAfterDelay(deadOrder));
+    }
+
+    private IEnumerator DespawnToPoolAfterDelay(int deadOrder)
+    {
+        yield return new WaitForSeconds(Mathf.Max(0f, despawnToPoolDelay));
+
         Vector3 bloodPos = col != null ? col.bounds.min : transform.position;
         bloodPos.z = 0f;
 
@@ -152,13 +159,6 @@ public class UnitHealth : MonoBehaviour
             bloodPoolPrefab,
             bloodPos
         );
-
-        StartCoroutine(DespawnToPoolAfterDelay());
-    }
-
-    private IEnumerator DespawnToPoolAfterDelay()
-    {
-        yield return new WaitForSeconds(Mathf.Max(0f, despawnToPoolDelay));
 
         if (enemyPoolMember != null && enemyPoolMember.TryDespawnToPool())
             yield break;
