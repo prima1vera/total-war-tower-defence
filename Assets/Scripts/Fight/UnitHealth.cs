@@ -14,6 +14,8 @@ public class UnitHealth : MonoBehaviour
     private UnitMovement movement;
     private SpriteRenderer spriteRenderer;
     private TopDownSorter topDownSorter;
+    private string defaultSortingLayerName;
+    private int defaultSortingOrder;
 
     public StatusEffectHandler StatusEffectHandler { get; private set; }
 
@@ -28,10 +30,17 @@ public class UnitHealth : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         topDownSorter = GetComponent<TopDownSorter>();
         StatusEffectHandler = GetComponent<StatusEffectHandler>();
+
+        if (spriteRenderer != null)
+        {
+            defaultSortingLayerName = spriteRenderer.sortingLayerName;
+            defaultSortingOrder = spriteRenderer.sortingOrder;
+        }
     }
 
     void OnEnable()
     {
+        ResetRuntimeState();
         EnemyRegistry.Register(this);
     }
 
@@ -41,9 +50,25 @@ public class UnitHealth : MonoBehaviour
         UnitHealthLookupCache.Remove(col);
     }
 
-    void Start()
+    private void ResetRuntimeState()
     {
         currentHealth = maxHealth;
+        CurrentState = UnitState.Moving;
+
+        if (col != null)
+            col.enabled = true;
+
+        if (topDownSorter != null)
+            topDownSorter.enabled = true;
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.sortingLayerName = defaultSortingLayerName;
+            spriteRenderer.sortingOrder = defaultSortingOrder;
+        }
+
+        if (animator != null)
+            animator.SetBool("isDead", false);
     }
 
     public void TakeDamage(int dmg, DamageType type, Vector2 hitDirection, float knockbackForce)

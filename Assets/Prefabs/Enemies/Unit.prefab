@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2404369416373103768}
@@ -43,7 +43,7 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 1
   simulationSpeed: 1
-  stopAction: 0
+  stopAction: 2
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
@@ -604,7 +604,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 1
-    maxNumParticles: 50
+    maxNumParticles: 20
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -4858,7 +4858,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2404369416373103768}
@@ -4873,7 +4873,7 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 1
   simulationSpeed: 1
-  stopAction: 0
+  stopAction: 2
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
@@ -9677,8 +9677,9 @@ GameObject:
   - component: {fileID: -6560936230222391820}
   - component: {fileID: 649036997620235078}
   - component: {fileID: 80529708912085982}
+  - component: {fileID: -1175284921020279558}
   m_Layer: 21
-  m_Name: Ogre
+  m_Name: Unit
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9693,7 +9694,7 @@ Transform:
   m_GameObject: {fileID: 8051200457295428929}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.829, y: 0.438, z: 0}
+  m_LocalPosition: {x: -0.636, y: 0.46662, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9741,13 +9742,13 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
   m_SortingLayer: 3
-  m_SortingOrder: 2
-  m_Sprite: {fileID: 1959878637, guid: 89da5f611cd71064d9ad364bddcd7d61, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: 2765022284340413302, guid: 25c7dc5f27ecb414391336fb47062618, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.96, y: 0.96}
+  m_Size: {x: 0.19, y: 0.4}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -9763,7 +9764,7 @@ Animator:
   m_GameObject: {fileID: 8051200457295428929}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 018b412a7343d8b4e8de1245b6d35d8f, type: 2}
+  m_Controller: {fileID: 9100000, guid: d288bd8a42a44e246b6407cfbcf9d87e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -9806,8 +9807,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.02277866, y: 0.07138914}
-  m_Size: {x: 0.38837212, y: 0.74430597}
+  m_Offset: {x: 0.002415657, y: -0.01718773}
+  m_Size: {x: 0.1792078, y: 0.3971214}
   m_Direction: 0
 --- !u!114 &5190869859010253226
 MonoBehaviour:
@@ -9821,7 +9822,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d410ab966cb688499031eeeac9a5d3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitMovement
-  speed: 0.25
+  speed: 0.5
   separationRadius: 0.2
   separationForce: 0.2
   separationLayerMask:
@@ -9841,9 +9842,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a166122f46c6d4290d6556a85e25a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitHealth
-  maxHealth: 15
-  bloodPoolPrefab: {fileID: 7924102300927368246, guid: e1c4e45aef445cd42818a3f188478c49, type: 3}
-  bloodSplashPrefab: {fileID: 6567675628769267437, guid: 626575ed6b0b8764db5d804dbe61ff9c, type: 3}
+  maxHealth: 5
+  bloodPoolPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
+  bloodSplashPrefab: {fileID: 6567675628769267437, guid: bcdc8edaa307d5941a4f80c7fd13bf4f, type: 3}
 --- !u!114 &-6560936230222391820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9882,3 +9883,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48da8c941c3df394ba96ba862e4ff997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownSorter
+--- !u!114 &-1175284921020279558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8051200457295428929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d471b7a0bc445b490335580618af494, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
