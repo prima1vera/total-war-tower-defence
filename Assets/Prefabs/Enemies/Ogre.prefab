@@ -9845,6 +9845,7 @@ MonoBehaviour:
   maxHealth: 15
   bloodPoolPrefab: {fileID: 7924102300927368246, guid: e1c4e45aef445cd42818a3f188478c49, type: 3}
   bloodSplashPrefab: {fileID: 6567675628769267437, guid: 626575ed6b0b8764db5d804dbe61ff9c, type: 3}
+  despawnToPoolDelay: 1.5
 --- !u!114 &-6560936230222391820
 MonoBehaviour:
   m_ObjectHideFlags: 0
