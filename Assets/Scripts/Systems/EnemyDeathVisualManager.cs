@@ -18,12 +18,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
 
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void Bootstrap()
-    {
-        _ = Instance;
-    }
-
     private void Awake()
     {
         if (instance != null && instance != this)
