@@ -21,6 +21,7 @@ public class UnitMovement : MonoBehaviour
 
     private Collider2D[] separationBuffer;
     private Transform cachedTransform;
+    private EnemyPoolMember enemyPoolMember;
 
     public void ApplyKnockback(Vector2 direction, float force)
     {
@@ -36,6 +37,7 @@ public class UnitMovement : MonoBehaviour
     void Awake()
     {
         cachedTransform = transform;
+        enemyPoolMember = GetComponent<EnemyPoolMember>();
 
         int bufferSize = Mathf.Max(4, maxSeparationColliders);
         separationBuffer = new Collider2D[bufferSize];
@@ -103,6 +105,9 @@ public class UnitMovement : MonoBehaviour
             if (waypointIndex >= path.Length)
             {
                 EnemyRuntimeEvents.RaiseEnemyReachedGoal(unitHealth);
+
+                if (enemyPoolMember != null && enemyPoolMember.TryDespawnToPool())
+                    return;
 
                 if (destroyOnGoalReached)
                     Destroy(gameObject);
