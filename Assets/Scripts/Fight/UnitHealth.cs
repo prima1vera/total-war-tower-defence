@@ -14,6 +14,7 @@ public class UnitHealth : MonoBehaviour
     private UnitMovement movement;
     private SpriteRenderer spriteRenderer;
     private TopDownSorter topDownSorter;
+    private EnemyPoolMember enemyPoolMember;
     private string defaultSortingLayerName;
     private int defaultSortingOrder;
 
@@ -21,6 +22,7 @@ public class UnitHealth : MonoBehaviour
 
     public GameObject bloodPoolPrefab;
     public GameObject bloodSplashPrefab;
+    [SerializeField] private float despawnToPoolDelay = 1.15f;
 
     void Awake()
     {
@@ -29,6 +31,7 @@ public class UnitHealth : MonoBehaviour
         movement = GetComponent<UnitMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         topDownSorter = GetComponent<TopDownSorter>();
+        enemyPoolMember = GetComponent<EnemyPoolMember>();
         StatusEffectHandler = GetComponent<StatusEffectHandler>();
 
         if (spriteRenderer != null)
@@ -122,104 +125,47 @@ public class UnitHealth : MonoBehaviour
             Instantiate(bloodSplashPrefab, transform.position, Quaternion.identity);
         }
 
-
-        if (bloodPoolPrefab != null && col != null)
-        {
-            Vector3 bloodPos = col != null ? col.bounds.min : transform.position;
-            bloodPos.z = 0f;
-
-            GameObject blood = Instantiate(bloodPoolPrefab, bloodPos, Quaternion.identity);
-
-            var bloodSR = blood.GetComponent<SpriteRenderer>();
-
-            float targetScale = UnityEngine.Random.Range(0.35f, 1.05f);
-
-            StartCoroutine(AnimateBloodPoolAAA(blood.transform, bloodSR, targetScale));
-        }
-
         if (topDownSorter != null)
             topDownSorter.enabled = false;
 
         if (col != null)
             col.enabled = false;
 
+        float y = (col != null) ? col.bounds.min.y : transform.position.y;
+        int deadOrder = Mathf.RoundToInt(-y * 100f) + Random.Range(-1, 2);
+
         if (spriteRenderer != null)
         {
-            float y = (col != null) ? col.bounds.min.y : transform.position.y;
-            int deadOrder = Mathf.RoundToInt(-y * 100f) + Random.Range(-1, 2);
-
             spriteRenderer.sortingLayerName = "Units_Dead";
             spriteRenderer.sortingOrder = deadOrder;
         }
+
+        Vector3 bloodPos = col != null ? col.bounds.min : transform.position;
+        bloodPos.z = 0f;
+
+        EnemyDeathVisualManager.Instance.SpawnDeathVisuals(
+            spriteRenderer != null ? spriteRenderer.sprite : null,
+            spriteRenderer != null && spriteRenderer.flipX,
+            transform.position,
+            transform.localScale,
+            deadOrder,
+            bloodPoolPrefab,
+            bloodPos
+        );
+
+        StartCoroutine(DespawnToPoolAfterDelay());
     }
 
-
-    IEnumerator AnimateBloodPoolAAA(Transform blood, SpriteRenderer sr, float targetScale)
+    private IEnumerator DespawnToPoolAfterDelay()
     {
-        float startUniform = UnityEngine.Random.Range(0.05f, 0.15f);
+        yield return new WaitForSeconds(Mathf.Max(0f, despawnToPoolDelay));
 
-        Vector3 startScale = new Vector3(startUniform, startUniform, 1f);
-        Vector3 endScale = new Vector3(targetScale, targetScale, 1f);
+        if (enemyPoolMember != null && enemyPoolMember.TryDespawnToPool())
+            yield break;
 
-        float duration = Mathf.Lerp(0.25f, 0.95f, Mathf.InverseLerp(0.35f, 1.05f, targetScale));
-        duration *= UnityEngine.Random.Range(1.9f, 3.25f);
-
-        Vector3 overScale = endScale;
-
-        float startAlpha = 0f;
-        float endAlpha = UnityEngine.Random.Range(0.8f, 1f);
-
-        if (sr != null)
+        if (gameObject.activeSelf)
         {
-            var c = sr.color;
-            c.a = startAlpha;
-            sr.color = c;
-        }
-
-        blood.localScale = startScale;
-
-        float t = 0f;
-
-        float growPhase = duration * 0.75f;
-        while (t < growPhase)
-        {
-            t += Time.deltaTime;
-            float k = Mathf.Clamp01(t / growPhase);
-
-            // smoothstep
-            k = k * k * (3f - 2f * k);
-
-            blood.localScale = Vector3.Lerp(startScale, overScale, k);
-
-            if (sr != null)
-            {
-                var c = sr.color;
-                c.a = Mathf.Lerp(startAlpha, endAlpha, k);
-                sr.color = c;
-            }
-
-            yield return null;
-        }
-
-        float settleT = 0f;
-        float settlePhase = duration * 0.25f;
-        while (settleT < settlePhase)
-        {
-            settleT += Time.deltaTime;
-            float k = Mathf.Clamp01(settleT / settlePhase);
-
-            k = Mathf.SmoothStep(0f, 1f, k);
-
-            blood.localScale = Vector3.Lerp(overScale, endScale, k);
-            yield return null;
-        }
-
-        blood.localScale = endScale;
-        if (sr != null)
-        {
-            var c = sr.color;
-            c.r *= 0.9f; c.g *= 0.85f; c.b *= 0.85f;
-            sr.color = c;
+            gameObject.SetActive(false);
         }
     }
 }
