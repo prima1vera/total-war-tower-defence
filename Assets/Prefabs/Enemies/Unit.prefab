@@ -9823,8 +9823,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitMovement
   speed: 0.5
-  separationRadius: 0.2
-  separationForce: 0.2
+  separationRadius: 0.3
+  separationForce: 0.1
   separationLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
