@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7887166906475820423
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5109954482519263424}
+  - component: {fileID: 9188115217899500902}
+  m_Layer: 0
+  m_Name: EnemyDeathManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5109954482519263424
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7887166906475820423}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.074492, y: 0.66179216, z: 0.05211379}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9188115217899500902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7887166906475820423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7211e33915e4fd2876451a808a237e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxTrackedDeaths: 20
+  overflowToRemainsTransitionDuration: 5
+  remainsLifetimeAfterOverflow: 25
+  remainsAlpha: 0.75
+  remainsScaleMultiplier: 0.75
+  remainsVariants:
+  - SourceSprite: {fileID: -186571565, guid: c3f9349128a97b94b8032d7e823a66b7, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: ced99ed6311f0a243aa99b16d04983ae, type: 3}

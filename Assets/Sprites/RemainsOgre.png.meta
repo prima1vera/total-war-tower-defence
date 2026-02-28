@@ -1,37 +1,7 @@
 fileFormatVersion: 2
-guid: c90d0921d61e42a498b4b5d67f62ef42
+guid: e2ae0418badb4d94b992b89d6db5fa46
 TextureImporter:
-  internalIDToNameTable:
-  - first:
-      213: -91627661426143493
-    second: FrostArrow_0
-  - first:
-      213: -3524322902855008437
-    second: FrostArrow_1
-  - first:
-      213: -7908271620140676262
-    second: FrostArrow_2
-  - first:
-      213: 3501392821321792530
-    second: FrostArrow_3
-  - first:
-      213: 8823804206335222483
-    second: FrostArrow_4
-  - first:
-      213: -6375324258364765454
-    second: FrostArrow_5
-  - first:
-      213: 2905235634825595384
-    second: FrostArrow_6
-  - first:
-      213: -5985578299703611303
-    second: FrostArrow_7
-  - first:
-      213: 5541024152420490311
-    second: FrostArrow_8
-  - first:
-      213: 3178019408684715049
-    second: FrostArrow_9
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -78,8 +48,8 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
-  spriteBorder: {x: 29, y: 61, z: 32, w: 46}
+  spritePixelsToUnits: 500
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -97,7 +67,7 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 0
   platformSettings:
-  - serializedVersion: 4
+  - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -110,8 +80,21 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
+  - serializedVersion: 3
     buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -125,53 +108,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: ArrowFrost_0
-      rect:
-        serializedVersion: 2
-        x: 59
-        y: 176
-        width: 263
-        height: 72
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bfe481d90297abef0800000000000000
-      internalID: -91627661426143493
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
-    customData: 
     physicsShape: []
     bones: []
-    spriteID: 424159b2d3462754581c45ac1e1c5a46
-    internalID: 1754323569
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
-    spriteCustomMetadata:
-      entries: []
-    nameFileIdTable:
-      ArrowFrost_0: -91627661426143493
-      FrostArrow_1: -3524322902855008437
-      FrostArrow_2: -7908271620140676262
-      FrostArrow_3: 3501392821321792530
-      FrostArrow_4: 8823804206335222483
-      FrostArrow_5: -6375324258364765454
-      FrostArrow_6: 2905235634825595384
-      FrostArrow_7: -5985578299703611303
-      FrostArrow_8: 5541024152420490311
-      FrostArrow_9: 3178019408684715049
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
