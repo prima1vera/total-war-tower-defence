@@ -75,7 +75,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
         {
             bloodObject = Instantiate(bloodPoolPrefab, bloodPosition, Quaternion.identity);
             SpriteRenderer bloodRenderer = bloodObject.GetComponent<SpriteRenderer>();
-            float targetScale = Random.Range(0.35f, 1.05f);
+            float targetScale = Random.Range(0.45f, 1.05f);
             StartCoroutine(AnimateBloodPool(bloodObject.transform, bloodRenderer, targetScale));
         }
 

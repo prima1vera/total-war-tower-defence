@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 43a0461da802a744eb28c2a84a9672fe
+guid: a1628bc044c509e47b1e24137ad82721
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7554067398021572401
-    second: WTFarrow_0
+      213: 8717243691107160497
+    second: TowerSprite_0
+  - first:
+      213: -5709785396720505293
+    second: TowerSprite_1
+  - first:
+      213: 4380293431896266413
+    second: TowerSprite_2
+  - first:
+      213: -3205520106432172034
+    second: TowerSprite_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,13 +55,13 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 9
-  spritePivot: {x: 0.49930596, y: 0.47501558}
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 52, y: 51, z: 46, w: 64}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -70,7 +79,7 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 0
   platformSettings:
-  - serializedVersion: 4
+  - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -83,8 +92,21 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
+  - serializedVersion: 3
     buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -100,42 +122,83 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: WTFarrow_0
+      name: TowerSprite_0
       rect:
         serializedVersion: 2
-        x: 151
-        y: 185
-        width: 224
-        height: 49
+        x: 28
+        y: 44
+        width: 271
+        height: 317
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fc8909389bf8a2790800000000000000
-      internalID: -7554067398021572401
+      spriteID: 1b115fc73fed9f870800000000000000
+      internalID: 8717243691107160497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TowerSprite_1
+      rect:
+        serializedVersion: 2
+        x: 371
+        y: 47
+        width: 271
+        height: 317
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33ee2c4fe64c2c0b0800000000000000
+      internalID: -5709785396720505293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TowerSprite_2
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 47
+        width: 271
+        height: 317
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da657242bade9cc30800000000000000
+      internalID: 4380293431896266413
       vertices: []
       indices: 
       edges: []
       weights: []
     outline: []
-    customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    spriteID: b578a059987699f4cba1dadb9be3ef9f
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
-    spriteCustomMetadata:
-      entries: []
     nameFileIdTable:
-      WTFarrow_0: -7554067398021572401
+      TowerSprite_0: 8717243691107160497
+      TowerSprite_1: -5709785396720505293
+      TowerSprite_2: 4380293431896266413
+      TowerSprite_3: -3205520106432172034
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
