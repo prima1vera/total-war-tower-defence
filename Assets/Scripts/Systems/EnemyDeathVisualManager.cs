@@ -144,6 +144,10 @@ public class EnemyDeathVisualManager : MonoBehaviour
             GameObject pooled = pool.Pop();
             if (pooled != null)
             {
+                SpriteRenderer pooledRenderer = pooled.GetComponent<SpriteRenderer>();
+                if (pooledRenderer != null)
+                    pooledRenderer.color = Color.white;
+
                 pooled.SetActive(true);
                 return pooled;
             }

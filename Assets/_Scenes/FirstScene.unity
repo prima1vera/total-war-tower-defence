@@ -16420,7 +16420,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: remainsLifetimeAfterOverflow
-      value: 10
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: overflowToRemainsTransitionDuration

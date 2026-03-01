@@ -146,7 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Arrow
   damage: 1
   damageType: 1
-  knockbackForce: 1
+  knockbackForce: 0
   travelTime: 0.75
   arcHeight: 0.75
   maxPierce: 3
