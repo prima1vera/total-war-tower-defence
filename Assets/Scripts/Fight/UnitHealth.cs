@@ -122,7 +122,7 @@ public class UnitHealth : MonoBehaviour
 
         if (bloodSplashPrefab != null)
         {
-            Instantiate(bloodSplashPrefab, transform.position, Quaternion.identity);
+            VfxPool.Instance.Spawn(bloodSplashPrefab, transform.position, Quaternion.identity);
         }
 
         if (topDownSorter != null)

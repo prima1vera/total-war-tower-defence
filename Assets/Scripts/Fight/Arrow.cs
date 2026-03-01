@@ -137,7 +137,7 @@ public class Arrow : MonoBehaviour
         hasImpacted = true;
 
         if (dustPrefab != null)
-            Instantiate(dustPrefab, cachedTransform.position, Quaternion.identity);
+            VfxPool.Instance.Spawn(dustPrefab, cachedTransform.position, Quaternion.identity);
 
         ExplodeAreaDamage();
 

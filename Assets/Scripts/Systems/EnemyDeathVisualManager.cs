@@ -11,11 +11,15 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [SerializeField] private int maxTrackedDeaths = 80;
     [SerializeField, Min(0.05f)] private float overflowToRemainsTransitionDuration = 0.6f;
     [SerializeField, Min(1f)] private float remainsLifetimeAfterOverflow = 60f;
-    [SerializeField, Range(0.05f, 1f)] private float remainsAlpha = 0.3f;
-    [SerializeField, Range(0.3f, 1.2f)] private float remainsScaleMultiplier = 0.75f;
     [SerializeField] private List<RemainsVariant> remainsVariants = new List<RemainsVariant>(4);
 
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
+    private readonly Dictionary<Sprite, Sprite> remainsVariantLookup = new Dictionary<Sprite, Sprite>(8);
+    private readonly Dictionary<GameObject, Stack<GameObject>> bloodPoolByPrefab = new Dictionary<GameObject, Stack<GameObject>>(4);
+    private readonly Stack<GameObject> corpseVisualPool = new Stack<GameObject>(64);
+
+    private WaitForSeconds cachedRemainsLifetimeWait;
+    private float cachedRemainsLifetime = -1f;
 
     private void Awake()
     {
@@ -27,6 +31,12 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject);
+        RebuildRemainsVariantLookup();
+    }
+
+    private void OnValidate()
+    {
+        RebuildRemainsVariantLookup();
     }
 
     public static EnemyDeathVisualManager Instance
@@ -59,29 +69,119 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
         if (corpseSprite != null)
         {
-            corpseObject = new GameObject("CorpseVisual");
+            corpseObject = AcquireCorpseVisual();
             corpseObject.transform.SetPositionAndRotation(corpsePosition, Quaternion.identity);
             corpseObject.transform.localScale = corpseScale;
 
-            corpseRenderer = corpseObject.AddComponent<SpriteRenderer>();
+            corpseRenderer = corpseObject.GetComponent<SpriteRenderer>();
+            corpseRenderer.color = Color.white;
             corpseRenderer.sprite = corpseSprite;
             corpseRenderer.flipX = corpseFlipX;
             corpseRenderer.sortingLayerName = "Units_Dead";
             corpseRenderer.sortingOrder = corpseSortingOrder;
+            corpseObject.SetActive(true);
         }
 
         GameObject bloodObject = null;
         if (bloodPoolPrefab != null)
         {
-            bloodObject = Instantiate(bloodPoolPrefab, bloodPosition, Quaternion.identity);
+            bloodObject = AcquireBloodVisual(bloodPoolPrefab);
+            bloodObject.transform.SetPositionAndRotation(bloodPosition, Quaternion.identity);
+
             SpriteRenderer bloodRenderer = bloodObject.GetComponent<SpriteRenderer>();
-            float targetScale = Random.Range(0.45f, 1.05f);
+            float targetScale = Random.Range(0.4f, 1.1f);
             StartCoroutine(AnimateBloodPool(bloodObject.transform, bloodRenderer, targetScale));
         }
 
-        activeVisuals.Enqueue(new DeathVisualEntry(corpseObject, corpseRenderer, bloodObject, corpseSprite, corpseSortingOrder));
+        activeVisuals.Enqueue(new DeathVisualEntry(corpseObject, corpseRenderer, bloodObject, corpseSprite, corpseSortingOrder, bloodPoolPrefab));
     }
 
+    private GameObject AcquireCorpseVisual()
+    {
+        if (corpseVisualPool.Count > 0)
+        {
+            GameObject pooled = corpseVisualPool.Pop();
+            if (pooled != null)
+                return pooled;
+        }
+
+        GameObject corpseObject = new GameObject("CorpseVisual");
+        corpseObject.transform.SetParent(transform, false);
+        corpseObject.AddComponent<SpriteRenderer>();
+        corpseObject.SetActive(false);
+        return corpseObject;
+    }
+
+    private void ReleaseCorpseVisual(GameObject corpseObject)
+    {
+        if (corpseObject == null)
+            return;
+
+        SpriteRenderer corpseRenderer = corpseObject.GetComponent<SpriteRenderer>();
+        if (corpseRenderer != null)
+        {
+            corpseRenderer.sprite = null;
+            corpseRenderer.color = Color.white;
+            corpseRenderer.flipX = false;
+            corpseRenderer.sortingOrder = 0;
+        }
+
+        corpseObject.SetActive(false);
+        corpseObject.transform.SetParent(transform, false);
+        corpseVisualPool.Push(corpseObject);
+    }
+
+    private GameObject AcquireBloodVisual(GameObject bloodPrefab)
+    {
+        if (!bloodPoolByPrefab.TryGetValue(bloodPrefab, out Stack<GameObject> pool))
+        {
+            pool = new Stack<GameObject>(16);
+            bloodPoolByPrefab[bloodPrefab] = pool;
+        }
+
+        while (pool.Count > 0)
+        {
+            GameObject pooled = pool.Pop();
+            if (pooled != null)
+            {
+                SpriteRenderer pooledRenderer = pooled.GetComponent<SpriteRenderer>();
+                if (pooledRenderer != null)
+                    pooledRenderer.color = Color.white;
+
+                pooled.SetActive(true);
+                return pooled;
+            }
+        }
+
+        GameObject created = Instantiate(bloodPrefab, transform);
+        created.SetActive(true);
+        return created;
+    }
+
+    private void ReleaseBloodVisual(GameObject bloodObject, GameObject sourcePrefab)
+    {
+        if (bloodObject == null)
+            return;
+
+        if (sourcePrefab == null)
+        {
+            Destroy(bloodObject);
+            return;
+        }
+
+        if (!bloodPoolByPrefab.TryGetValue(sourcePrefab, out Stack<GameObject> pool))
+        {
+            pool = new Stack<GameObject>(16);
+            bloodPoolByPrefab[sourcePrefab] = pool;
+        }
+
+        bloodObject.SetActive(false);
+        bloodObject.transform.SetParent(transform, false);
+        pool.Push(bloodObject);
+    }
+
+    // Overflow to remains: when tracked death visuals reach cap, the oldest corpse is removed
+    // from the active queue and converted into a faded remains visual (instead of instant destroy).
     private void EnforceCap()
     {
         int cap = Mathf.Max(1, maxTrackedDeaths);
@@ -95,7 +195,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
     private void ConvertOverflowToRemains(DeathVisualEntry entry)
     {
         if (entry.BloodObject != null)
-            Destroy(entry.BloodObject);
+            ReleaseBloodVisual(entry.BloodObject, entry.BloodSourcePrefab);
 
         if (entry.CorpseObject == null || entry.CorpseRenderer == null)
             return;
@@ -109,13 +209,36 @@ public class EnemyDeathVisualManager : MonoBehaviour
         if (sourceSprite == null)
             return null;
 
-        for (int i = 0; i < remainsVariants.Count; i++)
-        {
-            if (remainsVariants[i].SourceSprite == sourceSprite && remainsVariants[i].RemainsSprite != null)
-                return remainsVariants[i].RemainsSprite;
-        }
+        if (remainsVariantLookup.TryGetValue(sourceSprite, out Sprite remainsSprite))
+            return remainsSprite;
 
         return sourceSprite;
+    }
+
+    private void RebuildRemainsVariantLookup()
+    {
+        remainsVariantLookup.Clear();
+        for (int i = 0; i < remainsVariants.Count; i++)
+        {
+            Sprite sourceSprite = remainsVariants[i].SourceSprite;
+            Sprite remainsSprite = remainsVariants[i].RemainsSprite;
+            if (sourceSprite == null || remainsSprite == null || remainsVariantLookup.ContainsKey(sourceSprite))
+                continue;
+
+            remainsVariantLookup.Add(sourceSprite, remainsSprite);
+        }
+    }
+
+    private WaitForSeconds GetRemainsLifetimeWait()
+    {
+        float remainsLifetime = Mathf.Max(1f, remainsLifetimeAfterOverflow);
+        if (cachedRemainsLifetimeWait == null || !Mathf.Approximately(cachedRemainsLifetime, remainsLifetime))
+        {
+            cachedRemainsLifetime = remainsLifetime;
+            cachedRemainsLifetimeWait = new WaitForSeconds(remainsLifetime);
+        }
+
+        return cachedRemainsLifetimeWait;
     }
 
     private IEnumerator TransitionOverflowCorpseToRemains(Transform corpseTransform, SpriteRenderer corpseRenderer, Sprite remainsSprite, int corpseSortingOrder)
@@ -124,13 +247,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
             yield break;
 
         float duration = Mathf.Max(0.05f, overflowToRemainsTransitionDuration);
-
-        Vector3 startScale = corpseTransform.localScale;
-        Vector3 endScale = startScale * Mathf.Max(0.01f, remainsScaleMultiplier);
-
-        Color startColor = corpseRenderer.color;
-        Color endColor = startColor;
-        endColor.a = Mathf.Clamp01(remainsAlpha);
 
         if (remainsSprite != null)
             corpseRenderer.sprite = remainsSprite;
@@ -145,24 +261,18 @@ public class EnemyDeathVisualManager : MonoBehaviour
             float k = Mathf.Clamp01(t / duration);
             k = k * k * (3f - 2f * k);
 
-            corpseTransform.localScale = Vector3.Lerp(startScale, endScale, k);
-            corpseRenderer.color = Color.Lerp(startColor, endColor, k);
-
             yield return null;
         }
 
         if (corpseTransform == null || corpseRenderer == null)
             yield break;
 
-        corpseTransform.localScale = endScale;
-        corpseRenderer.color = endColor;
         corpseRenderer.sortingOrder = corpseSortingOrder - 1;
 
-        float remainsLifetime = Mathf.Max(1f, remainsLifetimeAfterOverflow);
-        yield return new WaitForSeconds(remainsLifetime);
+        yield return GetRemainsLifetimeWait();
 
         if (corpseRenderer != null)
-            Destroy(corpseRenderer.gameObject);
+            ReleaseCorpseVisual(corpseRenderer.gameObject);
     }
 
     private IEnumerator AnimateBloodPool(Transform blood, SpriteRenderer spriteRenderer, float targetScale)
@@ -234,14 +344,16 @@ public class EnemyDeathVisualManager : MonoBehaviour
         public readonly GameObject BloodObject;
         public readonly Sprite SourceCorpseSprite;
         public readonly int SortingOrder;
+        public readonly GameObject BloodSourcePrefab;
 
-        public DeathVisualEntry(GameObject corpseObject, SpriteRenderer corpseRenderer, GameObject bloodObject, Sprite sourceCorpseSprite, int sortingOrder)
+        public DeathVisualEntry(GameObject corpseObject, SpriteRenderer corpseRenderer, GameObject bloodObject, Sprite sourceCorpseSprite, int sortingOrder, GameObject bloodSourcePrefab)
         {
             CorpseObject = corpseObject;
             CorpseRenderer = corpseRenderer;
             BloodObject = bloodObject;
             SourceCorpseSprite = sourceCorpseSprite;
             SortingOrder = sortingOrder;
+            BloodSourcePrefab = bloodSourcePrefab;
         }
     }
 }
