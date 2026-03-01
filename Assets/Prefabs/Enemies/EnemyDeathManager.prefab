@@ -44,11 +44,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7211e33915e4fd2876451a808a237e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxTrackedDeaths: 20
-  overflowToRemainsTransitionDuration: 5
-  remainsLifetimeAfterOverflow: 25
-  remainsAlpha: 0.75
-  remainsScaleMultiplier: 0.75
+  maxTrackedDeaths: 60
+  overflowToRemainsTransitionDuration: 3
+  remainsLifetimeAfterOverflow: 60
+  remainsAlpha: 0.85
+  remainsScaleMultiplier: 1
   remainsVariants:
   - SourceSprite: {fileID: -186571565, guid: c3f9349128a97b94b8032d7e823a66b7, type: 3}
-    RemainsSprite: {fileID: 21300000, guid: ced99ed6311f0a243aa99b16d04983ae, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: e2ae0418badb4d94b992b89d6db5fa46, type: 3}
+  - SourceSprite: {fileID: -484281770, guid: 2332ebc498d480c4bb1bd00fbb93d0e4, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: e2ae0418badb4d94b992b89d6db5fa46, type: 3}
+  - SourceSprite: {fileID: 7675818124710891106, guid: 585632677c8fa4b408b686f5ee479870, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: 2643eae126eb47649998f9ca9e97259c, type: 3}
+  - SourceSprite: {fileID: 1395571263, guid: 57b9b0d67c6f5a243aa5451ea150fa15, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: 37d539365d03dd040a50f6dbfd28a0e9, type: 3}
+  - SourceSprite: {fileID: -1655576945, guid: 3ecc758922d699544a98d2b8a663d9e3, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: 3ffa011fb8760814ebba48bc06668513, type: 3}
+  - SourceSprite: {fileID: -1448914209, guid: acbdc7269f83c6f4788fe388a4dbe0ba, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: 1300498fda846ec4daa719f44e11561f, type: 3}

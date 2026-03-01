@@ -11,8 +11,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [SerializeField] private int maxTrackedDeaths = 80;
     [SerializeField, Min(0.05f)] private float overflowToRemainsTransitionDuration = 0.6f;
     [SerializeField, Min(1f)] private float remainsLifetimeAfterOverflow = 60f;
-    [SerializeField, Range(0.05f, 1f)] private float remainsAlpha = 0.3f;
-    [SerializeField, Range(0.3f, 1.2f)] private float remainsScaleMultiplier = 0.75f;
     [SerializeField] private List<RemainsVariant> remainsVariants = new List<RemainsVariant>(4);
 
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
@@ -91,7 +89,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
             bloodObject.transform.SetPositionAndRotation(bloodPosition, Quaternion.identity);
 
             SpriteRenderer bloodRenderer = bloodObject.GetComponent<SpriteRenderer>();
-            float targetScale = Random.Range(0.45f, 1.05f);
+            float targetScale = Random.Range(0.4f, 1.1f);
             StartCoroutine(AnimateBloodPool(bloodObject.transform, bloodRenderer, targetScale));
         }
 
@@ -246,13 +244,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
         float duration = Mathf.Max(0.05f, overflowToRemainsTransitionDuration);
 
-        Vector3 startScale = corpseTransform.localScale;
-        Vector3 endScale = startScale * Mathf.Max(0.01f, remainsScaleMultiplier);
-
-        Color startColor = corpseRenderer.color;
-        Color endColor = startColor;
-        endColor.a = Mathf.Clamp01(remainsAlpha);
-
         if (remainsSprite != null)
             corpseRenderer.sprite = remainsSprite;
 
@@ -266,17 +257,12 @@ public class EnemyDeathVisualManager : MonoBehaviour
             float k = Mathf.Clamp01(t / duration);
             k = k * k * (3f - 2f * k);
 
-            corpseTransform.localScale = Vector3.Lerp(startScale, endScale, k);
-            corpseRenderer.color = Color.Lerp(startColor, endColor, k);
-
             yield return null;
         }
 
         if (corpseTransform == null || corpseRenderer == null)
             yield break;
 
-        corpseTransform.localScale = endScale;
-        corpseRenderer.color = endColor;
         corpseRenderer.sortingOrder = corpseSortingOrder - 1;
 
         yield return GetRemainsLifetimeWait();
