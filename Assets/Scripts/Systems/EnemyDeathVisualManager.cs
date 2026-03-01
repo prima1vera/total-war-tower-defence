@@ -11,6 +11,9 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [SerializeField] private int maxTrackedDeaths = 80;
     [SerializeField, Min(0.05f)] private float overflowToRemainsTransitionDuration = 0.6f;
     [SerializeField, Min(1f)] private float remainsLifetimeAfterOverflow = 60f;
+    [SerializeField, Range(0f, 1f)] private float remainsAlpha = 0.8f;
+    [SerializeField, Min(0.1f)] private float remainsScaleMultiplier = 1f;
+    [SerializeField, Range(0.4f, 1.2f)] private float remainsBrightness = 0.9f;
     [SerializeField] private List<RemainsVariant> remainsVariants = new List<RemainsVariant>(4);
 
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
@@ -268,6 +271,17 @@ public class EnemyDeathVisualManager : MonoBehaviour
             yield break;
 
         corpseRenderer.sortingOrder = corpseSortingOrder - 1;
+
+        Vector3 scaled = corpseTransform.localScale * Mathf.Max(0.1f, remainsScaleMultiplier);
+        corpseTransform.localScale = scaled;
+
+        Color color = corpseRenderer.color;
+        float brightness = Mathf.Max(0.4f, remainsBrightness);
+        color.r *= brightness;
+        color.g *= brightness;
+        color.b *= brightness;
+        color.a = Mathf.Clamp01(remainsAlpha);
+        corpseRenderer.color = color;
 
         yield return GetRemainsLifetimeWait();
 

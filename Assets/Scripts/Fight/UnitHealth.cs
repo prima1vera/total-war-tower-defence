@@ -22,6 +22,7 @@ public class UnitHealth : MonoBehaviour
 
     public GameObject bloodPoolPrefab;
     public GameObject bloodSplashPrefab;
+    [SerializeField, Min(0)] private int bloodSplashPrewarmCount = 6;
     [SerializeField] private float despawnToPoolDelay = 2f;
 
     void Awake()
@@ -39,6 +40,9 @@ public class UnitHealth : MonoBehaviour
             defaultSortingLayerName = spriteRenderer.sortingLayerName;
             defaultSortingOrder = spriteRenderer.sortingOrder;
         }
+
+        if (bloodSplashPrefab != null && bloodSplashPrewarmCount > 0)
+            VfxPool.Instance.Prewarm(bloodSplashPrefab, bloodSplashPrewarmCount);
     }
 
     void OnEnable()

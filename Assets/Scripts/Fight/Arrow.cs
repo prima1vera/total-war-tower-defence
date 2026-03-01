@@ -17,6 +17,7 @@ public class Arrow : MonoBehaviour
     [SerializeField] private int maxHitColliders = 32;
 
     public GameObject dustPrefab;
+    [SerializeField, Min(0)] private int dustPrewarmCount = 8;
 
     private Vector2 startPos;
     private Vector2 targetPos;
@@ -35,6 +36,9 @@ public class Arrow : MonoBehaviour
 
         int bufferSize = Mathf.Max(8, maxHitColliders);
         hitBuffer = new Collider2D[bufferSize];
+
+        if (dustPrefab != null && dustPrewarmCount > 0)
+            VfxPool.Instance.Prewarm(dustPrefab, dustPrewarmCount);
     }
 
     public void Launch(Vector2 target)
