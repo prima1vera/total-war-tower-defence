@@ -16179,6 +16179,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7429450009831727654}
     - target: {fileID: 5942774154070165696, guid: 8a21a6b4b32f672408ae61b3aa1e8ce0, type: 3}
+      propertyPath: enemyPrefab
+      value: 
+      objectReference: {fileID: 8051200457295428929, guid: b9e8ab41d0c2a2148806d6d434aa0241, type: 3}
+    - target: {fileID: 5942774154070165696, guid: 8a21a6b4b32f672408ae61b3aa1e8ce0, type: 3}
       propertyPath: spawnInterval
       value: 1
       objectReference: {fileID: 0}
@@ -16225,6 +16229,10 @@ PrefabInstance:
       propertyPath: enemyPool
       value: 
       objectReference: {fileID: 255493462}
+    - target: {fileID: 775380276772531923, guid: 4f50d7fab22cd4b47a79e18691ce93b7, type: 3}
+      propertyPath: enemyPrefab
+      value: 
+      objectReference: {fileID: 8051200457295428929, guid: 8254c6cc6278d5045b15c9dd2dbf88b3, type: 3}
     - target: {fileID: 775380276772531923, guid: 4f50d7fab22cd4b47a79e18691ce93b7, type: 3}
       propertyPath: spawnInterval
       value: 10
