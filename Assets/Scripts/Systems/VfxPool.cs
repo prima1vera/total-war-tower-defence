@@ -10,6 +10,7 @@ public class VfxPool : MonoBehaviour
 
     [SerializeField, Min(1)] private int initialPoolSizePerPrefab = 8;
     [SerializeField, Min(0.1f)] private float fallbackLifetime = 2f;
+    [SerializeField] private List<PrewarmEntry> prewarmOnAwake = new List<PrewarmEntry>(4);
 
     private readonly Dictionary<GameObject, Stack<GameObject>> pooledByPrefab = new Dictionary<GameObject, Stack<GameObject>>(8);
     private readonly Dictionary<GameObject, GameObject> instanceToPrefab = new Dictionary<GameObject, GameObject>(64);
@@ -42,6 +43,21 @@ public class VfxPool : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject);
+        PrewarmConfiguredPrefabs();
+    }
+
+    public void Prewarm(GameObject prefab, int count)
+    {
+        if (prefab == null)
+            return;
+
+        int warmCount = Mathf.Max(0, count);
+        if (warmCount == 0)
+            return;
+
+        Stack<GameObject> pool = GetOrCreatePool(prefab);
+        while (pool.Count < warmCount)
+            pool.Push(CreatePooledInstance(prefab));
     }
 
     public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation)
@@ -49,12 +65,7 @@ public class VfxPool : MonoBehaviour
         if (prefab == null)
             return null;
 
-        if (!pooledByPrefab.TryGetValue(prefab, out Stack<GameObject> pool))
-        {
-            pool = new Stack<GameObject>(Mathf.Max(1, initialPoolSizePerPrefab));
-            pooledByPrefab.Add(prefab, pool);
-        }
-
+        Stack<GameObject> pool = GetOrCreatePool(prefab);
         GameObject instanceObject = pool.Count > 0 ? pool.Pop() : CreatePooledInstance(prefab);
         if (instanceObject == null)
             return null;
@@ -83,15 +94,33 @@ public class VfxPool : MonoBehaviour
             return;
         }
 
-        if (!pooledByPrefab.TryGetValue(prefab, out Stack<GameObject> pool))
-        {
-            pool = new Stack<GameObject>(Mathf.Max(1, initialPoolSizePerPrefab));
-            pooledByPrefab.Add(prefab, pool);
-        }
+        Stack<GameObject> pool = GetOrCreatePool(prefab);
 
         instanceObject.SetActive(false);
         instanceObject.transform.SetParent(transform, false);
         pool.Push(instanceObject);
+    }
+
+    private void PrewarmConfiguredPrefabs()
+    {
+        for (int i = 0; i < prewarmOnAwake.Count; i++)
+        {
+            PrewarmEntry entry = prewarmOnAwake[i];
+            if (entry.Prefab == null || entry.Count <= 0)
+                continue;
+
+            Prewarm(entry.Prefab, entry.Count);
+        }
+    }
+
+    private Stack<GameObject> GetOrCreatePool(GameObject prefab)
+    {
+        if (pooledByPrefab.TryGetValue(prefab, out Stack<GameObject> existingPool))
+            return existingPool;
+
+        Stack<GameObject> newPool = new Stack<GameObject>(Mathf.Max(1, initialPoolSizePerPrefab));
+        pooledByPrefab.Add(prefab, newPool);
+        return newPool;
     }
 
     private GameObject CreatePooledInstance(GameObject prefab)
@@ -100,6 +129,13 @@ public class VfxPool : MonoBehaviour
         instanceToPrefab[instanceObject] = prefab;
         instanceObject.SetActive(false);
         return instanceObject;
+    }
+
+    [System.Serializable]
+    public struct PrewarmEntry
+    {
+        public GameObject Prefab;
+        [Min(1)] public int Count;
     }
 }
 
