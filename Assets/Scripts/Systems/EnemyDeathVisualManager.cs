@@ -12,6 +12,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [SerializeField, Min(0.05f)] private float overflowToRemainsTransitionDuration = 0.6f;
     [SerializeField, Min(1f)] private float remainsLifetimeAfterOverflow = 60f;
     [SerializeField] private List<RemainsVariant> remainsVariants = new List<RemainsVariant>(4);
+    [SerializeField, Min(0)] private int prewarmCorpseCount = 32;
+    [SerializeField] private List<BloodPrewarmEntry> bloodPrewarmOnAwake = new List<BloodPrewarmEntry>(4);
 
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
     private readonly Dictionary<Sprite, Sprite> remainsVariantLookup = new Dictionary<Sprite, Sprite>(8);
@@ -32,6 +34,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(gameObject);
         RebuildRemainsVariantLookup();
+        PrewarmPools();
     }
 
     private void OnValidate()
@@ -96,15 +99,57 @@ public class EnemyDeathVisualManager : MonoBehaviour
         activeVisuals.Enqueue(new DeathVisualEntry(corpseObject, corpseRenderer, bloodObject, corpseSprite, corpseSortingOrder, bloodPoolPrefab));
     }
 
+    public void PrewarmCorpsePool(int count)
+    {
+        int targetCount = Mathf.Max(0, count);
+        while (corpseVisualPool.Count < targetCount)
+            corpseVisualPool.Push(CreateCorpseVisual());
+    }
+
+    public void PrewarmBloodPool(GameObject bloodPrefab, int count)
+    {
+        if (bloodPrefab == null)
+            return;
+
+        int targetCount = Mathf.Max(0, count);
+        Stack<GameObject> pool = GetOrCreateBloodPool(bloodPrefab);
+
+        while (pool.Count < targetCount)
+        {
+            GameObject created = Instantiate(bloodPrefab, transform);
+            created.SetActive(false);
+            pool.Push(created);
+        }
+    }
+
+    private void PrewarmPools()
+    {
+        PrewarmCorpsePool(prewarmCorpseCount);
+
+        for (int i = 0; i < bloodPrewarmOnAwake.Count; i++)
+        {
+            BloodPrewarmEntry entry = bloodPrewarmOnAwake[i];
+            if (entry.Prefab == null || entry.Count <= 0)
+                continue;
+
+            PrewarmBloodPool(entry.Prefab, entry.Count);
+        }
+    }
+
     private GameObject AcquireCorpseVisual()
     {
-        if (corpseVisualPool.Count > 0)
+        while (corpseVisualPool.Count > 0)
         {
             GameObject pooled = corpseVisualPool.Pop();
             if (pooled != null)
                 return pooled;
         }
 
+        return CreateCorpseVisual();
+    }
+
+    private GameObject CreateCorpseVisual()
+    {
         GameObject corpseObject = new GameObject("CorpseVisual");
         corpseObject.transform.SetParent(transform, false);
         corpseObject.AddComponent<SpriteRenderer>();
@@ -133,11 +178,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
     private GameObject AcquireBloodVisual(GameObject bloodPrefab)
     {
-        if (!bloodPoolByPrefab.TryGetValue(bloodPrefab, out Stack<GameObject> pool))
-        {
-            pool = new Stack<GameObject>(16);
-            bloodPoolByPrefab[bloodPrefab] = pool;
-        }
+        Stack<GameObject> pool = GetOrCreateBloodPool(bloodPrefab);
 
         while (pool.Count > 0)
         {
@@ -158,6 +199,16 @@ public class EnemyDeathVisualManager : MonoBehaviour
         return created;
     }
 
+    private Stack<GameObject> GetOrCreateBloodPool(GameObject bloodPrefab)
+    {
+        if (bloodPoolByPrefab.TryGetValue(bloodPrefab, out Stack<GameObject> existingPool))
+            return existingPool;
+
+        Stack<GameObject> newPool = new Stack<GameObject>(16);
+        bloodPoolByPrefab[bloodPrefab] = newPool;
+        return newPool;
+    }
+
     private void ReleaseBloodVisual(GameObject bloodObject, GameObject sourcePrefab)
     {
         if (bloodObject == null)
@@ -169,11 +220,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
             return;
         }
 
-        if (!bloodPoolByPrefab.TryGetValue(sourcePrefab, out Stack<GameObject> pool))
-        {
-            pool = new Stack<GameObject>(16);
-            bloodPoolByPrefab[sourcePrefab] = pool;
-        }
+        Stack<GameObject> pool = GetOrCreateBloodPool(sourcePrefab);
 
         bloodObject.SetActive(false);
         bloodObject.transform.SetParent(transform, false);
@@ -335,6 +382,13 @@ public class EnemyDeathVisualManager : MonoBehaviour
     {
         public Sprite SourceSprite;
         public Sprite RemainsSprite;
+    }
+
+    [System.Serializable]
+    private struct BloodPrewarmEntry
+    {
+        public GameObject Prefab;
+        [Min(1)] public int Count;
     }
 
     private readonly struct DeathVisualEntry
