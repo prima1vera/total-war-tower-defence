@@ -13,7 +13,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [SerializeField, Min(1f)] private float remainsLifetimeAfterOverflow = 60f;
     [SerializeField] private List<RemainsVariant> remainsVariants = new List<RemainsVariant>(4);
     [SerializeField, Min(0)] private int prewarmCorpseCount = 32;
-    [SerializeField] private List<BloodPrewarmEntry> bloodPrewarmOnAwake = new List<BloodPrewarmEntry>(4);
+    [SerializeField] private GameObject bloodPoolPrewarmPrefab;
+    [SerializeField, Min(0)] private int bloodPoolPrewarmCount = 24;
 
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
     private readonly Dictionary<Sprite, Sprite> remainsVariantLookup = new Dictionary<Sprite, Sprite>(8);
@@ -106,17 +107,17 @@ public class EnemyDeathVisualManager : MonoBehaviour
             corpseVisualPool.Push(CreateCorpseVisual());
     }
 
-    public void PrewarmBloodPool(GameObject bloodPrefab, int count)
+    public void PrewarmBloodPool(int count)
     {
-        if (bloodPrefab == null)
+        if (bloodPoolPrewarmPrefab == null)
             return;
 
         int targetCount = Mathf.Max(0, count);
-        Stack<GameObject> pool = GetOrCreateBloodPool(bloodPrefab);
+        Stack<GameObject> pool = GetOrCreateBloodPool(bloodPoolPrewarmPrefab);
 
         while (pool.Count < targetCount)
         {
-            GameObject created = Instantiate(bloodPrefab, transform);
+            GameObject created = Instantiate(bloodPoolPrewarmPrefab, transform);
             created.SetActive(false);
             pool.Push(created);
         }
@@ -126,14 +127,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
     {
         PrewarmCorpsePool(prewarmCorpseCount);
 
-        for (int i = 0; i < bloodPrewarmOnAwake.Count; i++)
-        {
-            BloodPrewarmEntry entry = bloodPrewarmOnAwake[i];
-            if (entry.Prefab == null || entry.Count <= 0)
-                continue;
-
-            PrewarmBloodPool(entry.Prefab, entry.Count);
-        }
+        PrewarmBloodPool(bloodPoolPrewarmCount);
     }
 
     private GameObject AcquireCorpseVisual()
@@ -384,12 +378,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
         public Sprite RemainsSprite;
     }
 
-    [System.Serializable]
-    private struct BloodPrewarmEntry
-    {
-        public GameObject Prefab;
-        [Min(1)] public int Count;
-    }
 
     private readonly struct DeathVisualEntry
     {
