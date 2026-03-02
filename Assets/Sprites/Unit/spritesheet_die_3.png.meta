@@ -152,7 +152,7 @@ TextureImporter:
       name: spritesheet_die_3_0
       rect:
         serializedVersion: 2
-        x: 16
+        x: 22
         y: 0
         width: 81
         height: 96
@@ -173,7 +173,7 @@ TextureImporter:
       name: spritesheet_die_3_1
       rect:
         serializedVersion: 2
-        x: 115
+        x: 124
         y: 0
         width: 77
         height: 96
@@ -194,9 +194,9 @@ TextureImporter:
       name: spritesheet_die_3_2
       rect:
         serializedVersion: 2
-        x: 204
+        x: 212
         y: 0
-        width: 84
+        width: 80
         height: 96
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -215,9 +215,9 @@ TextureImporter:
       name: spritesheet_die_3_3
       rect:
         serializedVersion: 2
-        x: 296
+        x: 304
         y: 0
-        width: 92
+        width: 85
         height: 96
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -236,9 +236,9 @@ TextureImporter:
       name: spritesheet_die_3_4
       rect:
         serializedVersion: 2
-        x: 393
+        x: 402
         y: 0
-        width: 88
+        width: 79
         height: 96
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -257,9 +257,9 @@ TextureImporter:
       name: spritesheet_die_3_5
       rect:
         serializedVersion: 2
-        x: 484
+        x: 495
         y: 0
-        width: 92
+        width: 81
         height: 96
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -278,9 +278,9 @@ TextureImporter:
       name: spritesheet_die_3_6
       rect:
         serializedVersion: 2
-        x: 576
+        x: 584
         y: 0
-        width: 96
+        width: 88
         height: 96
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
