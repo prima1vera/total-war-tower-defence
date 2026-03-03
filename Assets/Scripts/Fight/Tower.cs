@@ -9,16 +9,21 @@ public class Tower : MonoBehaviour
 
     [SerializeField] private float targetRefreshInterval = 0.15f;
     [SerializeField] private ArrowPool arrowPool;
+    [Header("Animation Sync")]
+    [SerializeField, Range(0.5f, 1f)] private float fireAnimationFillRatio = 0.85f;
+    [SerializeField] private float minAnimationCycleSeconds = 0.08f;
 
     private UnitHealth currentTarget;
     private float fireCountdown = 0f;
     private float targetRefreshTimer = 0f;
     private int lastKnownEnemyRegistryVersion = -1;
     private Animator animator;
+    private float fireClipLengthSeconds = 0.3f;
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        CacheFireClipLength();
 
         if (firePoint == null)
         {
@@ -44,6 +49,8 @@ public class Tower : MonoBehaviour
 
         if (currentTarget == null)
             return;
+
+        SyncAnimationSpeedToFireRate();
 
         if (fireCountdown <= 0f)
         {
@@ -72,6 +79,41 @@ public class Tower : MonoBehaviour
     private void RefreshTarget()
     {
         EnemyRegistry.TryGetNearestEnemy(transform.position, range, out currentTarget);
+    }
+
+    private void CacheFireClipLength()
+    {
+        if (animator == null || animator.runtimeAnimatorController == null)
+            return;
+
+        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+
+        if (clips == null || clips.Length == 0)
+            return;
+
+        for (int i = 0; i < clips.Length; i++)
+        {
+            AnimationClip clip = clips[i];
+
+            if (clip == null)
+                continue;
+
+            if (!clip.name.Contains("Fire"))
+                continue;
+
+            fireClipLengthSeconds = Mathf.Max(minAnimationCycleSeconds, clip.length);
+            return;
+        }
+    }
+
+    private void SyncAnimationSpeedToFireRate()
+    {
+        if (animator == null || fireRate <= 0f)
+            return;
+
+        float cooldownSeconds = Mathf.Max(0.01f, 1f / fireRate);
+        float targetAnimationTime = Mathf.Max(minAnimationCycleSeconds, cooldownSeconds * fireAnimationFillRatio);
+        animator.speed = fireClipLengthSeconds / targetAnimationTime;
     }
 
     public void ShootArrow()
