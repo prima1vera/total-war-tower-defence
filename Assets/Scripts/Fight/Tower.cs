@@ -10,7 +10,6 @@ public class Tower : MonoBehaviour
     [SerializeField] private float targetRefreshInterval = 0.15f;
     [SerializeField] private ArrowPool arrowPool;
     [Header("Animation Sync")]
-    [SerializeField, Range(0.5f, 1f)] private float fireAnimationFillRatio = 0.85f;
     [SerializeField] private float minAnimationCycleSeconds = 0.08f;
 
     private UnitHealth currentTarget;
@@ -112,7 +111,7 @@ public class Tower : MonoBehaviour
             return;
 
         float cooldownSeconds = Mathf.Max(0.01f, 1f / fireRate);
-        float targetAnimationTime = Mathf.Max(minAnimationCycleSeconds, cooldownSeconds * fireAnimationFillRatio);
+        float targetAnimationTime = Mathf.Max(minAnimationCycleSeconds, cooldownSeconds);
         animator.speed = fireClipLengthSeconds / targetAnimationTime;
     }
 
