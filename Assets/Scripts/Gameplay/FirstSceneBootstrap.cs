@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem.UI;
+#endif
 
 public static class FirstSceneBootstrap
 {
@@ -40,27 +44,37 @@ public static class FirstSceneBootstrap
         canvasRoot.AddComponent<CanvasScaler>();
         canvasRoot.AddComponent<GraphicRaycaster>();
 
-        if (Object.FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
-        {
-            GameObject eventSystem = new GameObject("EventSystem");
-            eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
-            eventSystem.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
-        }
+        EnsureEventSystemExists();
 
         GameObject hudObject = new GameObject("GameHudController");
         hudObject.transform.SetParent(canvasRoot.transform, false);
 
         GameHudController controller = hudObject.AddComponent<GameHudController>();
 
-        Text waveText = CreateLabel("WaveText", canvasRoot.transform, new Vector2(120f, -30f));
-        Text livesText = CreateLabel("LivesText", canvasRoot.transform, new Vector2(120f, -65f));
-        Text speedText = CreateLabel("SpeedText", canvasRoot.transform, new Vector2(120f, -100f));
+        Text waveText = CreateLabel("WaveText", canvasRoot.transform, new Vector2(24f, -24f));
+        Text livesText = CreateLabel("LivesText", canvasRoot.transform, new Vector2(24f, -60f));
+        Text speedText = CreateLabel("SpeedText", canvasRoot.transform, new Vector2(24f, -96f));
         Text stateText = CreateCenteredLabel("StateText", canvasRoot.transform, new Vector2(0f, 50f), 42);
 
-        Button pauseButton = CreateButton("PauseButton", canvasRoot.transform, new Vector2(-90f, 40f), "Pause");
-        Button speedButton = CreateButton("SpeedButton", canvasRoot.transform, new Vector2(-90f, 85f), "x2");
+        Button speedButton = CreateButton("SpeedButton", canvasRoot.transform, new Vector2(-20f, -20f), "x2");
+        Button pauseButton = CreateButton("PauseButton", canvasRoot.transform, new Vector2(-20f, -64f), "Pause");
 
         controller.Configure(flowManager, waveManager, waveText, livesText, speedText, stateText, pauseButton, speedButton);
+    }
+
+    private static void EnsureEventSystemExists()
+    {
+        if (Object.FindObjectOfType<EventSystem>() != null)
+            return;
+
+        GameObject eventSystem = new GameObject("EventSystem");
+        eventSystem.AddComponent<EventSystem>();
+
+#if ENABLE_INPUT_SYSTEM
+        eventSystem.AddComponent<InputSystemUIInputModule>();
+#else
+        eventSystem.AddComponent<StandaloneInputModule>();
+#endif
     }
 
     private static Text CreateLabel(string name, Transform parent, Vector2 anchoredPosition)

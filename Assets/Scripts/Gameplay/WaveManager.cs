@@ -12,7 +12,7 @@ public class WaveManager : MonoBehaviour
         [Min(0f)] public float startDelay;
     }
 
-    [SerializeField] private EnemySpawner enemySpawner;
+    [SerializeField] private EnemySpawner[] controlledSpawners;
     [SerializeField] private WaveDefinition[] waves =
     {
         new WaveDefinition { enemyCount = 8, spawnInterval = 0.7f, startDelay = 1f },
@@ -31,13 +31,19 @@ public class WaveManager : MonoBehaviour
 
     private void Start()
     {
-        if (enemySpawner == null)
-            enemySpawner = FindObjectOfType<EnemySpawner>();
+        if (controlledSpawners == null || controlledSpawners.Length == 0)
+            controlledSpawners = FindObjectsOfType<EnemySpawner>();
 
-        if (enemySpawner == null || waves == null || waves.Length == 0)
+        if (controlledSpawners == null || controlledSpawners.Length == 0 || waves == null || waves.Length == 0)
             return;
 
-        enemySpawner.SetAutoSpawn(false);
+        for (int i = 0; i < controlledSpawners.Length; i++)
+        {
+            EnemySpawner spawner = controlledSpawners[i];
+            if (spawner != null)
+                spawner.SetAutoSpawn(false);
+        }
+
         waveRoutine = StartCoroutine(RunWaves());
     }
 
@@ -57,7 +63,9 @@ public class WaveManager : MonoBehaviour
 
             for (int i = 0; i < spawnCount; i++)
             {
-                enemySpawner.SpawnEnemy();
+                EnemySpawner spawner = ResolveSpawnerForIndex(i);
+                if (spawner != null)
+                    spawner.SpawnEnemy();
 
                 if (i < spawnCount - 1)
                     yield return new WaitForSeconds(spawnInterval);
@@ -69,6 +77,39 @@ public class WaveManager : MonoBehaviour
 
         IsCompleted = true;
         AllWavesCompleted?.Invoke();
+    }
+
+    private EnemySpawner ResolveSpawnerForIndex(int index)
+    {
+        if (controlledSpawners == null || controlledSpawners.Length == 0)
+            return null;
+
+        int validCount = 0;
+        for (int i = 0; i < controlledSpawners.Length; i++)
+        {
+            if (controlledSpawners[i] != null)
+                validCount++;
+        }
+
+        if (validCount == 0)
+            return null;
+
+        int target = index % validCount;
+        int current = 0;
+
+        for (int i = 0; i < controlledSpawners.Length; i++)
+        {
+            EnemySpawner candidate = controlledSpawners[i];
+            if (candidate == null)
+                continue;
+
+            if (current == target)
+                return candidate;
+
+            current++;
+        }
+
+        return null;
     }
 
     private void OnDisable()

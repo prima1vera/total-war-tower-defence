@@ -1,12 +1,12 @@
 using System;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 public class GameFlowManager : MonoBehaviour
 {
     [SerializeField] private int startingLives = 20;
-    [SerializeField] private KeyCode pauseKey = KeyCode.Space;
-    [SerializeField] private KeyCode speedToggleKey = KeyCode.Tab;
-
     public event Action<int> LivesChanged;
     public event Action<float, bool> TimeScaleChanged;
     public event Action<bool> GameFinished;
@@ -35,11 +35,35 @@ public class GameFlowManager : MonoBehaviour
         if (IsGameOver)
             return;
 
-        if (Input.GetKeyDown(pauseKey))
+        if (WasPausePressed())
             TogglePause();
 
-        if (Input.GetKeyDown(speedToggleKey))
+        if (WasSpeedTogglePressed())
             ToggleSpeedMultiplier();
+    }
+
+    private bool WasPausePressed()
+    {
+#if ENABLE_INPUT_SYSTEM
+        Keyboard keyboard = Keyboard.current;
+        return keyboard != null && keyboard.spaceKey.wasPressedThisFrame;
+#elif ENABLE_LEGACY_INPUT_MANAGER
+        return Input.GetKeyDown(KeyCode.Space);
+#else
+        return false;
+#endif
+    }
+
+    private bool WasSpeedTogglePressed()
+    {
+#if ENABLE_INPUT_SYSTEM
+        Keyboard keyboard = Keyboard.current;
+        return keyboard != null && keyboard.tabKey.wasPressedThisFrame;
+#elif ENABLE_LEGACY_INPUT_MANAGER
+        return Input.GetKeyDown(KeyCode.Tab);
+#else
+        return false;
+#endif
     }
 
     private void OnDisable()
