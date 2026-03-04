@@ -23,6 +23,15 @@ public class EnemySpawner : MonoBehaviour
         spawnTimer = Mathf.Max(0.05f, spawnInterval);
     }
 
+
+    public void SetAutoSpawn(bool value)
+    {
+        autoSpawn = value;
+        if (autoSpawn)
+            spawnTimer = 0f;
+    }
+
+    public bool IsAutoSpawnEnabled => autoSpawn;
     public GameObject SpawnEnemy()
     {
         Transform spawnPoint = ResolveSpawnPoint();
