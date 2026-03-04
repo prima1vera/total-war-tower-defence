@@ -9822,9 +9822,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d410ab966cb688499031eeeac9a5d3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitMovement
-  speed: 0.25
-  separationRadius: 0.5
-  separationForce: 1
+  speed: 0.3
+  separationRadius: 0.3
+  separationForce: 0.3
   separationLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -9842,7 +9842,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a166122f46c6d4290d6556a85e25a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitHealth
-  maxHealth: 15
+  maxHealth: 40
   bloodPoolPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
   bloodSplashPrefab: {fileID: 6567675628769267437, guid: 626575ed6b0b8764db5d804dbe61ff9c, type: 3}
   despawnToPoolDelay: 1.5
