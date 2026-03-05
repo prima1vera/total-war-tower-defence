@@ -54,6 +54,14 @@ public class Arrow : MonoBehaviour
     [SerializeField, Tooltip("How long the impact wave animation should play (passed into ImpactWaveVfx.Configure).")]
     private float waveDuration = 0.22f;
 
+    [Header("VFX (Ground Decal)")]
+    public GameObject impactDecalPrefab;
+
+    [SerializeField] private float decalDuration = 0.8f;
+    [SerializeField] private float decalAlpha = 0.35f;
+    [SerializeField] private float decalSquash = 0.6f;
+    [SerializeField] private float decalScaleMultiplier = 1.15f;
+
     // --- Non-serialized tuning constants (keeps inspector clean) ---
     // Arc grows non-linearly with distance; >1 means arc grows slower at first then ramps up.
     private const float ArcPower = 1.35f;
@@ -275,7 +283,19 @@ public class Arrow : MonoBehaviour
             GameObject wave = VfxPool.Instance.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity);
             ImpactWaveVfx waveFx = wave != null ? wave.GetComponent<ImpactWaveVfx>() : null;
             if (waveFx != null)
-                waveFx.Configure(impactRadius, waveDuration, 0.6f);
+                waveFx.Configure(impactRadius, waveDuration, 0.6f); //hardcode
+        }
+
+        if (impactDecalPrefab != null)
+        {
+            GameObject decal = VfxPool.Instance.Spawn(impactDecalPrefab, cachedTransform.position, Quaternion.identity);
+            ImpactDecalVfx decalFx = decal != null ? decal.GetComponent<ImpactDecalVfx>() : null;
+
+            if (decalFx != null)
+            {
+                float scale = impactRadius * decalScaleMultiplier;
+                decalFx.Configure(scale, decalSquash, decalDuration, decalAlpha);
+            }
         }
 
         ExplodeAreaDamage();

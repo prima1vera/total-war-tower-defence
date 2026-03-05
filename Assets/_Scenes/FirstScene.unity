@@ -938,7 +938,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -9025213
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -2592,7 +2592,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 00000000dd5d3be1434976ffa17c27542be8a22fbb9cd21d
+  m_ApplyToSortingLayers: 00000000dd5d3be1434976ffa17c27542be8a22fbb9cd21d7bb48eb5
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -2732,7 +2732,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: c2625e2cb0e663943b9d04d820551c94, type: 3}
       propertyPath: fireRate
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: c2625e2cb0e663943b9d04d820551c94, type: 3}
       propertyPath: arrowPool
@@ -3030,11 +3030,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: 63fdd6d1c0ebe854c9f63fc6a15e1dff, type: 3}
       propertyPath: range
-      value: 11
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: 63fdd6d1c0ebe854c9f63fc6a15e1dff, type: 3}
       propertyPath: fireRate
-      value: 4
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: 63fdd6d1c0ebe854c9f63fc6a15e1dff, type: 3}
       propertyPath: arrowPool
@@ -3112,7 +3112,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: 63fdd6d1c0ebe854c9f63fc6a15e1dff, type: 3}
       propertyPath: fireRate
-      value: 7
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: 63fdd6d1c0ebe854c9f63fc6a15e1dff, type: 3}
       propertyPath: arrowPool
@@ -9522,7 +9522,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: c2625e2cb0e663943b9d04d820551c94, type: 3}
       propertyPath: fireRate
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: c2625e2cb0e663943b9d04d820551c94, type: 3}
       propertyPath: arrowPool
@@ -10075,7 +10075,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -9025213
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -11422,7 +11422,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: 63fdd6d1c0ebe854c9f63fc6a15e1dff, type: 3}
       propertyPath: fireRate
-      value: 15
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: 63fdd6d1c0ebe854c9f63fc6a15e1dff, type: 3}
       propertyPath: arrowPool
@@ -11868,7 +11868,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8961856547898701783, guid: c4079ea0815d4a1439ca9541da34a088, type: 3}
       propertyPath: prewarmOnAwake.Array.size
-      value: 7
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8961856547898701783, guid: c4079ea0815d4a1439ca9541da34a088, type: 3}
       propertyPath: prewarmOnAwake.Array.data[5].Count
@@ -11879,6 +11879,14 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8961856547898701783, guid: c4079ea0815d4a1439ca9541da34a088, type: 3}
+      propertyPath: prewarmOnAwake.Array.data[7].Count
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8961856547898701783, guid: c4079ea0815d4a1439ca9541da34a088, type: 3}
+      propertyPath: prewarmOnAwake.Array.data[8].Count
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8961856547898701783, guid: c4079ea0815d4a1439ca9541da34a088, type: 3}
       propertyPath: prewarmOnAwake.Array.data[5].Prefab
       value: 
       objectReference: {fileID: 6863645735893471128, guid: 58ee468152474d04984ad6892510c0b6, type: 3}
@@ -11886,6 +11894,14 @@ PrefabInstance:
       propertyPath: prewarmOnAwake.Array.data[6].Prefab
       value: 
       objectReference: {fileID: 6863645735893471128, guid: 6495ae220ea14fe45b88f07743ab89a2, type: 3}
+    - target: {fileID: 8961856547898701783, guid: c4079ea0815d4a1439ca9541da34a088, type: 3}
+      propertyPath: prewarmOnAwake.Array.data[7].Prefab
+      value: 
+      objectReference: {fileID: 6863645735893471128, guid: bbdf46ce298112247a6cedc4db5cc15b, type: 3}
+    - target: {fileID: 8961856547898701783, guid: c4079ea0815d4a1439ca9541da34a088, type: 3}
+      propertyPath: prewarmOnAwake.Array.data[8].Prefab
+      value: 
+      objectReference: {fileID: 6863645735893471128, guid: 68be0868497e369459c7a30e6ff0cce7, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

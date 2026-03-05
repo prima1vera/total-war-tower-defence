@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 3
+  serializedVersion: 2
   tags:
   - Enemy
   - Tower
@@ -49,6 +49,9 @@ TagManager:
   - name: Units_Dead
     uniqueID: 799205419
     locked: 0
+  - name: GroundVFX
+    uniqueID: 3046028411
+    locked: 0
   - name: Units_Alive
     uniqueID: 500341947
     locked: 0
@@ -61,5 +64,3 @@ TagManager:
   - name: Effects
     uniqueID: 1981946305
     locked: 0
-  m_RenderingLayers:
-  - Default

@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7346863461814819773}
   - component: {fileID: 9031095946201941783}
-  - component: {fileID: 1105000906170024694}
+  - component: {fileID: -6285811652986484804}
   m_Layer: 20
-  m_Name: ImpactWaveRingFrost
+  m_Name: ImpactGroundFire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -71,10 +71,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1981946305
-  m_SortingLayer: 7
-  m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: d98c5a8dca1963d419e567f3957feba9, type: 3}
+  m_SortingLayerID: -516203043
+  m_SortingLayer: 1
+  m_SortingOrder: 2
+  m_Sprite: {fileID: 21300000, guid: aa7c9258e155d0249a19e2b8c8467880, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1105000906170024694
+--- !u!114 &-6285811652986484804
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,35 +94,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6863645735893471128}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7f2eb5c2ca11c94baac7e5fd746a6c7, type: 3}
+  m_Script: {fileID: 11500000, guid: 8da2c36a7359d2f4c80feacbcbfa2ced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 1
-  startRadius: 0.01
-  endRadius: 1
-  startAlpha: 0.8
+  lifetime: 1
+  startAlpha: 1
   endAlpha: 0
-  ease:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  startScale: 1
+  endScale: 1.1
+  groundSquash: 0.6
