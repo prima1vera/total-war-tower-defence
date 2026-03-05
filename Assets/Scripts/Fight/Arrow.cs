@@ -16,6 +16,9 @@ public class Arrow : MonoBehaviour
 
     [SerializeField] private int maxHitColliders = 32;
 
+    public GameObject impactWavePrefab;
+    [SerializeField] private float waveDuration = 0.22f;
+
     public GameObject dustPrefab;
 
     private Vector2 startPos;
@@ -138,6 +141,14 @@ public class Arrow : MonoBehaviour
 
         if (dustPrefab != null)
             VfxPool.Instance.Spawn(dustPrefab, cachedTransform.position, Quaternion.identity);
+
+        if (impactWavePrefab != null)
+        {
+            GameObject wave = VfxPool.Instance.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity);
+            var waveFx = wave.GetComponent<ImpactWaveVfx>();
+            if (waveFx != null)
+                waveFx.Configure(impactRadius, waveDuration);
+        }
 
         ExplodeAreaDamage();
 

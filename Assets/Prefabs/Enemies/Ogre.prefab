@@ -9822,7 +9822,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d410ab966cb688499031eeeac9a5d3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitMovement
-  speed: 0.3
+  speed: 0.5
   separationRadius: 0.3
   separationForce: 0.3
   separationLayerMask:
