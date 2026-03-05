@@ -15,9 +15,9 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private EnemySpawner[] controlledSpawners;
     [SerializeField] private WaveDefinition[] waves =
     {
-        new WaveDefinition { enemyCount = 8, spawnInterval = 0.7f, startDelay = 1f },
-        new WaveDefinition { enemyCount = 12, spawnInterval = 0.6f, startDelay = 1.5f },
-        new WaveDefinition { enemyCount = 16, spawnInterval = 0.5f, startDelay = 2f }
+        new WaveDefinition { enemyCount = 10, spawnInterval = 0.7f, startDelay = 1f },
+        new WaveDefinition { enemyCount = 40, spawnInterval = 0.6f, startDelay = 1.5f },
+        new WaveDefinition { enemyCount = 160, spawnInterval = 0.5f, startDelay = 2f }
     };
 
     public event Action<int, int> WaveChanged;

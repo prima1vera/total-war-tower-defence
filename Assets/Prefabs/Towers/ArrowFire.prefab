@@ -147,15 +147,22 @@ MonoBehaviour:
   damage: 1
   damageType: 1
   knockbackForce: 0
-  travelTime: 0.75
-  arcHeight: 0.75
-  maxPierce: 3
+  maxPierce: 5
   impactRadius: 0.5
   unitLayer:
     serializedVersion: 2
     m_Bits: 2097152
   maxHitColliders: 32
+  minStraightDistance: 1.2
+  maxArcDistance: 7
+  maxArcHeight: 1
+  minTravelTime: 0.18
+  maxTravelTime: 0.6
+  rotationStartT: 0
+  groundSquash: 0.6
   dustPrefab: {fileID: 3219098132114001834, guid: 290ec3fd510c06e449a8ffd91b5b6829, type: 3}
+  impactWavePrefab: {fileID: 6863645735893471128, guid: 58ee468152474d04984ad6892510c0b6, type: 3}
+  waveDuration: 1
 --- !u!96 &1086319384668999527
 TrailRenderer:
   serializedVersion: 3

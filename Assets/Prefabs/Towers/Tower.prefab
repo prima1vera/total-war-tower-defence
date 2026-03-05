@@ -120,7 +120,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.042456627, y: -0.01819563}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -131,7 +131,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.594, y: 0.66694736}
+  m_Size: {x: 2.4984827, y: 3.1051712}
   m_EdgeRadius: 0
 --- !u!114 &3362007874931385704
 MonoBehaviour:
@@ -145,12 +145,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00c9b06d6e787134c9b43bc55e4fbe67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower
-  arrowPool: {fileID: 7358018726447226814, guid: fb1561b78eea8f04184f4e857e7443ac, type: 3}
   arrowPrefab: {fileID: 341183810093573692, guid: a6f41efdc35e0d047ba906f26e94f6c3, type: 3}
   range: 5
-  fireRate: 1
+  fireRate: 5
   firePoint: {fileID: 6024781246242465548}
   targetRefreshInterval: 0.15
+  arrowPool: {fileID: 7358018726447226814, guid: fb1561b78eea8f04184f4e857e7443ac, type: 3}
+  minAnimationCycleSeconds: 0.08
 --- !u!95 &4033096107844011754
 Animator:
   serializedVersion: 5
