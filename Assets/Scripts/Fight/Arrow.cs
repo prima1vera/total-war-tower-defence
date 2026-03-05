@@ -32,6 +32,22 @@ public class Arrow : MonoBehaviour
     private Collider2D[] hitBuffer;
     private Transform cachedTransform;
 
+    [Header("Flight feel")]
+    [SerializeField] private float minStraightDistance = 1.2f;   // ближе этого — почти прямой
+    [SerializeField] private float maxArcDistance = 7f;          // дальше этого — полный arcHeight
+    [SerializeField] private float arcPower = 1.35f;             // кривая роста дуги (1 = линейно)
+
+    [SerializeField] private float minTravelTime = 0.18f;        // ближний выстрел
+    [SerializeField] private float maxTravelTime = 0.6f;         // дальний выстрел (твой текущий)
+    [SerializeField] private float travelPower = 0.75f;          // кривая скорости (меньше = быстрее на ближних)
+
+    [SerializeField] private float lookAhead = 0.015f;           // сек вперёд для стабильного угла
+    [SerializeField] private float maxCloseAngle = 12f;          // чтобы на ближних не "задирать" стрелу
+
+    private float cachedArc;
+    private float cachedTravelTime;
+    private float cachedDistance;
+
     void Awake()
     {
         cachedTransform = transform;
@@ -48,6 +64,22 @@ public class Arrow : MonoBehaviour
         hasImpacted = false;
         pierceCount = 0;
         hitUnits.Clear();
+
+        cachedDistance = Vector2.Distance(startPos, targetPos);
+
+        // 0..1 по дистанции (с учётом зоны "прямого выстрела")
+        float dist01 = Mathf.InverseLerp(minStraightDistance, maxArcDistance, cachedDistance);
+        dist01 = Mathf.Clamp01(dist01);
+
+        // дуга: растёт плавно
+        float arc01 = Mathf.Pow(dist01, arcPower);
+        cachedArc = arcHeight * arc01;
+
+        // время полёта: ближе быстрее
+        float time01 = Mathf.Pow(dist01, travelPower);
+        cachedTravelTime = Mathf.Lerp(minTravelTime, maxTravelTime, time01);
+
+        // важно: используем cachedTravelTime вместо travelTime
     }
 
     public void SetPool(ArrowPool pool)
@@ -60,7 +92,7 @@ public class Arrow : MonoBehaviour
         if (hasImpacted) return;
 
         timer += Time.deltaTime;
-        float t = timer / travelTime;
+        float t = timer / Mathf.Max(0.0001f, cachedTravelTime);
 
         if (t >= 1f)
         {
@@ -68,21 +100,45 @@ public class Arrow : MonoBehaviour
             return;
         }
 
-        Vector2 currentPos = Vector2.Lerp(startPos, targetPos, t);
+        // позиция сейчас
+        Vector2 currentPos = EvaluatePosition(t);
 
-        float height = Mathf.Sin(t * Mathf.PI) * arcHeight;
-        currentPos.y += height;
+        // позиция чуть вперёд для вычисления угла (убирает дёргания)
+        float t2 = Mathf.Min(1f, (timer + lookAhead) / Mathf.Max(0.0001f, cachedTravelTime));
+        Vector2 nextPos = EvaluatePosition(t2);
 
-        Vector2 velocity = currentPos - (Vector2)cachedTransform.position;
-        if (velocity.sqrMagnitude > 0.001f)
+        Vector2 dir = nextPos - currentPos;
+        if (dir.sqrMagnitude > 0.00001f)
         {
-            float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+            // на ближних дистанциях держим угол почти горизонтальным
+            if (cachedDistance <= minStraightDistance)
+                angle = Mathf.Clamp(angle, -maxCloseAngle, maxCloseAngle);
+
             cachedTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
 
         cachedTransform.position = currentPos;
 
         CheckUnits();
+    }
+
+    private Vector2 EvaluatePosition(float t)
+    {
+        t = Mathf.Clamp01(t);
+
+        // базовая линия
+        Vector2 pos = Vector2.Lerp(startPos, targetPos, t);
+
+        // дуга (0 на ближних, cachedArc на дальних)
+        if (cachedArc > 0.0001f)
+        {
+            float height = Mathf.Sin(t * Mathf.PI) * cachedArc;
+            pos.y += height;
+        }
+
+        return pos;
     }
 
     void CheckUnits()
