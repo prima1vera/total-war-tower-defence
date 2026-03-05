@@ -158,7 +158,8 @@ MonoBehaviour:
   maxArcHeight: 1
   minTravelTime: 0.18
   maxTravelTime: 0.6
-  rotationStartT: 0.05
+  rotationStartT: 0
+  groundSquash: 0.6
   dustPrefab: {fileID: 8298402269546787181, guid: c1bd8d9833f221a46b7cdd8db323329a, type: 3}
   impactWavePrefab: {fileID: 6863645735893471128, guid: 6495ae220ea14fe45b88f07743ab89a2, type: 3}
   waveDuration: 2

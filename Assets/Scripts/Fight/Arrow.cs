@@ -33,7 +33,7 @@ public class Arrow : MonoBehaviour
     private float maxArcDistance = 7f;
 
     [SerializeField, Tooltip("Maximum arc height for far shots. Increase = more ballistic / cartoony. Decrease = flatter / more realistic.")]
-    private float maxArcHeight = 2f;
+    private float maxArcHeight = 1f;
 
     [SerializeField, Tooltip("Travel time for very close targets. Lower = snappier close shots.")]
     private float minTravelTime = 0.18f;
@@ -42,7 +42,7 @@ public class Arrow : MonoBehaviour
     private float maxTravelTime = 0.6f;
 
     [SerializeField, Tooltip("When to start rotating the arrow towards its velocity.\n0 = rotate immediately, 0.1 = start rotating after 10% of flight.\nHelps close shots look less 'jerky'.")]
-    private float rotationStartT = 0.05f;
+    private float rotationStartT = 0f;
 
     [Header("VFX (Impact)")]
     [Tooltip("Small dust / hit spark prefab spawned at impact point (via VfxPool).")]
@@ -107,6 +107,13 @@ public class Arrow : MonoBehaviour
         pierceCount = 0;
         hitUnits.Clear();
 
+        Vector2 dir = (targetPos - startPos);
+        if (dir.sqrMagnitude > 0.0001f)
+        {
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            cachedTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+
         // Precompute distance-based feel (one-time per shot)
         cachedDistance = Vector2.Distance(startPos, targetPos);
 
@@ -162,7 +169,7 @@ public class Arrow : MonoBehaviour
 
         // On very close shots keep angle mostly horizontal
         if (cachedDistance <= minStraightDistance)
-            angle = Mathf.Clamp(angle, -MaxCloseAngle, MaxCloseAngle);
+            angle = ClampCloseShotAngle(angle, MaxCloseAngle);
 
         cachedTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
@@ -237,6 +244,22 @@ public class Arrow : MonoBehaviour
             status.ApplyFreeze(2f, 0.4f);
     }
 
+    private static float ClampCloseShotAngle(float angleDeg, float maxCloseAngleDeg)
+    {
+        // Normalize to [-180..180]
+        angleDeg = Mathf.DeltaAngle(0f, angleDeg);
+
+        // If pointing mostly right (between -90..+90) clamp around 0
+        if (Mathf.Abs(angleDeg) <= 90f)
+            return Mathf.Clamp(angleDeg, -maxCloseAngleDeg, maxCloseAngleDeg);
+
+        // Otherwise pointing mostly left, clamp around 180/-180
+        // Convert to a "delta from 180", clamp that delta, then convert back.
+        float deltaFromLeft = Mathf.DeltaAngle(180f, angleDeg); // [-180..180] difference from 180
+        deltaFromLeft = Mathf.Clamp(deltaFromLeft, -maxCloseAngleDeg, maxCloseAngleDeg);
+        return 180f + deltaFromLeft;
+    }
+
     private void Explode()
     {
         if (hasImpacted)
@@ -252,7 +275,7 @@ public class Arrow : MonoBehaviour
             GameObject wave = VfxPool.Instance.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity);
             ImpactWaveVfx waveFx = wave != null ? wave.GetComponent<ImpactWaveVfx>() : null;
             if (waveFx != null)
-                waveFx.Configure(impactRadius, waveDuration);
+                waveFx.Configure(impactRadius, waveDuration, 0.6f);
         }
 
         ExplodeAreaDamage();

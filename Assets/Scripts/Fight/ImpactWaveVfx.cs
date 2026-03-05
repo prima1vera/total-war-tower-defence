@@ -1,51 +1,65 @@
 using UnityEngine;
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class ImpactWaveVfx : MonoBehaviour
 {
     [Header("Timing")]
-    [SerializeField] private float duration = 5f;
+    [SerializeField, Tooltip("How long the wave plays (seconds). Higher = longer visible wave.")]
+    private float duration = 0.25f;
 
     [Header("Scale")]
-    [SerializeField] private float startRadius = 0.01f;
-    [SerializeField] private float endRadius = 1.5f;
+    [SerializeField, Tooltip("Starting radius scale (in localScale units). Usually very small.")]
+    private float startRadius = 0.01f;
+
+    [SerializeField, Tooltip("Ending radius scale (in localScale units). This script treats it as 'radius scale', not world units.")]
+    private float endRadius = 1.5f;
 
     [Header("Fade")]
-    [SerializeField, Range(0f, 1f)] private float startAlpha = 1f;
-    [SerializeField, Range(0f, 1f)] private float endAlpha = 0f;
+    [SerializeField, Range(0f, 1f), Tooltip("Alpha at the beginning.")]
+    private float startAlpha = 1f;
+
+    [SerializeField, Range(0f, 1f), Tooltip("Alpha at the end.")]
+    private float endAlpha = 0f;
 
     [Header("Optional curve")]
-    [SerializeField] private AnimationCurve ease = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [SerializeField, Tooltip("Optional easing curve for scale & fade (0..1).")]
+    private AnimationCurve ease = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     private float t;
     private SpriteRenderer sr;
 
-    void Awake()
+    private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         t = 0f;
         Apply(0f);
     }
 
-    void Update()
+    private void Update()
     {
         t += Time.deltaTime;
-        float k = duration <= 0.0001f ? 1f : Mathf.Clamp01(t / duration);
-        Apply(k);
 
-        if (k >= 1f)
+        float d = Mathf.Max(0.0001f, duration);
+        float k01 = Mathf.Clamp01(t / d);
+
+        Apply(k01);
+
+        if (k01 >= 1f)
             VfxPool.Instance.Release(gameObject);
     }
+
+    private float squashY = 1f;
 
     private void Apply(float k01)
     {
         float k = ease != null ? ease.Evaluate(k01) : k01;
 
         float r = Mathf.Lerp(startRadius, endRadius, k);
-        transform.localScale = new Vector3(r, r, 1f);
+        transform.localScale = new Vector3(r, r * squashY, 1f);
 
         if (sr != null)
         {
@@ -55,10 +69,10 @@ public class ImpactWaveVfx : MonoBehaviour
         }
     }
 
-    // чтобы Arrow мог задать радиус под свой impactRadius
-    public void Configure(float radius, float waveDuration)
+    public void Configure(float radius, float waveDuration, float groundSquash = 0.6f)
     {
-        endRadius = Mathf.Max(0.01f, radius * 2f); // scale = diameter-ish дл€ большинства ring sprite
+        endRadius = Mathf.Max(0.01f, radius * 2f);
         duration = Mathf.Max(0.03f, waveDuration);
+        squashY = Mathf.Clamp(groundSquash, 0.1f, 1f);
     }
 }

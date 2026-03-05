@@ -100,6 +100,7 @@ MonoBehaviour:
   duration: 1
   startRadius: 0.01
   endRadius: 1
+  groundSquash: 0.35
   startAlpha: 1
   endAlpha: 0
   ease:
