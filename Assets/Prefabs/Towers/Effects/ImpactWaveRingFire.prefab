@@ -100,8 +100,9 @@ MonoBehaviour:
   duration: 1
   startRadius: 0.01
   endRadius: 1
-  startAlpha: 0.9
+  startAlpha: 1
   endAlpha: 0
+  groundSquash: 0.6
   ease:
     serializedVersion: 2
     m_Curve:

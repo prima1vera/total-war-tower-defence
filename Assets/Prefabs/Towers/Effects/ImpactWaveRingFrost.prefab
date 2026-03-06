@@ -97,11 +97,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7f2eb5c2ca11c94baac7e5fd746a6c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 1
+  duration: 2
   startRadius: 0.01
   endRadius: 1
-  startAlpha: 0.9
+  startAlpha: 1
   endAlpha: 0
+  groundSquash: 0.6
   ease:
     serializedVersion: 2
     m_Curve:

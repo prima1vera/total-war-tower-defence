@@ -275,10 +275,7 @@ public class Arrow : MonoBehaviour
 
         if (impactWavePrefab != null)
         {
-            GameObject wave = VfxPool.Instance.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity);
-            ImpactWaveVfx waveFx = wave != null ? wave.GetComponent<ImpactWaveVfx>() : null;
-            if (waveFx != null)
-                waveFx.Configure(impactRadius, waveDuration, 0.6f); //hardcode
+            VfxPool.Instance.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity);
         }
 
         if (impactDecalPrefab != null)
