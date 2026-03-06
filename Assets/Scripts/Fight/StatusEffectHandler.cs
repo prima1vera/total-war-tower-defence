@@ -54,7 +54,7 @@ public class StatusEffectHandler : MonoBehaviour
 
         while (timer < duration)
         {
-            health.TakePureDamage(tickDamage);
+            health.TakePureDamage(tickDamage, DamageType.Fire, DamageFeedbackKind.BurnTick);
             yield return new WaitForSeconds(tickRate);
             timer += tickRate;
         }

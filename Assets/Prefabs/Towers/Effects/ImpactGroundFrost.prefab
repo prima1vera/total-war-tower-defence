@@ -100,6 +100,6 @@ MonoBehaviour:
   lifetime: 2
   startAlpha: 1
   endAlpha: 0
-  startScale: 0.7
-  endScale: 1
+  startScale: 1
+  endScale: 1.1
   groundSquash: 0.6

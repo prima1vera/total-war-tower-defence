@@ -93,7 +93,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
             bloodObject.transform.SetPositionAndRotation(bloodPosition, Quaternion.identity);
 
             SpriteRenderer bloodRenderer = bloodObject.GetComponent<SpriteRenderer>();
-            float targetScale = Random.Range(0.4f, 1.1f);
+            float targetScale = Random.Range(0.5f, 1.1f);
             StartCoroutine(AnimateBloodPool(bloodObject.transform, bloodRenderer, targetScale));
         }
 
