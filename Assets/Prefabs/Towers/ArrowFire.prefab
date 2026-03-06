@@ -163,10 +163,10 @@ MonoBehaviour:
   impactWavePrefab: {fileID: 6863645735893471128, guid: 58ee468152474d04984ad6892510c0b6, type: 3}
   waveDuration: 1
   impactDecalPrefab: {fileID: 6863645735893471128, guid: bbdf46ce298112247a6cedc4db5cc15b, type: 3}
-  decalDuration: 1
-  decalAlpha: 0.8
+  decalDuration: 10
+  decalAlpha: 1
   decalSquash: 0.6
-  decalScaleMultiplier: 1.15
+  decalScaleMultiplier: 1
 --- !u!96 &1086319384668999527
 TrailRenderer:
   serializedVersion: 3

@@ -97,9 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8da2c36a7359d2f4c80feacbcbfa2ced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetime: 1
+  lifetime: 2
   startAlpha: 1
   endAlpha: 0
   startScale: 1
-  endScale: 1.1
+  endScale: 0.8
   groundSquash: 0.6

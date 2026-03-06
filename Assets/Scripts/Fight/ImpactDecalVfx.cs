@@ -3,22 +3,28 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class ImpactDecalVfx : MonoBehaviour
 {
-    [SerializeField] private float lifetime = 0.8f;
-    [SerializeField] private float startAlpha = 0.45f;
-    [SerializeField] private float endAlpha = 0f;
+    [Header("Lifetime")]
+    [SerializeField] private float lifetime = 12f;
 
-    [SerializeField] private float startScale = 0.9f;
-    [SerializeField] private float endScale = 1.1f;
+    [Header("Alpha")]
+    [SerializeField, Range(0f, 1f)] private float startAlpha = 0.45f;
+    [SerializeField, Range(0f, 1f)] private float endAlpha = 0f;
 
-    [SerializeField, Range(0.25f, 1f)]
-    private float groundSquash = 0.6f;
+    [Header("Scale")]
+    [SerializeField] private float startScale = 1f;
+    [SerializeField] private float endScale = 0.1f;
+
+    [Header("Ground Shape")]
+    [SerializeField, Range(0.1f, 1f)] private float groundSquash = 0.6f;
 
     private float timer;
     private SpriteRenderer sr;
+    private Color initialColor;
 
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
+        initialColor = sr.color;
     }
 
     private void OnEnable()
@@ -40,23 +46,11 @@ public class ImpactDecalVfx : MonoBehaviour
 
     private void Apply(float t)
     {
-        float scale = Mathf.Lerp(startScale, endScale, t);
-        transform.localScale = new Vector3(scale, scale * groundSquash, 1f);
+        float currentScale = Mathf.Lerp(startScale, endScale, t);
+        transform.localScale = new Vector3(currentScale, currentScale * groundSquash, 1f);
 
-        if (sr != null)
-        {
-            Color c = sr.color;
-            c.a = Mathf.Lerp(startAlpha, endAlpha, t);
-            sr.color = c;
-        }
-    }
-
-    public void Configure(float scaleMultiplier, float squash, float duration, float alpha)
-    {
-        startScale = Mathf.Max(0.01f, scaleMultiplier * 0.9f);
-        endScale = Mathf.Max(0.01f, scaleMultiplier * 1.1f);
-        groundSquash = Mathf.Clamp(squash, 0.1f, 1f);
-        lifetime = Mathf.Max(0.05f, duration);
-        startAlpha = Mathf.Clamp01(alpha);
+        Color c = initialColor;
+        c.a *= Mathf.Lerp(startAlpha, endAlpha, t);
+        sr.color = c;
     }
 }

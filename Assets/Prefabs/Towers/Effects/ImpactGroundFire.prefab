@@ -101,5 +101,5 @@ MonoBehaviour:
   startAlpha: 1
   endAlpha: 0
   startScale: 1
-  endScale: 1.1
+  endScale: 0.8
   groundSquash: 0.6

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4098682028092394491}
   - component: {fileID: 4509538942322167067}
   - component: {fileID: 8877867071774574948}
+  - component: {fileID: 4489503298198242595}
   m_Layer: 23
   m_Name: DustImpactFire
   m_TagString: Untagged
@@ -4854,7 +4855,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1981946305
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 4
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -4888,3 +4889,17 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &4489503298198242595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3219098132114001834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4241655f17abc44438d0600f4891adde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  includeChildren: 1
+  extraDelay: 0.05

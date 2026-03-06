@@ -36,7 +36,7 @@ public class UnitEffects : MonoBehaviour
             frostEffectPrefab.SetActive(state);
 
         if (sr != null)
-            sr.color = state ? Color.cyan : Color.white;
+            sr.color = state ? new Color(0.4f, 0.8f, 1f) : Color.white;
     }
 
 }

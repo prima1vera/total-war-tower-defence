@@ -100,7 +100,7 @@ MonoBehaviour:
   duration: 1
   startRadius: 0.01
   endRadius: 1
-  startAlpha: 0.8
+  startAlpha: 0.9
   endAlpha: 0
   ease:
     serializedVersion: 2
