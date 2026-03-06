@@ -74,10 +74,10 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1411873953
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: c90d0921d61e42a498b4b5d67f62ef42, type: 3}
-  m_Color: {r: 0.56924176, g: 0.58933395, b: 0.9811321, a: 1}
+  m_Color: {r: 0.6247775, g: 0.6417468, b: 0.9811321, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -159,10 +159,14 @@ MonoBehaviour:
   minTravelTime: 0.18
   maxTravelTime: 0.6
   rotationStartT: 0
-  groundSquash: 0.6
   dustPrefab: {fileID: 8298402269546787181, guid: c1bd8d9833f221a46b7cdd8db323329a, type: 3}
   impactWavePrefab: {fileID: 6863645735893471128, guid: 6495ae220ea14fe45b88f07743ab89a2, type: 3}
   waveDuration: 2
+  impactDecalPrefab: {fileID: 6863645735893471128, guid: 68be0868497e369459c7a30e6ff0cce7, type: 3}
+  decalDuration: 10
+  decalAlpha: 1
+  decalSquash: 0.6
+  decalScaleMultiplier: 1
 --- !u!96 &4872866415376078430
 TrailRenderer:
   serializedVersion: 3
@@ -203,7 +207,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1981946305
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 1
   m_Time: 0.25
   m_PreviewTimeScale: 1

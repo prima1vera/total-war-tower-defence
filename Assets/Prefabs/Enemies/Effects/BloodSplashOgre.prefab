@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7350709516648674983}
   - component: {fileID: 8739886801270593624}
   - component: {fileID: 2701482561356381987}
+  - component: {fileID: 179565954872716785}
   m_Layer: 21
   m_Name: BloodSplashOgre
   m_TagString: Untagged
@@ -4796,7 +4797,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1981946305
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 3
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -4830,3 +4831,17 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &179565954872716785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6567675628769267437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4241655f17abc44438d0600f4891adde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  includeChildren: 1
+  extraDelay: 0.05

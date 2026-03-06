@@ -54,6 +54,9 @@ public class Arrow : MonoBehaviour
     [SerializeField, Tooltip("How long the impact wave animation should play (passed into ImpactWaveVfx.Configure).")]
     private float waveDuration = 0.22f;
 
+    [Header("VFX (Ground Decal)")]
+    public GameObject impactDecalPrefab;
+
     // --- Non-serialized tuning constants (keeps inspector clean) ---
     // Arc grows non-linearly with distance; >1 means arc grows slower at first then ramps up.
     private const float ArcPower = 1.35f;
@@ -272,10 +275,12 @@ public class Arrow : MonoBehaviour
 
         if (impactWavePrefab != null)
         {
-            GameObject wave = VfxPool.Instance.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity);
-            ImpactWaveVfx waveFx = wave != null ? wave.GetComponent<ImpactWaveVfx>() : null;
-            if (waveFx != null)
-                waveFx.Configure(impactRadius, waveDuration, 0.6f);
+            VfxPool.Instance.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity);
+        }
+
+        if (impactDecalPrefab != null)
+        {
+            VfxPool.Instance.Spawn(impactDecalPrefab, cachedTransform.position, Quaternion.identity);
         }
 
         ExplodeAreaDamage();

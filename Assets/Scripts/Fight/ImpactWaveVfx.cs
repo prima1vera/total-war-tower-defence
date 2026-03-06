@@ -21,6 +21,9 @@ public class ImpactWaveVfx : MonoBehaviour
     [SerializeField, Range(0f, 1f), Tooltip("Alpha at the end.")]
     private float endAlpha = 0f;
 
+    [Header("Ground Shape")]
+    [SerializeField, Range(0.1f, 1f)] private float groundSquash = 0.6f;
+
     [Header("Optional curve")]
     [SerializeField, Tooltip("Optional easing curve for scale & fade (0..1).")]
     private AnimationCurve ease = AnimationCurve.EaseInOut(0, 0, 1, 1);
@@ -52,14 +55,12 @@ public class ImpactWaveVfx : MonoBehaviour
             VfxPool.Instance.Release(gameObject);
     }
 
-    private float squashY = 1f;
-
     private void Apply(float k01)
     {
         float k = ease != null ? ease.Evaluate(k01) : k01;
 
         float r = Mathf.Lerp(startRadius, endRadius, k);
-        transform.localScale = new Vector3(r, r * squashY, 1f);
+        transform.localScale = new Vector3(r, r * groundSquash, 1f);
 
         if (sr != null)
         {
@@ -67,12 +68,5 @@ public class ImpactWaveVfx : MonoBehaviour
             c.a = Mathf.Lerp(startAlpha, endAlpha, k);
             sr.color = c;
         }
-    }
-
-    public void Configure(float radius, float waveDuration, float groundSquash = 0.6f)
-    {
-        endRadius = Mathf.Max(0.01f, radius * 2f);
-        duration = Mathf.Max(0.03f, waveDuration);
-        squashY = Mathf.Clamp(groundSquash, 0.1f, 1f);
     }
 }
