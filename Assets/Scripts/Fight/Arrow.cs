@@ -51,9 +51,6 @@ public class Arrow : MonoBehaviour
     [Tooltip("Impact wave prefab spawned at impact point (via VfxPool).")]
     public GameObject impactWavePrefab;
 
-    [SerializeField, Tooltip("How long the impact wave animation should play (passed into ImpactWaveVfx.Configure).")]
-    private float waveDuration = 0.22f;
-
     [Header("VFX (Ground Decal)")]
     public GameObject impactDecalPrefab;
 

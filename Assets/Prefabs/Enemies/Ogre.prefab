@@ -4796,7 +4796,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1981946305
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 2
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -9626,7 +9626,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1981946305
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 1
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -9741,7 +9741,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 1
   m_Sprite: {fileID: 1959878637, guid: 89da5f611cd71064d9ad364bddcd7d61, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -9807,8 +9807,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.02277866, y: 0.07138914}
-  m_Size: {x: 0.38837212, y: 0.74430597}
+  m_Offset: {x: -0.02277866, y: 0.018854618}
+  m_Size: {x: 0.38837212, y: 0.849375}
   m_Direction: 0
 --- !u!114 &5190869859010253226
 MonoBehaviour:
@@ -9858,6 +9858,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8026eae8aaf85de46bc0550bd9c3bd5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitEffects
+  fireTint: {r: 1, g: 0.5, b: 0.2, a: 1}
+  freezeTint: {r: 0.4, g: 0.8, b: 1, a: 1}
+  hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
+  hitFlashDuration: 0.1
+  hitFlashStrength: 1
+  burnTickColor: {r: 0.99215686, g: 0.92229563, b: 0, a: 1}
+  burnTickDuration: 0.2
+  burnTickStrength: 1
   fireEffect: {fileID: 6702332221611775603}
   frostEffectPrefab: {fileID: 4952141576655577673}
 --- !u!114 &649036997620235078

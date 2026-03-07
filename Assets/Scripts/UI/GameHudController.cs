@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,44 +7,18 @@ public class GameHudController : MonoBehaviour
     [SerializeField] private GameFlowManager gameFlowManager;
     [SerializeField] private WaveManager waveManager;
 
-    [SerializeField] private Text waveText;
-    [SerializeField] private Text livesText;
-    [SerializeField] private Text speedText;
-    [SerializeField] private Text stateText;
+    [SerializeField] private TextMeshProUGUI waveText;
+    [SerializeField] private TextMeshProUGUI livesText;
+    [SerializeField] private TextMeshProUGUI speedText;
+    [SerializeField] private TextMeshProUGUI stateText;
 
     [SerializeField] private Button pauseButton;
     [SerializeField] private Button speedButton;
 
     private bool isBound;
 
-
-    public void Configure(
-        GameFlowManager flow,
-        WaveManager wave,
-        Text waveLabel,
-        Text livesLabel,
-        Text speedLabel,
-        Text stateLabel,
-        Button pause,
-        Button speed)
-    {
-        gameFlowManager = flow;
-        waveManager = wave;
-        waveText = waveLabel;
-        livesText = livesLabel;
-        speedText = speedLabel;
-        stateText = stateLabel;
-        pauseButton = pause;
-        speedButton = speed;
-    }
     private void Start()
     {
-        if (gameFlowManager == null)
-            gameFlowManager = FindObjectOfType<GameFlowManager>();
-
-        if (waveManager == null)
-            waveManager = FindObjectOfType<WaveManager>();
-
         Bind();
         RefreshStaticLabels();
     }
