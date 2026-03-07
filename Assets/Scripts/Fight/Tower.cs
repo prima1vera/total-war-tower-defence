@@ -3,6 +3,7 @@ using UnityEngine;
 public class Tower : MonoBehaviour
 {
     public GameObject arrowPrefab;
+    public int damage = 1;
     public float range = 5f;
     public float fireRate = 1f;
     public Transform firePoint;
@@ -13,11 +14,15 @@ public class Tower : MonoBehaviour
     [SerializeField] private float minAnimationCycleSeconds = 0.08f;
 
     private UnitHealth currentTarget;
-    private float fireCountdown = 0f;
-    private float targetRefreshTimer = 0f;
+    private float fireCountdown;
+    private float targetRefreshTimer;
     private int lastKnownEnemyRegistryVersion = -1;
     private Animator animator;
     private float fireClipLengthSeconds = 0.3f;
+
+    public int Damage => Mathf.Max(1, damage);
+    public float Range => Mathf.Max(0.1f, range);
+    public float FireRate => Mathf.Max(0.05f, fireRate);
 
     void Start()
     {
@@ -54,12 +59,20 @@ public class Tower : MonoBehaviour
         if (fireCountdown <= 0f)
         {
             if (animator != null)
-            {
                 animator.SetTrigger("Shoot");
-            }
 
-            fireCountdown = 1f / fireRate;
+            fireCountdown = 1f / FireRate;
         }
+    }
+
+    public void SetCombatStats(int newDamage, float newRange, float newFireRate)
+    {
+        damage = Mathf.Max(1, newDamage);
+        range = Mathf.Max(0.1f, newRange);
+        fireRate = Mathf.Max(0.05f, newFireRate);
+
+        float cooldown = 1f / FireRate;
+        fireCountdown = Mathf.Min(fireCountdown, cooldown);
     }
 
     private bool IsCurrentTargetValid()
@@ -67,7 +80,7 @@ public class Tower : MonoBehaviour
         if (currentTarget == null)
             return false;
 
-        float rangeSqr = range * range;
+        float rangeSqr = Range * Range;
         if (currentTarget.CurrentState == UnitState.Dead)
             return false;
 
@@ -77,7 +90,7 @@ public class Tower : MonoBehaviour
 
     private void RefreshTarget()
     {
-        EnemyRegistry.TryGetNearestEnemy(transform.position, range, out currentTarget);
+        EnemyRegistry.TryGetNearestEnemy(transform.position, Range, out currentTarget);
     }
 
     private void CacheFireClipLength()
@@ -107,20 +120,20 @@ public class Tower : MonoBehaviour
 
     private void SyncAnimationSpeedToFireRate()
     {
-        if (animator == null || fireRate <= 0f)
+        if (animator == null || FireRate <= 0f)
             return;
 
-        float cooldownSeconds = Mathf.Max(0.01f, 1f / fireRate);
+        float cooldownSeconds = Mathf.Max(0.01f, 1f / FireRate);
         float targetAnimationTime = Mathf.Max(minAnimationCycleSeconds, cooldownSeconds);
         animator.speed = fireClipLengthSeconds / targetAnimationTime;
     }
 
     public void ShootArrow()
     {
-        if (currentTarget == null) return;
+        if (currentTarget == null)
+            return;
 
         Arrow arrow = null;
-
         Vector3 spawnPosition = firePoint != null ? firePoint.position : transform.position;
 
         if (arrowPool != null)
@@ -129,17 +142,14 @@ public class Tower : MonoBehaviour
         }
         else if (arrowPrefab != null)
         {
-            GameObject arrowGO = Instantiate(
-                arrowPrefab,
-                spawnPosition,
-                Quaternion.identity
-            );
-
+            GameObject arrowGO = Instantiate(arrowPrefab, spawnPosition, Quaternion.identity);
             arrow = arrowGO.GetComponent<Arrow>();
         }
 
         if (arrow == null)
             return;
+
+        arrow.damage = Damage;
 
         Vector2 randomOffset = Random.insideUnitCircle * 0.5f;
         Vector2 targetPoint = (Vector2)currentTarget.transform.position + randomOffset;

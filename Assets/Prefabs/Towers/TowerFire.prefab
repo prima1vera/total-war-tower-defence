@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5970684417959116472}
   - component: {fileID: 3362007874931385704}
   - component: {fileID: 4033096107844011754}
+  - component: {fileID: 4831381402598911427}
   m_Layer: 24
   m_Name: TowerFire
   m_TagString: Tower
@@ -75,7 +76,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -9025213
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_Sprite: {fileID: 9115904403495626911, guid: e870b947a0d383d4fb7da64bbf7a74a0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -146,6 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower
   arrowPrefab: {fileID: 341183810093573692, guid: 17d2c027a75fc62458beef0b2ddb0fc0, type: 3}
+  damage: 1
   range: 7
   fireRate: 4
   firePoint: {fileID: 6024781246242465548}
@@ -173,6 +175,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4831381402598911427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102647808292042453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d6617ef9ab0deb4fb728a4288ed9f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tower: {fileID: 3362007874931385704}
+  upgradeTree: {fileID: 11400000, guid: 3a07bd733b0f01b4ba98ced77253bd71, type: 2}
+  startLevelOverride: 1
+  initializeOnAwake: 1
 --- !u!1 &3188258520158176754
 GameObject:
   m_ObjectHideFlags: 0
