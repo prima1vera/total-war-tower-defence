@@ -17,7 +17,7 @@ public class WaveManager : MonoBehaviour
     {
         new WaveDefinition { enemyCount = 10, spawnInterval = 0.7f, startDelay = 1f },
         new WaveDefinition { enemyCount = 40, spawnInterval = 0.6f, startDelay = 1.5f },
-        new WaveDefinition { enemyCount = 160, spawnInterval = 0.5f, startDelay = 2f }
+        new WaveDefinition { enemyCount = 60, spawnInterval = 0.5f, startDelay = 2f }
     };
 
     public event Action<int, int> WaveChanged;
@@ -31,9 +31,6 @@ public class WaveManager : MonoBehaviour
 
     private void Start()
     {
-        if (controlledSpawners == null || controlledSpawners.Length == 0)
-            controlledSpawners = FindObjectsOfType<EnemySpawner>();
-
         if (controlledSpawners == null || controlledSpawners.Length == 0 || waves == null || waves.Length == 0)
             return;
 
