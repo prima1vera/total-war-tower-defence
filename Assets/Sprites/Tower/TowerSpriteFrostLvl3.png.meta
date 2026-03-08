@@ -118,7 +118,7 @@ TextureImporter:
         width: 333.33334
         height: 460
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -134,12 +134,12 @@ TextureImporter:
       name: TowerSpriteFrostLvl3_1
       rect:
         serializedVersion: 2
-        x: 333
+        x: 330
         y: 0
-        width: 333.33334
-        height: 460
+        width: 333
+        height: 451
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -156,11 +156,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 666
-        y: 0
-        width: 333.33334
-        height: 460
+        y: 13
+        width: 333
+        height: 447
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: FireTowerLv3_Override
+  m_Controller: {fileID: 9100000, guid: 6c09811e26f8e03469ca3b6ceff04e44, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 399b32c9e24d463488f4b3ac736672e3, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 75fb7b9112a749da87b99efafab83c72, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 5152102ddc6c18e42a159fc05a0a6449, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: e3572f89437d4c4a8219e4d40db70155, type: 2}

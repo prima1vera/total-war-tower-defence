@@ -16,4 +16,5 @@ MonoBehaviour:
   projectilePoolKey: 3
   arrowPrefab: {fileID: 341183810093573692, guid: a6f41efdc35e0d047ba906f26e94f6c3, type: 3}
   towerSprite: {fileID: 704688879, guid: 37220679d394cb74dbe2f62e95ca09ca, type: 3}
-  animatorController: {fileID: 9100000, guid: 6c09811e26f8e03469ca3b6ceff04e44, type: 2}
+  animatorController: {fileID: 22100000, guid: 1a7e7826cd8d40f4a1f73db6f2552986, type: 2}
+
