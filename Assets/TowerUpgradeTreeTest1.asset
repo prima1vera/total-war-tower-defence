@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: f0b37c408f9e4e54a11933c56cff7dcd, type: 3}
   m_Name: TowerUpgradeTreeTest1
   m_EditorClassIdentifier: Assembly-CSharp::TowerUpgradeTree
   towerDisplayName: Tower
-  startLevelIndex: 1
+  startLevelIndex: 0
   levels:
   - Level: 1
     Stats:
@@ -24,11 +24,11 @@ MonoBehaviour:
     UpgradeA:
       Label: Fire Tower
       Cost: 30
-      NextLevelIndex: 2
+      NextLevelIndex: 1
     UpgradeB:
       Label: Ice Tower
       Cost: 40
-      NextLevelIndex: 3
+      NextLevelIndex: 2
   - Level: 2
     Stats:
       Damage: 8
@@ -57,3 +57,4 @@ MonoBehaviour:
       Label: 
       Cost: 0
       NextLevelIndex: -1
+

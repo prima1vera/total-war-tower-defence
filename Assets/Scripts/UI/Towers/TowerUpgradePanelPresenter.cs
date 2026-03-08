@@ -28,9 +28,20 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
 
     [Header("Optional")]
     [SerializeField] private TMP_Text goldText;
+
+    [Header("Labels")]
     [SerializeField] private string unavailableUpgradeLabel = "MAX";
+    [SerializeField] private string levelPrefix = "Lv";
+    [SerializeField] private string goldPrefix = "Gold";
+    [SerializeField] private string sellLabel = "Sell";
+    [SerializeField] private string currencySuffix = "g";
+    [SerializeField] private string damageShortLabel = "DMG";
+    [SerializeField] private string rangeShortLabel = "RNG";
+    [SerializeField] private string fireRateShortLabel = "SPD";
 
     private TowerUpgradable selectedTower;
+    private CanvasGroup panelCanvasGroup;
+    private bool useCanvasGroupVisibility;
 
     private void Awake()
     {
@@ -43,8 +54,8 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
         if (sellButton != null)
             sellButton.onClick.AddListener(HandleSell);
 
-        if (panelRoot != null)
-            panelRoot.SetActive(false);
+        InitializePanelVisibilityMode();
+        SetPanelVisible(false);
     }
 
     private void OnEnable()
@@ -72,6 +83,37 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
             currencyWallet.BalanceChanged -= HandleBalanceChanged;
 
         DetachTowerEvents();
+    }
+
+    private void InitializePanelVisibilityMode()
+    {
+        if (panelRoot == null)
+            return;
+
+        useCanvasGroupVisibility = panelRoot == gameObject;
+        if (!useCanvasGroupVisibility)
+            return;
+
+        panelCanvasGroup = panelRoot.GetComponent<CanvasGroup>();
+        if (panelCanvasGroup == null)
+            panelCanvasGroup = panelRoot.AddComponent<CanvasGroup>();
+    }
+
+    private void SetPanelVisible(bool isVisible)
+    {
+        if (panelRoot == null)
+            return;
+
+        if (useCanvasGroupVisibility && panelCanvasGroup != null)
+        {
+            panelCanvasGroup.alpha = isVisible ? 1f : 0f;
+            panelCanvasGroup.blocksRaycasts = isVisible;
+            panelCanvasGroup.interactable = isVisible;
+            return;
+        }
+
+        if (panelRoot.activeSelf != isVisible)
+            panelRoot.SetActive(isVisible);
     }
 
     private void HandleSelectionChanged(TowerUpgradable tower)
@@ -125,7 +167,7 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
     private void HandleBalanceChanged(int balance)
     {
         if (goldText != null)
-            goldText.text = $"Gold: {balance}";
+            goldText.text = $"{goldPrefix}: {balance}";
 
         RefreshUpgradeButtons();
     }
@@ -159,12 +201,13 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
     private void RefreshPanel()
     {
         bool hasSelection = selectedTower != null && selectedTower.gameObject.activeInHierarchy && !selectedTower.IsSold;
-
-        if (panelRoot != null)
-            panelRoot.SetActive(hasSelection);
+        SetPanelVisible(hasSelection);
 
         if (!hasSelection)
+        {
+            RefreshUpgradeButtons();
             return;
+        }
 
         if (selectedTower.TryGetCurrentLevel(out TowerUpgradeLevelDefinition level))
         {
@@ -172,19 +215,19 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
                 towerNameText.text = selectedTower.TowerDisplayName;
 
             if (levelText != null)
-                levelText.text = $"Level {level.Level}";
+                levelText.text = $"{levelPrefix} {level.Level}";
 
             if (damageText != null)
-                damageText.text = $"Damage: {level.Stats.Damage}";
+                damageText.text = $"{damageShortLabel} {level.Stats.Damage}";
 
             if (rangeText != null)
-                rangeText.text = $"Range: {level.Stats.Range:0.0}";
+                rangeText.text = $"{rangeShortLabel} {level.Stats.Range:0.0}";
 
             if (fireRateText != null)
-                fireRateText.text = $"Fire Rate: {level.Stats.FireRate:0.00}";
+                fireRateText.text = $"{fireRateShortLabel} {level.Stats.FireRate:0.00}";
 
             if (sellButtonText != null)
-                sellButtonText.text = $"Sell (+{level.SellValue})";
+                sellButtonText.text = $"{sellLabel} (+{level.SellValue}{currencySuffix})";
         }
 
         RefreshUpgradeButtons();
@@ -206,8 +249,8 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
         TowerUpgradeOptionState optionA = selectedTower.GetUpgradeOptionState(TowerUpgradeSlot.A, currencyWallet);
         TowerUpgradeOptionState optionB = selectedTower.GetUpgradeOptionState(TowerUpgradeSlot.B, currencyWallet);
 
-        string labelA = BuildUpgradeLabel(optionA);
-        string labelB = BuildUpgradeLabel(optionB);
+        string labelA = BuildUpgradeLabel(optionA, "A");
+        string labelB = BuildUpgradeLabel(optionB, "B");
 
         ApplyButtonState(upgradeButtonA, upgradeButtonAText, optionA.IsAvailable && optionA.CanAfford, labelA);
         ApplyButtonState(upgradeButtonB, upgradeButtonBText, optionB.IsAvailable && optionB.CanAfford, labelB);
@@ -216,16 +259,16 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
             sellButton.interactable = true;
     }
 
-    private string BuildUpgradeLabel(TowerUpgradeOptionState option)
+    private string BuildUpgradeLabel(TowerUpgradeOptionState option, string slotLabel)
     {
         if (!option.IsAvailable)
             return unavailableUpgradeLabel;
 
         string label = string.IsNullOrWhiteSpace(option.Label)
-            ? $"Upgrade {option.Slot}"
+            ? $"Upgrade {slotLabel}"
             : option.Label;
 
-        return $"{label} ({option.Cost})";
+        return $"{label} ({option.Cost}{currencySuffix})";
     }
 
     private static void ApplyButtonState(Button button, TMP_Text buttonText, bool interactable, string label)
@@ -234,6 +277,9 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
             button.interactable = interactable;
 
         if (buttonText != null)
+        {
             buttonText.text = label;
+            buttonText.alpha = interactable ? 1f : 0.6f;
+        }
     }
 }
