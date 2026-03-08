@@ -23,6 +23,8 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
     [SerializeField] private TMP_Text upgradeButtonAText;
     [SerializeField] private Button upgradeButtonB;
     [SerializeField] private TMP_Text upgradeButtonBText;
+    [SerializeField] private Button upgradeButtonC;
+    [SerializeField] private TMP_Text upgradeButtonCText;
     [SerializeField] private Button sellButton;
     [SerializeField] private TMP_Text sellButtonText;
 
@@ -42,6 +44,7 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
     private TowerUpgradable selectedTower;
     private CanvasGroup panelCanvasGroup;
     private bool useCanvasGroupVisibility;
+    private bool loggedMissingUpgradeCButton;
 
     private void Awake()
     {
@@ -50,6 +53,9 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
 
         if (upgradeButtonB != null)
             upgradeButtonB.onClick.AddListener(HandleUpgradeB);
+
+        if (upgradeButtonC != null)
+            upgradeButtonC.onClick.AddListener(HandleUpgradeC);
 
         if (sellButton != null)
             sellButton.onClick.AddListener(HandleSell);
@@ -182,6 +188,11 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
         TryUpgrade(TowerUpgradeSlot.B);
     }
 
+    private void HandleUpgradeC()
+    {
+        TryUpgrade(TowerUpgradeSlot.C);
+    }
+
     private void TryUpgrade(TowerUpgradeSlot slot)
     {
         if (selectedTower == null)
@@ -239,6 +250,7 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
         {
             ApplyButtonState(upgradeButtonA, upgradeButtonAText, false, unavailableUpgradeLabel);
             ApplyButtonState(upgradeButtonB, upgradeButtonBText, false, unavailableUpgradeLabel);
+            ApplyButtonState(upgradeButtonC, upgradeButtonCText, false, unavailableUpgradeLabel);
 
             if (sellButton != null)
                 sellButton.interactable = false;
@@ -248,12 +260,21 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
 
         TowerUpgradeOptionState optionA = selectedTower.GetUpgradeOptionState(TowerUpgradeSlot.A, currencyWallet);
         TowerUpgradeOptionState optionB = selectedTower.GetUpgradeOptionState(TowerUpgradeSlot.B, currencyWallet);
+        TowerUpgradeOptionState optionC = selectedTower.GetUpgradeOptionState(TowerUpgradeSlot.C, currencyWallet);
+
+        if (upgradeButtonC == null && optionC.IsAvailable && !loggedMissingUpgradeCButton)
+        {
+            Debug.LogWarning("TowerUpgradePanelPresenter: Upgrade C is configured but Upgrade Button C is not assigned in Inspector.", this);
+            loggedMissingUpgradeCButton = true;
+        }
 
         string labelA = BuildUpgradeLabel(optionA, "A");
         string labelB = BuildUpgradeLabel(optionB, "B");
+        string labelC = BuildUpgradeLabel(optionC, "C");
 
         ApplyButtonState(upgradeButtonA, upgradeButtonAText, optionA.IsAvailable && optionA.CanAfford, labelA);
         ApplyButtonState(upgradeButtonB, upgradeButtonBText, optionB.IsAvailable && optionB.CanAfford, labelB);
+        ApplyButtonState(upgradeButtonC, upgradeButtonCText, optionC.IsAvailable && optionC.CanAfford, labelC);
 
         if (sellButton != null)
             sellButton.interactable = true;

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TowerEvolution_Fire
   m_EditorClassIdentifier: 
   displayNameOverride: Fire Tower
+  projectilePoolKey: 1
   arrowPrefab: {fileID: 341183810093573692, guid: 17d2c027a75fc62458beef0b2ddb0fc0, type: 3}
-  arrowPool: {fileID: 4389561047177262492, guid: 749d9f93455e14d4197a42e5f681e979, type: 3}
-  towerSprite: {fileID: 9115904403495626911, guid: e870b947a0d383d4fb7da64bbf7a74a0, type: 3}
+  towerSprite: {fileID: -243633275, guid: 4fbeb3908fca4eb4fbb6830103a40121, type: 3}
   animatorController: {fileID: 22100000, guid: 40fa64cb50e9e3d42a0a9b9e8014846d, type: 2}

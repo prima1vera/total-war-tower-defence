@@ -53,6 +53,7 @@ public sealed class TowerUpgradeTree : ScriptableObject
             level.SellValue = Mathf.Max(0, level.SellValue);
             level.UpgradeA = NormalizeOption(level.UpgradeA, maxIndex);
             level.UpgradeB = NormalizeOption(level.UpgradeB, maxIndex);
+            level.UpgradeC = NormalizeOption(level.UpgradeC, maxIndex);
             levels[i] = level;
         }
     }

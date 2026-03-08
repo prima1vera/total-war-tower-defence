@@ -6,11 +6,11 @@ public sealed class TowerEvolutionProfile : ScriptableObject
     [SerializeField, Tooltip("Optional name shown in upgrade panel after this evolution is applied.")]
     private string displayNameOverride;
 
-    [SerializeField, Tooltip("Projectile prefab fallback used by Tower when no pool is assigned.")]
-    private GameObject arrowPrefab;
+    [SerializeField, Tooltip("Which scene projectile pool family should this tower use after evolution.")]
+    private TowerProjectilePoolKey projectilePoolKey = TowerProjectilePoolKey.Base;
 
-    [SerializeField, Tooltip("Projectile pool used by evolved tower.")]
-    private ArrowPool arrowPool;
+    [SerializeField, Tooltip("Projectile prefab fallback when pool is missing.")]
+    private GameObject arrowPrefab;
 
     [SerializeField, Tooltip("Optional sprite override for evolved tower visuals.")]
     private Sprite towerSprite;
@@ -19,8 +19,8 @@ public sealed class TowerEvolutionProfile : ScriptableObject
     private RuntimeAnimatorController animatorController;
 
     public string DisplayNameOverride => displayNameOverride;
+    public TowerProjectilePoolKey ProjectilePoolKey => projectilePoolKey;
     public GameObject ArrowPrefab => arrowPrefab;
-    public ArrowPool ArrowPool => arrowPool;
     public Sprite TowerSprite => towerSprite;
     public RuntimeAnimatorController AnimatorController => animatorController;
 }

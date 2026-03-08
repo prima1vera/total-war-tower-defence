@@ -4,7 +4,8 @@ using UnityEngine;
 public enum TowerUpgradeSlot
 {
     A,
-    B
+    B,
+    C
 }
 
 [Serializable]
@@ -60,9 +61,18 @@ public struct TowerUpgradeLevelDefinition
 
     public TowerUpgradeOptionDefinition UpgradeA;
     public TowerUpgradeOptionDefinition UpgradeB;
+    public TowerUpgradeOptionDefinition UpgradeC;
 
     public TowerUpgradeOptionDefinition GetOption(TowerUpgradeSlot slot)
     {
-        return slot == TowerUpgradeSlot.A ? UpgradeA : UpgradeB;
+        switch (slot)
+        {
+            case TowerUpgradeSlot.A:
+                return UpgradeA;
+            case TowerUpgradeSlot.B:
+                return UpgradeB;
+            default:
+                return UpgradeC;
+        }
     }
 }

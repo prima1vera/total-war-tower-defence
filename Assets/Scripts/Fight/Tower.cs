@@ -21,6 +21,7 @@ public class Tower : MonoBehaviour
     private int lastKnownEnemyRegistryVersion = -1;
     private Animator animator;
     private float fireClipLengthSeconds = 0.3f;
+    private bool loggedInvalidPoolReference;
 
     public int Damage => Mathf.Max(1, damage);
     public float Range => Mathf.Max(0.1f, range);
@@ -86,8 +87,10 @@ public class Tower : MonoBehaviour
         if (profile.ArrowPrefab != null)
             arrowPrefab = profile.ArrowPrefab;
 
-        if (profile.ArrowPool != null)
-            arrowPool = profile.ArrowPool;
+        if (TowerProjectilePoolRegistry.TryGetPool(profile.ProjectilePoolKey, out ArrowPool resolvedPool) && resolvedPool != null)
+            arrowPool = resolvedPool;
+
+        loggedInvalidPoolReference = false;
 
         if (profile.TowerSprite != null)
         {
@@ -181,10 +184,11 @@ public class Tower : MonoBehaviour
 
         Arrow arrow = null;
         Vector3 spawnPosition = firePoint != null ? firePoint.position : transform.position;
+        ArrowPool activePool = GetValidArrowPool();
 
-        if (arrowPool != null)
+        if (activePool != null)
         {
-            arrow = arrowPool.Spawn(spawnPosition, Quaternion.identity);
+            arrow = activePool.Spawn(spawnPosition, Quaternion.identity);
         }
         else if (arrowPrefab != null)
         {
@@ -201,5 +205,23 @@ public class Tower : MonoBehaviour
         Vector2 targetPoint = (Vector2)currentTarget.transform.position + randomOffset;
 
         arrow.Launch(targetPoint);
+    }
+
+    private ArrowPool GetValidArrowPool()
+    {
+        if (arrowPool == null)
+            return null;
+
+        if (arrowPool.gameObject.scene.IsValid())
+            return arrowPool;
+
+        if (!loggedInvalidPoolReference)
+        {
+            Debug.LogWarning($"{name}: ArrowPool reference points to a prefab asset. Falling back to instantiate until a scene pool is resolved.", this);
+            loggedInvalidPoolReference = true;
+        }
+
+        arrowPool = null;
+        return null;
     }
 }

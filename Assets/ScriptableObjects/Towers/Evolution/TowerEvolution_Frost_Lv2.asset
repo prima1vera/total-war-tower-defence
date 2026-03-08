@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ce86ffdf811484d90bf809362af98a5, type: 3}
-  m_Name: TowerEvolution_Iron
+  m_Name: TowerEvolution_Frost_Lv2
   m_EditorClassIdentifier: 
-  displayNameOverride: Iron Tower
-  projectilePoolKey: 3
-  arrowPrefab: {fileID: 341183810093573692, guid: a6f41efdc35e0d047ba906f26e94f6c3, type: 3}
-  towerSprite: {fileID: -1568226208, guid: 258eca78542834e40ae5f3c6d070b39b, type: 3}
-  animatorController: {fileID: 9100000, guid: 6c09811e26f8e03469ca3b6ceff04e44, type: 2}
+  displayNameOverride: Frost Tower
+  projectilePoolKey: 2
+  arrowPrefab: {fileID: 341183810093573692, guid: 104585fd8c0e6f34e89c090c966db830, type: 3}
+  towerSprite: {fileID: 185330520, guid: 2c69b570b388f8044a9ea39e5b4137d9, type: 3}
+  animatorController: {fileID: 22100000, guid: 703ea713d1f1c384584ee3f398434eba, type: 2}
