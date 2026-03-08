@@ -10,6 +10,8 @@ public class Tower : MonoBehaviour
 
     [SerializeField] private float targetRefreshInterval = 0.15f;
     [SerializeField] private ArrowPool arrowPool;
+    [SerializeField] private SpriteRenderer towerSpriteRenderer;
+
     [Header("Animation Sync")]
     [SerializeField] private float minAnimationCycleSeconds = 0.08f;
 
@@ -24,9 +26,10 @@ public class Tower : MonoBehaviour
     public float Range => Mathf.Max(0.1f, range);
     public float FireRate => Mathf.Max(0.05f, fireRate);
 
-    void Start()
+    private void Start()
     {
-        animator = GetComponent<Animator>();
+        EnsureAnimator();
+        EnsureSpriteRenderer();
         CacheFireClipLength();
 
         if (firePoint == null)
@@ -36,7 +39,7 @@ public class Tower : MonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
         fireCountdown -= Time.deltaTime;
         targetRefreshTimer -= Time.deltaTime;
@@ -75,6 +78,37 @@ public class Tower : MonoBehaviour
         fireCountdown = Mathf.Min(fireCountdown, cooldown);
     }
 
+    public void ApplyEvolutionProfile(TowerEvolutionProfile profile)
+    {
+        if (profile == null)
+            return;
+
+        if (profile.ArrowPrefab != null)
+            arrowPrefab = profile.ArrowPrefab;
+
+        if (profile.ArrowPool != null)
+            arrowPool = profile.ArrowPool;
+
+        if (profile.TowerSprite != null)
+        {
+            EnsureSpriteRenderer();
+            if (towerSpriteRenderer != null)
+                towerSpriteRenderer.sprite = profile.TowerSprite;
+        }
+
+        if (profile.AnimatorController != null)
+        {
+            EnsureAnimator();
+            if (animator != null && animator.runtimeAnimatorController != profile.AnimatorController)
+            {
+                animator.runtimeAnimatorController = profile.AnimatorController;
+                animator.Rebind();
+                animator.Update(0f);
+                CacheFireClipLength();
+            }
+        }
+    }
+
     private bool IsCurrentTargetValid()
     {
         if (currentTarget == null)
@@ -93,20 +127,32 @@ public class Tower : MonoBehaviour
         EnemyRegistry.TryGetNearestEnemy(transform.position, Range, out currentTarget);
     }
 
+    private void EnsureAnimator()
+    {
+        if (animator == null)
+            animator = GetComponent<Animator>();
+    }
+
+    private void EnsureSpriteRenderer()
+    {
+        if (towerSpriteRenderer == null)
+            towerSpriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
     private void CacheFireClipLength()
     {
+        fireClipLengthSeconds = minAnimationCycleSeconds;
+
         if (animator == null || animator.runtimeAnimatorController == null)
             return;
 
         AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
-
         if (clips == null || clips.Length == 0)
             return;
 
         for (int i = 0; i < clips.Length; i++)
         {
             AnimationClip clip = clips[i];
-
             if (clip == null)
                 continue;
 

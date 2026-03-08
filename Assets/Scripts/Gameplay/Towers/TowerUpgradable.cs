@@ -12,6 +12,7 @@ public class TowerUpgradable : MonoBehaviour
     private int currentLevelIndex = -1;
     private bool initialized;
     private bool sold;
+    private string cachedTowerDisplayName;
 
     public event Action<TowerUpgradable> DataChanged;
     public event Action<TowerUpgradable> Sold;
@@ -19,7 +20,7 @@ public class TowerUpgradable : MonoBehaviour
     public TowerUpgradeTree UpgradeTree => upgradeTree;
     public bool IsSold => sold;
     public int CurrentLevelIndex => currentLevelIndex;
-    public string TowerDisplayName => upgradeTree != null ? upgradeTree.TowerDisplayName : gameObject.name;
+    public string TowerDisplayName => string.IsNullOrWhiteSpace(cachedTowerDisplayName) ? gameObject.name : cachedTowerDisplayName;
 
     private void Awake()
     {
@@ -46,6 +47,7 @@ public class TowerUpgradable : MonoBehaviour
         if (upgradeTree == null)
         {
             currentLevelIndex = -1;
+            cachedTowerDisplayName = gameObject.name;
             initialized = true;
             DataChanged?.Invoke(this);
             return;
@@ -59,7 +61,7 @@ public class TowerUpgradable : MonoBehaviour
         currentLevelIndex = desiredStart;
         initialized = true;
 
-        ApplyCurrentStatsToTower();
+        ApplyCurrentLevelToTower();
         DataChanged?.Invoke(this);
     }
 
@@ -114,7 +116,7 @@ public class TowerUpgradable : MonoBehaviour
             return false;
 
         currentLevelIndex = option.NextLevelIndex;
-        ApplyCurrentStatsToTower();
+        ApplyCurrentLevelToTower();
         DataChanged?.Invoke(this);
         return true;
     }
@@ -136,15 +138,43 @@ public class TowerUpgradable : MonoBehaviour
         return true;
     }
 
-    private void ApplyCurrentStatsToTower()
+    private void ApplyCurrentLevelToTower()
     {
-        if (tower == null || upgradeTree == null)
+        if (upgradeTree == null)
+        {
+            cachedTowerDisplayName = gameObject.name;
             return;
+        }
 
         if (!upgradeTree.TryGetLevel(currentLevelIndex, out TowerUpgradeLevelDefinition level))
+        {
+            cachedTowerDisplayName = upgradeTree.TowerDisplayName;
             return;
+        }
 
-        TowerCombatStats stats = TowerCombatStats.Clamp(level.Stats);
-        tower.SetCombatStats(stats.Damage, stats.Range, stats.FireRate);
+        if (tower != null)
+        {
+            if (level.EvolutionProfile != null)
+                tower.ApplyEvolutionProfile(level.EvolutionProfile);
+
+            TowerCombatStats stats = TowerCombatStats.Clamp(level.Stats);
+            tower.SetCombatStats(stats.Damage, stats.Range, stats.FireRate);
+        }
+
+        cachedTowerDisplayName = ResolveDisplayName(level);
+    }
+
+    private string ResolveDisplayName(TowerUpgradeLevelDefinition level)
+    {
+        if (level.EvolutionProfile != null && !string.IsNullOrWhiteSpace(level.EvolutionProfile.DisplayNameOverride))
+            return level.EvolutionProfile.DisplayNameOverride;
+
+        if (!string.IsNullOrWhiteSpace(level.DisplayNameOverride))
+            return level.DisplayNameOverride;
+
+        if (upgradeTree != null && !string.IsNullOrWhiteSpace(upgradeTree.TowerDisplayName))
+            return upgradeTree.TowerDisplayName;
+
+        return gameObject.name;
     }
 }

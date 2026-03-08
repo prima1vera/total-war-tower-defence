@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4033096107844011754}
   - component: {fileID: -6770446820894433619}
   m_Layer: 24
-  m_Name: Tower
+  m_Name: TowerBase
   m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: -9025213
   m_SortingLayer: 5
   m_SortingOrder: 1
-  m_Sprite: {fileID: 8717243691107160497, guid: a1628bc044c509e47b1e24137ad82721, type: 3}
+  m_Sprite: {fileID: -1672319629, guid: 1345c689f65353446a4da56f7f8e430f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -125,7 +125,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.71, y: 3.17}
+    oldSize: {x: 3.3333335, y: 4.2}
     newSize: {x: 2.71, y: 3.17}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -153,6 +153,7 @@ MonoBehaviour:
   firePoint: {fileID: 6024781246242465548}
   targetRefreshInterval: 0.15
   arrowPool: {fileID: 7358018726447226814, guid: fb1561b78eea8f04184f4e857e7443ac, type: 3}
+  towerSpriteRenderer: {fileID: 0}
   minAnimationCycleSeconds: 0.08
 --- !u!95 &4033096107844011754
 Animator:
@@ -189,7 +190,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tower: {fileID: 3362007874931385704}
   upgradeTree: {fileID: 11400000, guid: 3a07bd733b0f01b4ba98ced77253bd71, type: 2}
-  startLevelOverride: 1
+  startLevelOverride: -1
   initializeOnAwake: 1
 --- !u!1 &3188258520158176754
 GameObject:

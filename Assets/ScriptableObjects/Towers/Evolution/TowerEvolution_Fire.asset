@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce86ffdf811484d90bf809362af98a5, type: 3}
+  m_Name: TowerEvolution_Fire
+  m_EditorClassIdentifier: 
+  displayNameOverride: Fire Tower
+  arrowPrefab: {fileID: 341183810093573692, guid: 17d2c027a75fc62458beef0b2ddb0fc0, type: 3}
+  arrowPool: {fileID: 4389561047177262492, guid: 749d9f93455e14d4197a42e5f681e979, type: 3}
+  towerSprite: {fileID: 9115904403495626911, guid: e870b947a0d383d4fb7da64bbf7a74a0, type: 3}
+  animatorController: {fileID: 22100000, guid: 40fa64cb50e9e3d42a0a9b9e8014846d, type: 2}

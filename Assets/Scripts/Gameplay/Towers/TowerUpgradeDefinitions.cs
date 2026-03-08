@@ -52,6 +52,12 @@ public struct TowerUpgradeLevelDefinition
     [Tooltip("Gold returned on sell from this level.")]
     public int SellValue;
 
+    [Tooltip("Optional name shown in UI when this level is active.")]
+    public string DisplayNameOverride;
+
+    [Tooltip("Optional evolution profile: projectile source + visual overrides.")]
+    public TowerEvolutionProfile EvolutionProfile;
+
     public TowerUpgradeOptionDefinition UpgradeA;
     public TowerUpgradeOptionDefinition UpgradeB;
 

@@ -21,6 +21,8 @@ MonoBehaviour:
       Range: 5
       FireRate: 1
     SellValue: 10
+    DisplayNameOverride: 
+    EvolutionProfile: {fileID: 0}
     UpgradeA:
       Label: Fire Tower
       Cost: 30
@@ -35,6 +37,8 @@ MonoBehaviour:
       Range: 7
       FireRate: 2
     SellValue: 15
+    DisplayNameOverride: Fire Tower
+    EvolutionProfile: {fileID: 11400000, guid: 421662703be745a1a75654019b7f3126, type: 2}
     UpgradeA:
       Label: 
       Cost: 0
@@ -43,12 +47,14 @@ MonoBehaviour:
       Label: 
       Cost: 0
       NextLevelIndex: -1
-  - Level: 3
+  - Level: 2
     Stats:
       Damage: 8
       Range: 6
       FireRate: 1
     SellValue: 20
+    DisplayNameOverride: 
+    EvolutionProfile: {fileID: 11400000, guid: ecc6d70ff4b5497499cc61a49c4a2609, type: 2}
     UpgradeA:
       Label: 
       Cost: 0
@@ -57,4 +63,3 @@ MonoBehaviour:
       Label: 
       Cost: 0
       NextLevelIndex: -1
-
