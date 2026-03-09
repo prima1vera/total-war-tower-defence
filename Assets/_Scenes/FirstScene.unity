@@ -2863,26 +2863,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 616228513}
     m_Modifications:
-    - target: {fileID: -6770446820894433619, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
-      propertyPath: startLevelOverride
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2102647808292042453, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
       propertyPath: m_Name
       value: Tower (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 2102647808292042453, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3362007874931385704, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
-      propertyPath: range
-      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3362007874931385704, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
       propertyPath: arrowPool
       value: 
       objectReference: {fileID: 1620184920}
+    - target: {fileID: 3362007874931385704, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
+      propertyPath: groundLocalOffset.y
+      value: -0.9
+      objectReference: {fileID: 0}
     - target: {fileID: 8990869992959872207, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6.97
