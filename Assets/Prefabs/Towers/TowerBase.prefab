@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: -9025213
   m_SortingLayer: 5
   m_SortingOrder: 1
-  m_Sprite: {fileID: -1672319629, guid: 1345c689f65353446a4da56f7f8e430f, type: 3}
+  m_Sprite: {fileID: 908435097, guid: 73780f647b97b974db6afd033cad1fe9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -156,10 +156,10 @@ MonoBehaviour:
   arrowPool: {fileID: 0}
   towerSpriteRenderer: {fileID: 0}
   towerGroundRenderer: {fileID: 4579000000000000003}
-  baseGroundSprite: {fileID: -1286614090, guid: c7e8203eaf5bc7640a3428a9a4833877, type: 3}
-  fireGroundSprite: {fileID: 279904946, guid: c7e8203eaf5bc7640a3428a9a4833877, type: 3}
-  frostGroundSprite: {fileID: 1599113234, guid: c7e8203eaf5bc7640a3428a9a4833877, type: 3}
-  ironGroundSprite: {fileID: 1574557754, guid: c7e8203eaf5bc7640a3428a9a4833877, type: 3}
+  baseGroundSprite: {fileID: -708932053, guid: 2b8fac167d4a41c4e9446d34002461f0, type: 3}
+  fireGroundSprite: {fileID: -751840578, guid: 2b8fac167d4a41c4e9446d34002461f0, type: 3}
+  frostGroundSprite: {fileID: -1618715906, guid: 2b8fac167d4a41c4e9446d34002461f0, type: 3}
+  ironGroundSprite: {fileID: -1932692492, guid: 2b8fac167d4a41c4e9446d34002461f0, type: 3}
   groundScaleMultiplier: 1.33
   levelScaleStep: 0.2
   minAnimationCycleSeconds: 0.08
@@ -304,7 +304,7 @@ SpriteRenderer:
   m_SortingLayerID: -9025213
   m_SortingLayer: 5
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1286614090, guid: c7e8203eaf5bc7640a3428a9a4833877, type: 3}
+  m_Sprite: {fileID: -708932053, guid: 2b8fac167d4a41c4e9446d34002461f0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

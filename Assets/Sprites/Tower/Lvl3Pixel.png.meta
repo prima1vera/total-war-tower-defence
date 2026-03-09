@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2c69b570b388f8044a9ea39e5b4137d9
+guid: 1614a15d73edefb41a693d2e80c6ce5f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TowerSpriteFrostLvl2_0
+      name: Lvl3Pixel_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 333.33334
-        height: 460
+        x: 16
+        y: 5
+        width: 304
+        height: 409
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d139a6c5425233844a8241fc1a3a7f65
-      internalID: 185330520
+      spriteID: 67f6a75e1c2d9144faccff727436a36d
+      internalID: 2028000299
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: TowerSpriteFrostLvl2_1
+      name: Lvl3Pixel_1
       rect:
         serializedVersion: 2
-        x: 340
-        y: 9
-        width: 333
-        height: 450
+        x: 355
+        y: 6
+        width: 304
+        height: 409
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,20 +145,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6f98627c9ef13a3458eb6ce4f9de241a
-      internalID: -1617028279
+      spriteID: 659da013f96f39d47931a9cd961a5b9a
+      internalID: 3032955
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: TowerSpriteFrostLvl2_2
+      name: Lvl3Pixel_2
       rect:
         serializedVersion: 2
-        x: 665
-        y: 11
-        width: 333
-        height: 449
+        x: 685
+        y: 2
+        width: 304
+        height: 409
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,8 +166,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5b65b32d826d9b84b8f89e67c0ba5e4b
-      internalID: -1868336518
+      spriteID: 60edaa38d4a639a4b8545af368884880
+      internalID: -1058771782
       vertices: []
       indices: 
       edges: []
@@ -183,9 +183,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      TowerSpriteFrostLvl2_0: 185330520
-      TowerSpriteFrostLvl2_1: -1617028279
-      TowerSpriteFrostLvl2_2: -1868336518
+      Lvl3Pixel_0: 2028000299
+      Lvl3Pixel_1: 3032955
+      Lvl3Pixel_2: -1058771782
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

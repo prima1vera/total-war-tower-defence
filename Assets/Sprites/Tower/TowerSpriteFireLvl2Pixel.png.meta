@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c7e8203eaf5bc7640a3428a9a4833877
+guid: 70deed4c3529e064eb1280663ea524af
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,85 +110,64 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TowersGround_Fire
+      name: TowerSpriteFireLvl2Pixel_0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 0
-        width: 361
-        height: 208
+        x: 33
+        y: 22
+        width: 300
+        height: 381
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 34d632ec622f94f41bf50ccee7a5cbff
-      internalID: 279904946
+      spriteID: b6b87ffd476d36145937610462710efc
+      internalID: 1379723620
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: TowersGround_Ice
+      name: TowerSpriteFireLvl2Pixel_1
       rect:
         serializedVersion: 2
-        x: 416
-        y: 0
-        width: 352
-        height: 208
+        x: 383
+        y: 30
+        width: 300
+        height: 381
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 22d408b579f123343a5c62fc07e74f59
-      internalID: 1599113234
+      spriteID: 631f32d8ceae9044d9fe5a7d890f7d62
+      internalID: 844468563
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: TowersGround_Iron
+      name: TowerSpriteFireLvl2Pixel_2
       rect:
         serializedVersion: 2
-        x: 772
-        y: 0
-        width: 372
-        height: 208
+        x: 710
+        y: 29
+        width: 300
+        height: 381
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c662822b9ef55084aa9eec2a5c931a05
-      internalID: 1574557754
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: TowersGround_Base
-      rect:
-        serializedVersion: 2
-        x: 1152
-        y: 0
-        width: 374
-        height: 208
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a230fbc4ef7997a4482505f7e358a6d8
-      internalID: -1286614090
+      spriteID: 445b2f0a31866f74f9ecd488fb293a7a
+      internalID: -815423381
       vertices: []
       indices: 
       edges: []
@@ -204,10 +183,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      TowersGround_Base: -1286614090
-      TowersGround_Fire: 279904946
-      TowersGround_Ice: 1599113234
-      TowersGround_Iron: 1574557754
+      TowerSpriteFireLvl2Pixel_0: 1379723620
+      TowerSpriteFireLvl2Pixel_1: 844468563
+      TowerSpriteFireLvl2Pixel_2: -815423381
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
