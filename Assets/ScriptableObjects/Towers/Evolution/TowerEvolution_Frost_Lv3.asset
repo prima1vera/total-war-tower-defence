@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce86ffdf811484d90bf809362af98a5, type: 3}
+  m_Name: TowerEvolution_Frost_Lv3
+  m_EditorClassIdentifier: 
+  displayNameOverride: Frost Tower
+  projectilePoolKey: 2
+  arrowPrefab: {fileID: 341183810093573692, guid: 104585fd8c0e6f34e89c090c966db830, type: 3}
+  towerSprite: {fileID: -689431517, guid: 0c5325504e2a1e54a81fef0dc7cdff3f, type: 3}
+  animatorController: {fileID: 22100000, guid: b562163ec0c44f4da81cf9762319c953, type: 2}

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce86ffdf811484d90bf809362af98a5, type: 3}
+  m_Name: TowerEvolution_Iron_Lv2
+  m_EditorClassIdentifier: 
+  displayNameOverride: Iron Tower
+  projectilePoolKey: 3
+  arrowPrefab: {fileID: 341183810093573692, guid: a6f41efdc35e0d047ba906f26e94f6c3, type: 3}
+  towerSprite: {fileID: 704688879, guid: 37220679d394cb74dbe2f62e95ca09ca, type: 3}
+  animatorController: {fileID: 22100000, guid: 1a7e7826cd8d40f4a1f73db6f2552986, type: 2}
+

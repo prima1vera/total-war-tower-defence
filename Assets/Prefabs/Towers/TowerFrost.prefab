@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5970684417959116472}
   - component: {fileID: 3362007874931385704}
   - component: {fileID: 4033096107844011754}
+  - component: {fileID: -3249808779253615029}
   m_Layer: 24
   m_Name: TowerFrost
   m_TagString: Tower
@@ -75,9 +76,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -9025213
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1
-  m_Sprite: {fileID: -6279380965164574515, guid: cf20f42998817d3409f33a9523f62cc0, type: 3}
+  m_Sprite: {fileID: 1425251534, guid: c55dbe4387aba2b4091ae211c57a38d1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -124,7 +125,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.26, y: 3.19}
+    oldSize: {x: 2.81, y: 3.49}
     newSize: {x: 2.87, y: 3.39}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -146,11 +147,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower
   arrowPrefab: {fileID: 341183810093573692, guid: 104585fd8c0e6f34e89c090c966db830, type: 3}
+  damage: 1
   range: 5
   fireRate: 3
   firePoint: {fileID: 6024781246242465548}
   targetRefreshInterval: 0.15
   arrowPool: {fileID: 2751605115218878623, guid: aa8ac9f47c14b4249b42c3bf840f09e6, type: 3}
+  towerSpriteRenderer: {fileID: 0}
   minAnimationCycleSeconds: 0.08
 --- !u!95 &4033096107844011754
 Animator:
@@ -173,6 +176,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-3249808779253615029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102647808292042453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d6617ef9ab0deb4fb728a4288ed9f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tower: {fileID: 3362007874931385704}
+  upgradeTree: {fileID: 11400000, guid: 3a07bd733b0f01b4ba98ced77253bd71, type: 2}
+  startLevelOverride: -1
+  initializeOnAwake: 1
 --- !u!1 &3188258520158176754
 GameObject:
   m_ObjectHideFlags: 0
