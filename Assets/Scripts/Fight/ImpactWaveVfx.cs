@@ -30,6 +30,7 @@ public class ImpactWaveVfx : MonoBehaviour
 
     private float t;
     private SpriteRenderer sr;
+    private float spawnScaleMultiplier = 1f;
 
     private void Awake()
     {
@@ -39,6 +40,7 @@ public class ImpactWaveVfx : MonoBehaviour
     private void OnEnable()
     {
         t = 0f;
+        spawnScaleMultiplier = Mathf.Max(0.01f, transform.localScale.x);
         Apply(0f);
     }
 
@@ -60,11 +62,12 @@ public class ImpactWaveVfx : MonoBehaviour
         float k = ease != null ? ease.Evaluate(k01) : k01;
 
         float r = Mathf.Lerp(startRadius, endRadius, k);
-        transform.localScale = new Vector3(r, r * groundSquash, 1f);
+        float scaled = r * spawnScaleMultiplier;
+        transform.localScale = new Vector3(scaled, scaled * groundSquash, 1f);
 
         if (sr != null)
         {
-            var c = sr.color;
+            Color c = sr.color;
             c.a = Mathf.Lerp(startAlpha, endAlpha, k);
             sr.color = c;
         }

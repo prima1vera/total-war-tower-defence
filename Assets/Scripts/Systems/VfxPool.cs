@@ -59,6 +59,11 @@ public class VfxPool : MonoBehaviour
 
     public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation)
     {
+        return Spawn(prefab, position, rotation, Vector3.one);
+    }
+
+    public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation, Vector3 scale)
+    {
         if (prefab == null)
             return null;
 
@@ -67,8 +72,10 @@ public class VfxPool : MonoBehaviour
         if (instanceObject == null)
             return null;
 
-        instanceObject.transform.SetParent(null, false);
-        instanceObject.transform.SetPositionAndRotation(position, rotation);
+        Transform instanceTransform = instanceObject.transform;
+        instanceTransform.SetParent(null, false);
+        instanceTransform.SetPositionAndRotation(position, rotation);
+        instanceTransform.localScale = scale;
         instanceObject.SetActive(true);
 
         return instanceObject;

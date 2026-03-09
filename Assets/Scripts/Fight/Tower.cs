@@ -35,6 +35,7 @@ public class Tower : MonoBehaviour
     private bool loggedInvalidPoolReference;
     private bool loggedMissingGroundRenderer;
     private int currentVisualLevel = 1;
+    private float currentLevelScaleMultiplier = 1f;
     private Vector3 cachedBaseScale;
     private bool cachedBaseScaleInitialized;
     private TowerProjectilePoolKey currentProjectilePoolKey = TowerProjectilePoolKey.Base;
@@ -248,6 +249,7 @@ public class Tower : MonoBehaviour
         CacheBaseScale();
 
         float multiplier = 1f + Mathf.Max(0f, levelScaleStep) * Mathf.Max(0, level - 1);
+        currentLevelScaleMultiplier = multiplier;
         transform.localScale = cachedBaseScale * multiplier;
     }
 
@@ -309,6 +311,7 @@ public class Tower : MonoBehaviour
             return;
 
         arrow.damage = Damage;
+        arrow.SetVisualScale(currentLevelScaleMultiplier);
 
         Vector2 randomOffset = Random.insideUnitCircle * 0.5f;
         Vector2 targetPoint = (Vector2)currentTarget.transform.position + randomOffset;
