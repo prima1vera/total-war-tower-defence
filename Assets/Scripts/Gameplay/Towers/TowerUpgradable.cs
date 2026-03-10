@@ -159,6 +159,7 @@ public class TowerUpgradable : MonoBehaviour
 
             TowerCombatStats stats = TowerCombatStats.Clamp(level.Stats);
             tower.SetCombatStats(stats.Damage, stats.Range, stats.FireRate);
+            tower.SetVisualLevel(level.Level);
         }
 
         cachedTowerDisplayName = ResolveDisplayName(level);

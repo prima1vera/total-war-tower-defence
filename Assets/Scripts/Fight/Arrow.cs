@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
@@ -16,8 +16,16 @@ public class Arrow : MonoBehaviour
     [Tooltip("How many different enemies this arrow can pierce before exploding.")]
     public int maxPierce = 3;
 
-    [Tooltip("AoE radius applied on impact (damage + wave visuals scale).")]
+    [Tooltip("AoE radius applied on impact.")]
     public float impactRadius = 1.5f;
+
+    [SerializeField, Range(0f, 2f)]
+    [Tooltip("How much tower level scale affects AoE radius. 1 = same as arrow scale.")]
+    private float impactRadiusScaleWeight = 1f;
+
+    [SerializeField, Range(0f, 2f)]
+    [Tooltip("How much tower level scale affects impact VFX/decal size. 1 = same as arrow scale.")]
+    private float impactVfxScaleWeight = 1f;
 
     [Tooltip("Which layers are considered enemies (for OverlapCircle checks).")]
     public LayerMask unitLayer;
@@ -82,6 +90,10 @@ public class Arrow : MonoBehaviour
     private ArrowPool ownerPool;
     private Collider2D[] hitBuffer;
     private Transform cachedTransform;
+    private Vector3 cachedBaseScale;
+
+    private float shotScaleMultiplier = 1f;
+    private float scaledImpactRadius = 1.5f;
 
     // Cached per-shot values
     private float cachedDistance;
@@ -91,11 +103,25 @@ public class Arrow : MonoBehaviour
     private void Awake()
     {
         cachedTransform = transform;
+        cachedBaseScale = cachedTransform.localScale;
+        scaledImpactRadius = impactRadius;
+
         int bufferSize = Mathf.Max(8, maxHitColliders);
         hitBuffer = new Collider2D[bufferSize];
     }
 
     public void SetPool(ArrowPool pool) => ownerPool = pool;
+
+    public void SetVisualScale(float scaleMultiplier)
+    {
+        float safeScale = Mathf.Max(0.1f, scaleMultiplier);
+        shotScaleMultiplier = safeScale;
+
+        cachedTransform.localScale = cachedBaseScale * safeScale;
+
+        float radiusScale = Mathf.Lerp(1f, safeScale, Mathf.Max(0f, impactRadiusScaleWeight));
+        scaledImpactRadius = Mathf.Max(0f, impactRadius) * radiusScale;
+    }
 
     public void Launch(Vector2 target)
     {
@@ -107,7 +133,7 @@ public class Arrow : MonoBehaviour
         pierceCount = 0;
         hitUnits.Clear();
 
-        Vector2 dir = (targetPos - startPos);
+        Vector2 dir = targetPos - startPos;
         if (dir.sqrMagnitude > 0.0001f)
         {
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
@@ -267,18 +293,16 @@ public class Arrow : MonoBehaviour
 
         hasImpacted = true;
 
+        Vector3 vfxScale = Vector3.one * GetImpactVfxScaleMultiplier();
+
         if (dustPrefab != null)
-            VfxPool.Instance.Spawn(dustPrefab, cachedTransform.position, Quaternion.identity);
+            VfxPool.Instance.Spawn(dustPrefab, cachedTransform.position, Quaternion.identity, vfxScale);
 
         if (impactWavePrefab != null)
-        {
-            VfxPool.Instance.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity);
-        }
+            VfxPool.Instance.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity, vfxScale);
 
         if (impactDecalPrefab != null)
-        {
-            VfxPool.Instance.Spawn(impactDecalPrefab, cachedTransform.position, Quaternion.identity);
-        }
+            VfxPool.Instance.Spawn(impactDecalPrefab, cachedTransform.position, Quaternion.identity, vfxScale);
 
         ExplodeAreaDamage();
 
@@ -298,7 +322,7 @@ public class Arrow : MonoBehaviour
 
         int hitCount = Physics2D.OverlapCircleNonAlloc(
             cachedTransform.position,
-            impactRadius,
+            scaledImpactRadius,
             hitBuffer,
             unitLayer
         );
@@ -315,5 +339,11 @@ public class Arrow : MonoBehaviour
 
             ApplyDamage(health);
         }
+    }
+
+    private float GetImpactVfxScaleMultiplier()
+    {
+        float weight = Mathf.Max(0f, impactVfxScaleWeight);
+        return Mathf.Lerp(1f, shotScaleMultiplier, weight);
     }
 }

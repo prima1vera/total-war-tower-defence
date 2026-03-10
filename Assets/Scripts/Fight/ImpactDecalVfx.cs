@@ -20,6 +20,7 @@ public class ImpactDecalVfx : MonoBehaviour
     private float timer;
     private SpriteRenderer sr;
     private Color initialColor;
+    private float spawnScaleMultiplier = 1f;
 
     private void Awake()
     {
@@ -30,6 +31,7 @@ public class ImpactDecalVfx : MonoBehaviour
     private void OnEnable()
     {
         timer = 0f;
+        spawnScaleMultiplier = Mathf.Max(0.01f, transform.localScale.x);
         Apply(0f);
     }
 
@@ -46,7 +48,7 @@ public class ImpactDecalVfx : MonoBehaviour
 
     private void Apply(float t)
     {
-        float currentScale = Mathf.Lerp(startScale, endScale, t);
+        float currentScale = Mathf.Lerp(startScale, endScale, t) * spawnScaleMultiplier;
         transform.localScale = new Vector3(currentScale, currentScale * groundSquash, 1f);
 
         Color c = initialColor;

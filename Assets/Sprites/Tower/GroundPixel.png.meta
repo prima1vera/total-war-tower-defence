@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c55dbe4387aba2b4091ae211c57a38d1
+guid: 2b8fac167d4a41c4e9446d34002461f0
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,64 +110,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TowerSpriteFrostLvl1_0
+      name: GroundPixel_0
       rect:
         serializedVersion: 2
-        x: 30
-        y: 45
-        width: 281
-        height: 349
+        x: 19
+        y: 0
+        width: 365
+        height: 208
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4072351f9fe853948b5cd512352e9d92
-      internalID: 1425251534
+      spriteID: efa04a2fd05a307488fb398958d60729
+      internalID: -751840578
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: TowerSpriteFrostLvl1_1
+      name: GroundPixel_1
       rect:
         serializedVersion: 2
-        x: 368
-        y: 54
-        width: 281
-        height: 349
+        x: 414
+        y: 0
+        width: 346
+        height: 208
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ccad5f1011e5efe4db201d803be8bc1f
-      internalID: -2043295881
+      spriteID: b5b956c69c30dde4ba530927f8e03a4b
+      internalID: -1618715906
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: TowerSpriteFrostLvl1_2
+      name: GroundPixel_2
       rect:
         serializedVersion: 2
-        x: 694
-        y: 58
-        width: 281
-        height: 349
+        x: 770
+        y: 0
+        width: 372
+        height: 208
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e120053e51c70644bbc2cbf8f84e5b89
-      internalID: 1656242259
+      spriteID: 5eba7b05c6151574fafd223caf3bf009
+      internalID: -1932692492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GroundPixel_3
+      rect:
+        serializedVersion: 2
+        x: 1148
+        y: 0
+        width: 379
+        height: 208
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92b55539ea423184f9f173c4b4b4ef75
+      internalID: -708932053
       vertices: []
       indices: 
       edges: []
@@ -183,9 +204,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      TowerSpriteFrostLvl1_0: 1425251534
-      TowerSpriteFrostLvl1_1: -2043295881
-      TowerSpriteFrostLvl1_2: 1656242259
+      GroundPixel_0: -751840578
+      GroundPixel_1: -1618715906
+      GroundPixel_2: -1932692492
+      GroundPixel_3: -708932053
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

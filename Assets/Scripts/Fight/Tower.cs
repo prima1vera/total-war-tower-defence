@@ -12,6 +12,17 @@ public class Tower : MonoBehaviour
     [SerializeField] private ArrowPool arrowPool;
     [SerializeField] private SpriteRenderer towerSpriteRenderer;
 
+    [Header("Ground Visual")]
+    [SerializeField] private SpriteRenderer towerGroundRenderer;
+    [SerializeField] private Sprite baseGroundSprite;
+    [SerializeField] private Sprite fireGroundSprite;
+    [SerializeField] private Sprite frostGroundSprite;
+    [SerializeField] private Sprite ironGroundSprite;
+    [SerializeField, Min(1f)] private float groundScaleMultiplier = 1.33f;
+
+    [Header("Tower Scale")]
+    [SerializeField, Min(0f)] private float levelScaleStep = 0.2f;
+
     [Header("Animation Sync")]
     [SerializeField] private float minAnimationCycleSeconds = 0.08f;
 
@@ -22,15 +33,30 @@ public class Tower : MonoBehaviour
     private Animator animator;
     private float fireClipLengthSeconds = 0.3f;
     private bool loggedInvalidPoolReference;
+    private bool loggedMissingGroundRenderer;
+    private int currentVisualLevel = 1;
+    private float currentLevelScaleMultiplier = 1f;
+    private Vector3 cachedBaseScale;
+    private bool cachedBaseScaleInitialized;
+    private TowerProjectilePoolKey currentProjectilePoolKey = TowerProjectilePoolKey.Base;
 
     public int Damage => Mathf.Max(1, damage);
     public float Range => Mathf.Max(0.1f, range);
     public float FireRate => Mathf.Max(0.05f, fireRate);
 
+    private void Awake()
+    {
+        CacheBaseScale();
+    }
+
     private void Start()
     {
         EnsureAnimator();
         EnsureSpriteRenderer();
+        EnsureGroundRenderer();
+        ApplyLevelScale(currentVisualLevel);
+        ApplyGroundScale();
+        ApplyGroundSprite(currentProjectilePoolKey);
         CacheFireClipLength();
 
         if (firePoint == null)
@@ -79,6 +105,13 @@ public class Tower : MonoBehaviour
         fireCountdown = Mathf.Min(fireCountdown, cooldown);
     }
 
+    public void SetVisualLevel(int level)
+    {
+        currentVisualLevel = Mathf.Max(1, level);
+        ApplyLevelScale(currentVisualLevel);
+        ApplyGroundScale();
+    }
+
     public void ApplyEvolutionProfile(TowerEvolutionProfile profile)
     {
         if (profile == null)
@@ -89,6 +122,9 @@ public class Tower : MonoBehaviour
 
         if (TowerProjectilePoolRegistry.TryGetPool(profile.ProjectilePoolKey, out ArrowPool resolvedPool) && resolvedPool != null)
             arrowPool = resolvedPool;
+
+        currentProjectilePoolKey = profile.ProjectilePoolKey;
+        ApplyGroundSprite(currentProjectilePoolKey);
 
         loggedInvalidPoolReference = false;
 
@@ -140,6 +176,81 @@ public class Tower : MonoBehaviour
     {
         if (towerSpriteRenderer == null)
             towerSpriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    private void EnsureGroundRenderer()
+    {
+        if (towerGroundRenderer != null)
+            return;
+
+        Transform ground = transform.Find("TowerGround");
+        if (ground != null)
+            towerGroundRenderer = ground.GetComponent<SpriteRenderer>();
+
+        if (towerGroundRenderer == null && !loggedMissingGroundRenderer)
+        {
+            Debug.LogWarning($"{name}: TowerGround renderer is not assigned. Ground visual won't update.", this);
+            loggedMissingGroundRenderer = true;
+        }
+    }
+
+    private void ApplyGroundSprite(TowerProjectilePoolKey key)
+    {
+        EnsureGroundRenderer();
+
+        if (towerGroundRenderer == null)
+            return;
+
+        Sprite targetGround = ResolveGroundSprite(key);
+        if (targetGround == null)
+            targetGround = baseGroundSprite;
+
+        if (targetGround != null)
+            towerGroundRenderer.sprite = targetGround;
+    }
+
+    private Sprite ResolveGroundSprite(TowerProjectilePoolKey key)
+    {
+        switch (key)
+        {
+            case TowerProjectilePoolKey.Fire:
+                return fireGroundSprite;
+            case TowerProjectilePoolKey.Frost:
+                return frostGroundSprite;
+            case TowerProjectilePoolKey.Iron:
+                return ironGroundSprite;
+            default:
+                return baseGroundSprite;
+        }
+    }
+
+    private void ApplyGroundScale()
+    {
+        EnsureGroundRenderer();
+
+        if (towerGroundRenderer == null)
+            return;
+
+        float scale = Mathf.Max(1f, groundScaleMultiplier);
+        towerGroundRenderer.transform.localScale = new Vector3(scale, scale, 1f);
+    }
+
+    private void CacheBaseScale()
+    {
+        if (cachedBaseScaleInitialized)
+            return;
+
+        cachedBaseScale = transform.localScale;
+        cachedBaseScaleInitialized = true;
+    }
+
+    private void ApplyLevelScale(int level)
+    {
+        CacheBaseScale();
+
+        float multiplier = 1f + Mathf.Max(0f, levelScaleStep) * Mathf.Max(0, level - 1);
+        currentLevelScaleMultiplier = multiplier;
+        transform.localScale = cachedBaseScale * multiplier;
     }
 
     private void CacheFireClipLength()
@@ -200,6 +311,7 @@ public class Tower : MonoBehaviour
             return;
 
         arrow.damage = Damage;
+        arrow.SetVisualScale(currentLevelScaleMultiplier);
 
         Vector2 randomOffset = Random.insideUnitCircle * 0.5f;
         Vector2 targetPoint = (Vector2)currentTarget.transform.position + randomOffset;

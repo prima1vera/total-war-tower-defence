@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 4fbeb3908fca4eb4fbb6830103a40121
+guid: 70deed4c3529e064eb1280663ea524af
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,64 +110,64 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TowerSpriteFireLvl1_0
+      name: TowerSpriteFireLvl2Pixel_0
       rect:
         serializedVersion: 2
-        x: 15
-        y: 27
-        width: 279
-        height: 352
+        x: 33
+        y: 22
+        width: 300
+        height: 381
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 67dceb1bd466ee0498359ab130075204
-      internalID: -243633275
+      spriteID: b6b87ffd476d36145937610462710efc
+      internalID: 1379723620
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: TowerSpriteFireLvl1_1
+      name: TowerSpriteFireLvl2Pixel_1
       rect:
         serializedVersion: 2
-        x: 362
-        y: 38
-        width: 279
-        height: 352
+        x: 383
+        y: 30
+        width: 300
+        height: 381
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4605ca080300f3542903e1df3a994b8e
-      internalID: 948130605
+      spriteID: 631f32d8ceae9044d9fe5a7d890f7d62
+      internalID: 844468563
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: TowerSpriteFireLvl1_2
+      name: TowerSpriteFireLvl2Pixel_2
       rect:
         serializedVersion: 2
-        x: 691
-        y: 40
-        width: 279
-        height: 352
+        x: 710
+        y: 29
+        width: 300
+        height: 381
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6d1825ca06eb9e947875bb65c06bb895
-      internalID: -1376981983
+      spriteID: 445b2f0a31866f74f9ecd488fb293a7a
+      internalID: -815423381
       vertices: []
       indices: 
       edges: []
@@ -183,9 +183,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      TowerSpriteFireLvl1_0: -243633275
-      TowerSpriteFireLvl1_1: 948130605
-      TowerSpriteFireLvl1_2: -1376981983
+      TowerSpriteFireLvl2Pixel_0: 1379723620
+      TowerSpriteFireLvl2Pixel_1: 844468563
+      TowerSpriteFireLvl2Pixel_2: -815423381
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
