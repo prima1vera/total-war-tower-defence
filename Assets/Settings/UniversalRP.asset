@@ -80,3 +80,5 @@ MonoBehaviour:
     bayerMatrixTex: {fileID: 2800000, guid: f9ee4ed84c1d10c49aabb9b210b0fc44, type: 3}
   m_ShaderVariantLogLevel: 0
   m_ShadowCascades: 0
+
+
