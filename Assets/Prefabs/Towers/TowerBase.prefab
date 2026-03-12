@@ -156,10 +156,10 @@ MonoBehaviour:
   arrowPool: {fileID: 0}
   towerSpriteRenderer: {fileID: 0}
   towerGroundRenderer: {fileID: 4579000000000000003}
-  baseGroundSprite: {fileID: -708932053, guid: 2b8fac167d4a41c4e9446d34002461f0, type: 3}
-  fireGroundSprite: {fileID: -751840578, guid: 2b8fac167d4a41c4e9446d34002461f0, type: 3}
-  frostGroundSprite: {fileID: -1618715906, guid: 2b8fac167d4a41c4e9446d34002461f0, type: 3}
-  ironGroundSprite: {fileID: -1932692492, guid: 2b8fac167d4a41c4e9446d34002461f0, type: 3}
+  baseGroundSprite: {fileID: -673470162, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
+  fireGroundSprite: {fileID: 1316506609, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
+  frostGroundSprite: {fileID: 390634003, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
+  ironGroundSprite: {fileID: 1410214893, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   groundScaleMultiplier: 1.33
   levelScaleStep: 0.2
   minAnimationCycleSeconds: 0.08
@@ -304,7 +304,7 @@ SpriteRenderer:
   m_SortingLayerID: -9025213
   m_SortingLayer: 5
   m_SortingOrder: 0
-  m_Sprite: {fileID: -708932053, guid: 2b8fac167d4a41c4e9446d34002461f0, type: 3}
+  m_Sprite: {fileID: -673470162, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 89da5f611cd71064d9ad364bddcd7d61
+guid: 1dc0d599c85d393459adc5012f205f2f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_0
+      name: ogre_dead_2S4xPixel_0
       rect:
         serializedVersion: 2
         x: 0
@@ -124,14 +124,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 340d602752ac1bc4784d90a14d2ba8ff
-      internalID: 1959878637
+      spriteID: 7354fe2b367de0f4b90b528a872ea39e
+      internalID: -1036664689
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_1
+      name: ogre_dead_2S4xPixel_1
       rect:
         serializedVersion: 2
         x: 96
@@ -145,14 +145,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c9db858cb774674a980a723afd8fff9
-      internalID: 452980348
+      spriteID: 175baecb25d459b4380161773be0fc04
+      internalID: 1175492499
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_2
+      name: ogre_dead_2S4xPixel_2
       rect:
         serializedVersion: 2
         x: 192
@@ -166,14 +166,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0e96584d01b20e84391ee8b9e337c19c
-      internalID: -27898759
+      spriteID: b1529807a412f8248a693cc8ff1d1c50
+      internalID: -185970918
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_3
+      name: ogre_dead_2S4xPixel_3
       rect:
         serializedVersion: 2
         x: 288
@@ -187,14 +187,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c9c2ffc3efa58194db3672df5af61091
-      internalID: -358324146
+      spriteID: 7665703ec198fb44f87fbc35493dfb83
+      internalID: -599211152
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_4
+      name: ogre_dead_2S4xPixel_4
       rect:
         serializedVersion: 2
         x: 384
@@ -208,14 +208,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0999a24f7933a514dbac524b3bf98618
-      internalID: 1928287325
+      spriteID: 4939ccf327494fd41adcd7e3939f1fb1
+      internalID: 79747306
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_5
+      name: ogre_dead_2S4xPixel_5
       rect:
         serializedVersion: 2
         x: 480
@@ -229,14 +229,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4745be6dbb44cb04e81f6fdbf83392de
-      internalID: 501270070
+      spriteID: 78306c0c9595c7e459ee55a85d396f84
+      internalID: -1040797674
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_6
+      name: ogre_dead_2S4xPixel_6
       rect:
         serializedVersion: 2
         x: 576
@@ -250,14 +250,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 559cc47ab900b5d47bc8b31e35f6c5be
-      internalID: 1367125026
+      spriteID: 863b74085dbfb87428c3f3bba7611623
+      internalID: -305879739
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_7
+      name: ogre_dead_2S4xPixel_7
       rect:
         serializedVersion: 2
         x: 672
@@ -271,14 +271,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1f5fb71fcd4eacd468169037a86a615e
-      internalID: 995799013
+      spriteID: 8b1a4f80487fe334fa3e7b5e9028d08a
+      internalID: 1257338414
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_8
+      name: ogre_dead_2S4xPixel_8
       rect:
         serializedVersion: 2
         x: 768
@@ -292,14 +292,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fe26e1a79feb7714c83982fec29a92b6
-      internalID: 541472170
+      spriteID: f147d56b97b45a145a0bc838ddeaeb6e
+      internalID: -360390330
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_9
+      name: ogre_dead_2S4xPixel_9
       rect:
         serializedVersion: 2
         x: 864
@@ -313,14 +313,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7cd32b33263c13c41b0bb6b4046d02a1
-      internalID: -800646204
+      spriteID: 2681436d0fb4eb54ab83f0e7e9a8cbe5
+      internalID: 960569158
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_10
+      name: ogre_dead_2S4xPixel_10
       rect:
         serializedVersion: 2
         x: 960
@@ -334,14 +334,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 48ff80dbff5f75e439b6160d1cfdb4a2
-      internalID: 529453549
+      spriteID: 5a4550ef696fb6249935b216321764f8
+      internalID: -293372727
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_11
+      name: ogre_dead_2S4xPixel_11
       rect:
         serializedVersion: 2
         x: 1056
@@ -355,14 +355,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fe41f1ae957bfa84ab9998a58a3cebb6
-      internalID: -537886016
+      spriteID: 1270a420136578944a4704e85c814aed
+      internalID: -1670071827
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritsheet_ogre_walk_left_12
+      name: ogre_dead_2S4xPixel_12
       rect:
         serializedVersion: 2
         x: 1152
@@ -376,8 +376,71 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 683dabadeb9465b4d927261596d49e6c
-      internalID: 1293865632
+      spriteID: c5c0ee7558591554ba29dd307109526c
+      internalID: -571387855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ogre_dead_2S4xPixel_13
+      rect:
+        serializedVersion: 2
+        x: 1248
+        y: 0
+        width: 96
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abeeaed03cc1e83468a7cb86404fd55d
+      internalID: 891260731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ogre_dead_2S4xPixel_14
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 0
+        width: 96
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23f1543212196fc44b8a202173848885
+      internalID: -1934963096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ogre_dead_2S4xPixel_15
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 0
+        width: 96
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4de42e60b7c68c6498578df27cc8093c
+      internalID: -1861150795
       vertices: []
       indices: 
       edges: []
@@ -393,19 +456,22 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      spritsheet_ogre_walk_left_0: 1959878637
-      spritsheet_ogre_walk_left_1: 452980348
-      spritsheet_ogre_walk_left_10: 529453549
-      spritsheet_ogre_walk_left_11: -537886016
-      spritsheet_ogre_walk_left_12: 1293865632
-      spritsheet_ogre_walk_left_2: -27898759
-      spritsheet_ogre_walk_left_3: -358324146
-      spritsheet_ogre_walk_left_4: 1928287325
-      spritsheet_ogre_walk_left_5: 501270070
-      spritsheet_ogre_walk_left_6: 1367125026
-      spritsheet_ogre_walk_left_7: 995799013
-      spritsheet_ogre_walk_left_8: 541472170
-      spritsheet_ogre_walk_left_9: -800646204
+      ogre_dead_2S4xPixel_0: -1036664689
+      ogre_dead_2S4xPixel_1: 1175492499
+      ogre_dead_2S4xPixel_10: -293372727
+      ogre_dead_2S4xPixel_11: -1670071827
+      ogre_dead_2S4xPixel_12: -571387855
+      ogre_dead_2S4xPixel_13: 891260731
+      ogre_dead_2S4xPixel_14: -1934963096
+      ogre_dead_2S4xPixel_15: -1861150795
+      ogre_dead_2S4xPixel_2: -185970918
+      ogre_dead_2S4xPixel_3: -599211152
+      ogre_dead_2S4xPixel_4: 79747306
+      ogre_dead_2S4xPixel_5: -1040797674
+      ogre_dead_2S4xPixel_6: -305879739
+      ogre_dead_2S4xPixel_7: 1257338414
+      ogre_dead_2S4xPixel_8: -360390330
+      ogre_dead_2S4xPixel_9: 960569158
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

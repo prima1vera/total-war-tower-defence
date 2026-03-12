@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 73780f647b97b974db6afd033cad1fe9
+guid: f7301ae7ea2412b4caef04b341ac6689
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,64 +110,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BaseTowerPixelated_0
+      name: Ground4xPixel_0
       rect:
         serializedVersion: 2
-        x: 19
-        y: 35
-        width: 279
-        height: 344
+        x: 23
+        y: 407
+        width: 374
+        height: 224
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f4e698dcd9e669143a3c5f2b8fabec0b
-      internalID: 908435097
+      spriteID: d911bd998b87af240a04cd6087d820a1
+      internalID: 1316506609
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseTowerPixelated_1
+      name: Ground4xPixel_1
       rect:
         serializedVersion: 2
-        x: 363
-        y: 33
-        width: 279
-        height: 344
+        x: 384
+        y: 406
+        width: 384
+        height: 226
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1e752e76b699c1b439a96cbcfae6669d
-      internalID: -607830634
+      spriteID: 84c22b35f7c89af43a714b4bb339ff40
+      internalID: 390634003
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseTowerPixelated_2
+      name: Ground4xPixel_2
       rect:
         serializedVersion: 2
-        x: 691
-        y: 35
-        width: 279
-        height: 344
+        x: 771
+        y: 405
+        width: 381
+        height: 227
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9448ba695d8a0f7419e39642b1327d83
-      internalID: 1030702246
+      spriteID: 0871c447f4b630c45aacd8e538d2ac88
+      internalID: 1410214893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ground4xPixel_3
+      rect:
+        serializedVersion: 2
+        x: 1141
+        y: 405
+        width: 383
+        height: 227
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ee1a77ca04999a47bb4bbc4abf8ffe3
+      internalID: -673470162
       vertices: []
       indices: 
       edges: []
@@ -183,9 +204,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      BaseTowerPixelated_0: 908435097
-      BaseTowerPixelated_1: -607830634
-      BaseTowerPixelated_2: 1030702246
+      Ground4xPixel_0: 1316506609
+      Ground4xPixel_1: 390634003
+      Ground4xPixel_2: 1410214893
+      Ground4xPixel_3: -673470162
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
