@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class EnemyDeathVisualManager : MonoBehaviour
 {
-    private const string RuntimeObjectName = "[EnemyDeathVisualManager]";
-
     private static EnemyDeathVisualManager instance;
+    private static bool missingInstanceLogged;
 
     [SerializeField] private int maxTrackedDeaths = 80;
     [SerializeField, Min(0.05f)] private float overflowToRemainsTransitionDuration = 0.6f;
@@ -33,9 +32,15 @@ public class EnemyDeathVisualManager : MonoBehaviour
         }
 
         instance = this;
-        DontDestroyOnLoad(gameObject);
+        missingInstanceLogged = false;
         RebuildRemainsVariantLookup();
         PrewarmPools();
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null;
     }
 
     private void OnValidate()
@@ -47,20 +52,21 @@ public class EnemyDeathVisualManager : MonoBehaviour
     {
         get
         {
-            if (instance != null)
-                return instance;
+            if (instance == null && !missingInstanceLogged)
+            {
+                missingInstanceLogged = true;
+                Debug.LogError("EnemyDeathVisualManager instance is missing. Add a scene-wired EnemyDeathManager object to the scene.");
+            }
 
-            instance = FindObjectOfType<EnemyDeathVisualManager>();
-            if (instance != null)
-                return instance;
-
-            GameObject runtimeObject = new GameObject(RuntimeObjectName);
-            instance = runtimeObject.AddComponent<EnemyDeathVisualManager>();
-            DontDestroyOnLoad(runtimeObject);
             return instance;
         }
     }
 
+    public static bool TryGetInstance(out EnemyDeathVisualManager manager)
+    {
+        manager = instance;
+        return manager != null;
+    }
     public void SpawnDeathVisuals(Sprite corpseSprite, bool corpseFlipX, Vector3 corpsePosition, Vector3 corpseScale, int corpseSortingOrder, GameObject bloodPoolPrefab, Vector3 bloodPosition)
     {
         if (corpseSprite == null && bloodPoolPrefab == null)

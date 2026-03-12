@@ -54,7 +54,12 @@ public class ImpactWaveVfx : MonoBehaviour
         Apply(k01);
 
         if (k01 >= 1f)
-            VfxPool.Instance.Release(gameObject);
+        {
+            if (VfxPool.TryGetInstance(out VfxPool vfxPool))
+                vfxPool.Release(gameObject);
+            else
+                Destroy(gameObject);
+        }
     }
 
     private void Apply(float k01)

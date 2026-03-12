@@ -205,8 +205,8 @@ internal sealed class UnitDeathLifecycle
             animator.SetBool("isDead", true);
         }
 
-        if (owner.bloodSplashPrefab != null)
-            VfxPool.Instance.Spawn(owner.bloodSplashPrefab, owner.transform.position, Quaternion.identity);
+        if (owner.bloodSplashPrefab != null && VfxPool.TryGetInstance(out VfxPool vfxPool))
+            vfxPool.Spawn(owner.bloodSplashPrefab, owner.transform.position, Quaternion.identity);
 
         if (topDownSorter != null)
             topDownSorter.enabled = false;
@@ -238,15 +238,18 @@ internal sealed class UnitDeathLifecycle
         if (delay > 0f)
             yield return WaitForSecondsCache.Get(delay);
 
-        EnemyDeathVisualManager.Instance.SpawnDeathVisuals(
-            spriteRenderer != null ? spriteRenderer.sprite : null,
-            spriteRenderer != null && spriteRenderer.flipX,
-            owner.transform.position,
-            owner.transform.localScale,
-            deadOrder,
-            owner.bloodPoolPrefab,
-            bloodPosition
-        );
+        if (EnemyDeathVisualManager.TryGetInstance(out EnemyDeathVisualManager deathVisualManager))
+        {
+            deathVisualManager.SpawnDeathVisuals(
+                spriteRenderer != null ? spriteRenderer.sprite : null,
+                spriteRenderer != null && spriteRenderer.flipX,
+                owner.transform.position,
+                owner.transform.localScale,
+                deadOrder,
+                owner.bloodPoolPrefab,
+                bloodPosition
+            );
+        }
 
         if (enemyPoolMember != null && enemyPoolMember.TryDespawnToPool())
         {

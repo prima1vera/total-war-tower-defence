@@ -295,14 +295,17 @@ public class Arrow : MonoBehaviour
 
         Vector3 vfxScale = Vector3.one * GetImpactVfxScaleMultiplier();
 
-        if (dustPrefab != null)
-            VfxPool.Instance.Spawn(dustPrefab, cachedTransform.position, Quaternion.identity, vfxScale);
+        if (VfxPool.TryGetInstance(out VfxPool vfxPool))
+        {
+            if (dustPrefab != null)
+                vfxPool.Spawn(dustPrefab, cachedTransform.position, Quaternion.identity, vfxScale);
 
-        if (impactWavePrefab != null)
-            VfxPool.Instance.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity, vfxScale);
+            if (impactWavePrefab != null)
+                vfxPool.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity, vfxScale);
 
-        if (impactDecalPrefab != null)
-            VfxPool.Instance.Spawn(impactDecalPrefab, cachedTransform.position, Quaternion.identity, vfxScale);
+            if (impactDecalPrefab != null)
+                vfxPool.Spawn(impactDecalPrefab, cachedTransform.position, Quaternion.identity, vfxScale);
+        }
 
         ExplodeAreaDamage();
 
