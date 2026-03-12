@@ -154,7 +154,7 @@ public class Tower : MonoBehaviour
             return false;
 
         float rangeSqr = Range * Range;
-        if (currentTarget.CurrentState == UnitState.Dead)
+        if (currentTarget.IsDead)
             return false;
 
         float distSqr = (currentTarget.transform.position - transform.position).sqrMagnitude;
@@ -337,3 +337,4 @@ public class Tower : MonoBehaviour
         return null;
     }
 }
+

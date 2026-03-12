@@ -159,7 +159,7 @@ public class EnemyHealthBarSystem : MonoBehaviour
         if (!tracked.Unit.gameObject.activeInHierarchy)
             return true;
 
-        if (tracked.Unit.CurrentState == UnitState.Dead)
+        if (tracked.Unit.IsDead)
             return true;
 
         return now >= tracked.HideAtTime;
@@ -371,3 +371,4 @@ public class EnemyHealthBarSystem : MonoBehaviour
         public float NormalizedHealth;
     }
 }
+

@@ -1,14 +1,17 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class UnitHealth : MonoBehaviour
 {
+    [Header("Health")]
     public int maxHealth = 1;
     private int currentHealth;
 
     public UnitState CurrentState { get; private set; } = UnitState.Moving;
+    public bool IsDead => CurrentState == UnitState.Dead;
     public int CurrentHealth => currentHealth;
     public int MaxHealth => Mathf.Max(1, maxHealth);
     public float NormalizedHealth => Mathf.Clamp01((float)currentHealth / MaxHealth);
@@ -20,36 +23,25 @@ public class UnitHealth : MonoBehaviour
     public static event Action<DamageFeedbackEvent> GlobalDamageTaken;
     public static event Action<UnitHealth> GlobalUnitDied;
 
-    private Animator animator;
     private Collider2D col;
     private UnitMovement movement;
-    private SpriteRenderer spriteRenderer;
-    private TopDownSorter topDownSorter;
-    private EnemyPoolMember enemyPoolMember;
-    private string defaultSortingLayerName;
-    private int defaultSortingOrder;
+    private UnitDeathLifecycle deathLifecycle;
 
     public StatusEffectHandler StatusEffectHandler { get; private set; }
 
+    [Header("Death Visuals")]
     public GameObject bloodPoolPrefab;
     public GameObject bloodSplashPrefab;
     [SerializeField] private float despawnToPoolDelay = 2f;
 
     void Awake()
     {
-        animator = GetComponent<Animator>();
         col = GetComponent<Collider2D>();
         movement = GetComponent<UnitMovement>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        topDownSorter = GetComponent<TopDownSorter>();
-        enemyPoolMember = GetComponent<EnemyPoolMember>();
         StatusEffectHandler = GetComponent<StatusEffectHandler>();
 
-        if (spriteRenderer != null)
-        {
-            defaultSortingLayerName = spriteRenderer.sortingLayerName;
-            defaultSortingOrder = spriteRenderer.sortingOrder;
-        }
+        deathLifecycle = new UnitDeathLifecycle(this);
+        deathLifecycle.Initialize();
     }
 
     void OnEnable()
@@ -62,6 +54,7 @@ public class UnitHealth : MonoBehaviour
     {
         EnemyRegistry.Unregister(this);
         UnitHealthLookupCache.Remove(col);
+        deathLifecycle.CancelPendingDespawn();
     }
 
     private void ResetRuntimeState()
@@ -72,25 +65,12 @@ public class UnitHealth : MonoBehaviour
         if (col != null)
             col.enabled = true;
 
-        if (topDownSorter != null)
-            topDownSorter.enabled = true;
-
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.sortingLayerName = defaultSortingLayerName;
-            spriteRenderer.sortingOrder = defaultSortingOrder;
-        }
-
-        if (animator != null)
-            animator.SetBool("isDead", false);
+        deathLifecycle.ResetForSpawn();
     }
 
     public void TakeDamage(int dmg, DamageType type, Vector2 hitDirection, float knockbackForce)
     {
-        if (CurrentState == UnitState.Dead)
-            return;
-
-        if (dmg <= 0)
+        if (!CanApplyDamage(dmg))
             return;
 
         currentHealth -= dmg;
@@ -99,63 +79,48 @@ public class UnitHealth : MonoBehaviour
             movement.ApplyKnockback(hitDirection, knockbackForce);
 
         RaiseDamageTaken(dmg, type, DamageFeedbackKind.DirectHit);
-
-        if (currentHealth <= 0)
-            Die();
+        TryDie();
     }
 
     public void TakePureDamage(int dmg, DamageType type = DamageType.Normal, DamageFeedbackKind feedbackKind = DamageFeedbackKind.DotTick)
     {
-        if (CurrentState == UnitState.Dead)
-            return;
-
-        if (dmg <= 0)
+        if (!CanApplyDamage(dmg))
             return;
 
         currentHealth -= dmg;
         RaiseDamageTaken(dmg, type, feedbackKind);
 
-        if (currentHealth <= 0)
-            Die();
+        TryDie();
     }
 
     public void SetState(UnitState newState)
     {
-        if (CurrentState == UnitState.Dead)
+        if (IsDead)
             return;
 
         CurrentState = newState;
     }
 
-    void Die()
+    private bool CanApplyDamage(int damageAmount)
     {
+        if (IsDead)
+            return false;
+
+        return damageAmount > 0;
+    }
+
+    private void TryDie()
+    {
+        if (IsDead || currentHealth > 0)
+            return;
+
         EnemyRegistry.Unregister(this);
         CurrentState = UnitState.Dead;
 
         Died?.Invoke(this);
         GlobalUnitDied?.Invoke(this);
 
-        if (animator != null)
-        {
-            int randomDeath = Random.Range(0, 4);
-            animator.SetInteger("deathIndex", randomDeath);
-            animator.SetBool("isDead", true);
-        }
-
-        if (bloodSplashPrefab != null)
-            VfxPool.Instance.Spawn(bloodSplashPrefab, transform.position, Quaternion.identity);
-
-        if (topDownSorter != null)
-            topDownSorter.enabled = false;
-
-        Vector3 colBounds = col != null ? col.bounds.min : transform.position;
-
-        if (col != null)
-            col.enabled = false;
-
-        int deadOrder = Mathf.RoundToInt(-colBounds.y * 100f) + Random.Range(-1, 2);
-
-        StartCoroutine(DespawnToPoolAfterDelay(deadOrder, colBounds));
+        deathLifecycle.HandleDeath();
     }
 
     private void RaiseDamageTaken(int amount, DamageType type, DamageFeedbackKind feedbackKind)
@@ -176,27 +141,142 @@ public class UnitHealth : MonoBehaviour
         GlobalDamageTaken?.Invoke(damageEvent);
     }
 
-    private IEnumerator DespawnToPoolAfterDelay(int deadOrder, Vector3 colBloodPos)
-    {
-        yield return new WaitForSeconds(Mathf.Max(0f, despawnToPoolDelay));
+    internal float GetDespawnDelay() => Mathf.Max(0f, despawnToPoolDelay);
+}
 
-        colBloodPos.z = 0f;
+internal sealed class UnitDeathLifecycle
+{
+    private readonly UnitHealth owner;
+
+    private Animator animator;
+    private Collider2D collider;
+    private SpriteRenderer spriteRenderer;
+    private TopDownSorter topDownSorter;
+    private EnemyPoolMember enemyPoolMember;
+
+    private string defaultSortingLayerName;
+    private int defaultSortingOrder;
+
+    private Coroutine despawnRoutine;
+
+    public UnitDeathLifecycle(UnitHealth owner)
+    {
+        this.owner = owner;
+    }
+
+    public void Initialize()
+    {
+        animator = owner.GetComponent<Animator>();
+        collider = owner.GetComponent<Collider2D>();
+        spriteRenderer = owner.GetComponent<SpriteRenderer>();
+        topDownSorter = owner.GetComponent<TopDownSorter>();
+        enemyPoolMember = owner.GetComponent<EnemyPoolMember>();
+
+        if (spriteRenderer != null)
+        {
+            defaultSortingLayerName = spriteRenderer.sortingLayerName;
+            defaultSortingOrder = spriteRenderer.sortingOrder;
+        }
+    }
+
+    public void ResetForSpawn()
+    {
+        CancelPendingDespawn();
+
+        if (topDownSorter != null)
+            topDownSorter.enabled = true;
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.sortingLayerName = defaultSortingLayerName;
+            spriteRenderer.sortingOrder = defaultSortingOrder;
+        }
+
+        if (animator != null)
+            animator.SetBool("isDead", false);
+    }
+
+    public void HandleDeath()
+    {
+        if (animator != null)
+        {
+            int randomDeath = Random.Range(0, 4);
+            animator.SetInteger("deathIndex", randomDeath);
+            animator.SetBool("isDead", true);
+        }
+
+        if (owner.bloodSplashPrefab != null)
+            VfxPool.Instance.Spawn(owner.bloodSplashPrefab, owner.transform.position, Quaternion.identity);
+
+        if (topDownSorter != null)
+            topDownSorter.enabled = false;
+
+        Vector3 bloodPosition = collider != null ? collider.bounds.min : owner.transform.position;
+        bloodPosition.z = 0f;
+
+        if (collider != null)
+            collider.enabled = false;
+
+        int deadOrder = Mathf.RoundToInt(-bloodPosition.y * 100f) + Random.Range(-1, 2);
+
+        CancelPendingDespawn();
+        despawnRoutine = owner.StartCoroutine(DespawnToPoolAfterDelay(deadOrder, bloodPosition));
+    }
+
+    public void CancelPendingDespawn()
+    {
+        if (despawnRoutine == null)
+            return;
+
+        owner.StopCoroutine(despawnRoutine);
+        despawnRoutine = null;
+    }
+
+    private IEnumerator DespawnToPoolAfterDelay(int deadOrder, Vector3 bloodPosition)
+    {
+        float delay = owner.GetDespawnDelay();
+        if (delay > 0f)
+            yield return WaitForSecondsCache.Get(delay);
 
         EnemyDeathVisualManager.Instance.SpawnDeathVisuals(
             spriteRenderer != null ? spriteRenderer.sprite : null,
             spriteRenderer != null && spriteRenderer.flipX,
-            transform.position,
-            transform.localScale,
+            owner.transform.position,
+            owner.transform.localScale,
             deadOrder,
-            bloodPoolPrefab,
-            colBloodPos
+            owner.bloodPoolPrefab,
+            bloodPosition
         );
 
         if (enemyPoolMember != null && enemyPoolMember.TryDespawnToPool())
+        {
+            despawnRoutine = null;
             yield break;
+        }
 
-        if (gameObject.activeSelf)
-            gameObject.SetActive(false);
+        if (owner.gameObject.activeSelf)
+            owner.gameObject.SetActive(false);
+
+        despawnRoutine = null;
+    }
+
+    private static class WaitForSecondsCache
+    {
+        private static readonly Dictionary<float, WaitForSeconds> Cache = new Dictionary<float, WaitForSeconds>(8);
+
+        public static WaitForSeconds Get(float seconds)
+        {
+            float roundedSeconds = Mathf.Round(seconds * 100f) * 0.01f;
+            if (roundedSeconds <= 0f)
+                roundedSeconds = 0.01f;
+
+            if (Cache.TryGetValue(roundedSeconds, out WaitForSeconds cached))
+                return cached;
+
+            WaitForSeconds created = new WaitForSeconds(roundedSeconds);
+            Cache[roundedSeconds] = created;
+            return created;
+        }
     }
 }
 

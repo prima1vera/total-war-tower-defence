@@ -80,7 +80,7 @@ public static class EnemyRegistry
                 continue;
             }
 
-            if (enemy.CurrentState == UnitState.Dead)
+            if (enemy.IsDead)
                 continue;
 
             Transform enemyTransform = enemy.transform;
@@ -110,3 +110,4 @@ public static class EnemyRegistry
         return found;
     }
 }
+
