@@ -113,10 +113,10 @@ TextureImporter:
       name: Fire_lvl1_128_0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 30
-        width: 48
-        height: 62
+        x: 1
+        y: 23
+        width: 56
+        height: 74
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,8 +124,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9f9d0f50aa9779543b8ce362fe69991a
-      internalID: -849434017
+      spriteID: 4d17225a226fad94f911abded641f593
+      internalID: -1517028976
       vertices: []
       indices: 
       edges: []
@@ -134,10 +134,10 @@ TextureImporter:
       name: Fire_lvl1_128_1
       rect:
         serializedVersion: 2
-        x: 71
-        y: 30
-        width: 48
-        height: 62
+        x: 70
+        y: 23
+        width: 56
+        height: 74
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,8 +145,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fcbf98b3e40fab94fb671edd29303a2a
-      internalID: -1259082932
+      spriteID: e09da375fb8db12438569718a8ce6766
+      internalID: -1466221452
       vertices: []
       indices: 
       edges: []
@@ -155,10 +155,10 @@ TextureImporter:
       name: Fire_lvl1_128_2
       rect:
         serializedVersion: 2
-        x: 135
-        y: 30
-        width: 48
-        height: 62
+        x: 146
+        y: 23
+        width: 56
+        height: 74
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,8 +166,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: adf8a05f986a23a438cbe54f0db415bf
-      internalID: 1124245500
+      spriteID: 8f3ef185b4ee18c469489827e99bd959
+      internalID: 1522862131
       vertices: []
       indices: 
       edges: []
@@ -183,9 +183,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Fire_lvl1_128_0: -849434017
-      Fire_lvl1_128_1: -1259082932
-      Fire_lvl1_128_2: 1124245500
+      Fire_lvl1_128_0: -1517028976
+      Fire_lvl1_128_1: -1466221452
+      Fire_lvl1_128_2: 1522862131
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -9804,6 +9804,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TowerBase (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 4033096107844011754, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 6c09811e26f8e03469ca3b6ceff04e44, type: 2}
     - target: {fileID: 8990869992959872207, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.089
