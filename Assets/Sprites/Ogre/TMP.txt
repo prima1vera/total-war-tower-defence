@@ -1,0 +1,28 @@
+Discussion: should CS2 Trade Protected have a very limited retroactive review for earlier verified cases?
+
+
+Valve introduced Trade Protected for CS2 items in July 2025, which allows trades to be reversed within 7 days.
+
+It’s a good system and clearly addresses account compromise and scam trades.
+
+The discussion I’m curious about is whether a very limited retroactive review could ever make sense for rare verified cases where:
+• the compromise was confirmed
+• the receiving account was banned
+• the items never entered the market
+
+The point wouldn’t be to reopen every old trade, but to discuss whether very narrow cases like this could theoretically be reviewed without affecting the market economy.
+
+Steam discussion:
+https://steamcommunity.com/discussions/forum/10/797837596195599080/?tscn=1772729655
+
+
+Hello,
+
+My post was previously approved by a moderator but was caught again by Reddit's spam filters.
+
+Could you please re-approve it if possible?
+
+Link:
+https://steamcommunity.com/discussions/forum/10/797837596195599080/?tscn=1772729655
+
+Thank you.

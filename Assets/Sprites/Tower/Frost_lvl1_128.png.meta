@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2b8fac167d4a41c4e9446d34002461f0
+guid: 07d1560d0f6dfc445b5655ad15833a34
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: GroundPixel_0
+      name: Frost_lvl1_128_0
       rect:
         serializedVersion: 2
-        x: 19
-        y: 0
-        width: 365
-        height: 208
+        x: 1
+        y: 31
+        width: 55
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: efa04a2fd05a307488fb398958d60729
-      internalID: -751840578
+      spriteID: 8f3d2dc7816a66b43978c77685095a9a
+      internalID: 597745967
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GroundPixel_1
+      name: Frost_lvl1_128_1
       rect:
         serializedVersion: 2
-        x: 414
-        y: 0
-        width: 346
-        height: 208
+        x: 68
+        y: 31
+        width: 55
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,20 +145,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b5b956c69c30dde4ba530927f8e03a4b
-      internalID: -1618715906
+      spriteID: 481ad2c7fdaedf84ab5c8d7c87b3525e
+      internalID: -1894665303
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GroundPixel_2
+      name: Frost_lvl1_128_2
       rect:
         serializedVersion: 2
-        x: 770
-        y: 0
-        width: 372
-        height: 208
+        x: 136
+        y: 31
+        width: 55
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,29 +166,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5eba7b05c6151574fafd223caf3bf009
-      internalID: -1932692492
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: GroundPixel_3
-      rect:
-        serializedVersion: 2
-        x: 1148
-        y: 0
-        width: 379
-        height: 208
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 92b55539ea423184f9f173c4b4b4ef75
-      internalID: -708932053
+      spriteID: 7535928c5d5a5424299ebe9c6928c409
+      internalID: 1129469618
       vertices: []
       indices: 
       edges: []
@@ -204,10 +183,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      GroundPixel_0: -751840578
-      GroundPixel_1: -1618715906
-      GroundPixel_2: -1932692492
-      GroundPixel_3: -708932053
+      Frost_lvl1_128_0: 597745967
+      Frost_lvl1_128_1: -1894665303
+      Frost_lvl1_128_2: 1129469618
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: da78c2aec631af54388b15fa5ab16e9c
+guid: f7301ae7ea2412b4caef04b341ac6689
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,64 +110,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TowerSpriteFrostLvl3Pixel_0
+      name: Ground4xPixel_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 35
-        width: 298
-        height: 393
+        x: 5
+        y: 0
+        width: 91
+        height: 51
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 777016a63cf6c9747b3cb7fbc5dbeab5
-      internalID: 1892578639
+      spriteID: d911bd998b87af240a04cd6087d820a1
+      internalID: 1316506609
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: TowerSpriteFrostLvl3Pixel_1
+      name: Ground4xPixel_1
       rect:
         serializedVersion: 2
-        x: 342
-        y: 30
-        width: 298
-        height: 393
+        x: 103
+        y: 0
+        width: 89
+        height: 51
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4a82ac4fe2d37914ba80ce4fa665ae1c
-      internalID: -1694120145
+      spriteID: 84c22b35f7c89af43a714b4bb339ff40
+      internalID: 390634003
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: TowerSpriteFrostLvl3Pixel_2
+      name: Ground4xPixel_2
       rect:
         serializedVersion: 2
-        x: 677
-        y: 41
-        width: 298
-        height: 393
+        x: 192
+        y: 0
+        width: 93
+        height: 51
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ca8a5827541b56043a3f3b9d48c49c76
-      internalID: 1602915658
+      spriteID: 0871c447f4b630c45aacd8e538d2ac88
+      internalID: 1410214893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ground4xPixel_3
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 0
+        width: 94
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ee1a77ca04999a47bb4bbc4abf8ffe3
+      internalID: -673470162
       vertices: []
       indices: 
       edges: []
@@ -183,9 +204,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      TowerSpriteFrostLvl3Pixel_0: 1892578639
-      TowerSpriteFrostLvl3Pixel_1: -1694120145
-      TowerSpriteFrostLvl3Pixel_2: 1602915658
+      Ground4xPixel_0: 1316506609
+      Ground4xPixel_1: 390634003
+      Ground4xPixel_2: 1410214893
+      Ground4xPixel_3: -673470162
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

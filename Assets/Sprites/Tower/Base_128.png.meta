@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f7301ae7ea2412b4caef04b341ac6689
+guid: f72eaa13bcfbfc743a4f7f58dc35949c
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Ground4xPixel_0
+      name: Base_128_0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 407
-        width: 374
-        height: 224
+        x: 3
+        y: 33
+        width: 56
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d911bd998b87af240a04cd6087d820a1
-      internalID: 1316506609
+      spriteID: 194779492293be84aa6d339829c027da
+      internalID: 1319556631
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ground4xPixel_1
+      name: Base_128_1
       rect:
         serializedVersion: 2
-        x: 384
-        y: 406
-        width: 384
-        height: 226
+        x: 70
+        y: 33
+        width: 56
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,20 +145,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 84c22b35f7c89af43a714b4bb339ff40
-      internalID: 390634003
+      spriteID: 8f1f6b431b7f24649bc4c6569ac9ee26
+      internalID: -1649888875
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ground4xPixel_2
+      name: Base_128_2
       rect:
         serializedVersion: 2
-        x: 771
-        y: 405
-        width: 381
-        height: 227
+        x: 138
+        y: 33
+        width: 56
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,29 +166,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0871c447f4b630c45aacd8e538d2ac88
-      internalID: 1410214893
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Ground4xPixel_3
-      rect:
-        serializedVersion: 2
-        x: 1141
-        y: 405
-        width: 383
-        height: 227
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9ee1a77ca04999a47bb4bbc4abf8ffe3
-      internalID: -673470162
+      spriteID: ccae20bb42afcb348880ddebfc122ddd
+      internalID: -399487841
       vertices: []
       indices: 
       edges: []
@@ -204,10 +183,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Ground4xPixel_0: 1316506609
-      Ground4xPixel_1: 390634003
-      Ground4xPixel_2: 1410214893
-      Ground4xPixel_3: -673470162
+      Base_128_0: 1319556631
+      Base_128_1: -1649888875
+      Base_128_2: -399487841
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
