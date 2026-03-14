@@ -4,9 +4,8 @@ using UnityEngine.UI;
 
 public class EnemyHealthBarSystem : MonoBehaviour
 {
-    private const string RuntimeObjectName = "[EnemyHealthBarSystem]";
-
     private static EnemyHealthBarSystem instance;
+    private static bool missingInstanceLogged;
 
     [SerializeField, Min(1)] private int prewarmCount = 32;
     [SerializeField, Min(0.2f)] private float visibleDuration = 1.15f;
@@ -15,6 +14,7 @@ public class EnemyHealthBarSystem : MonoBehaviour
     [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.55f);
     [SerializeField] private Color fillColor = new Color(0.22f, 0.9f, 0.34f, 1f);
     [SerializeField] private Color lowHealthColor = new Color(1f, 0.28f, 0.2f, 1f);
+    [SerializeField] private Camera worldCamera;
 
     private readonly Stack<HealthBarView> pooledViews = new Stack<HealthBarView>(64);
     private readonly List<TrackedBar> activeBars = new List<TrackedBar>(128);
@@ -29,18 +29,20 @@ public class EnemyHealthBarSystem : MonoBehaviour
     {
         get
         {
-            if (instance != null)
-                return instance;
+            if (instance == null && !missingInstanceLogged)
+            {
+                missingInstanceLogged = true;
+                Debug.LogError("EnemyHealthBarSystem instance is missing. Add a scene-wired EnemyHealthBarSystem object to the scene.");
+            }
 
-            instance = FindObjectOfType<EnemyHealthBarSystem>();
-            if (instance != null)
-                return instance;
-
-            GameObject runtimeRoot = new GameObject(RuntimeObjectName);
-            instance = runtimeRoot.AddComponent<EnemyHealthBarSystem>();
-            DontDestroyOnLoad(runtimeRoot);
             return instance;
         }
+    }
+
+    public static bool TryGetInstance(out EnemyHealthBarSystem system)
+    {
+        system = instance;
+        return system != null;
     }
 
     private void Awake()
@@ -52,12 +54,18 @@ public class EnemyHealthBarSystem : MonoBehaviour
         }
 
         instance = this;
-        DontDestroyOnLoad(gameObject);
+        missingInstanceLogged = false;
+        cachedCamera = worldCamera;
 
         EnsureCanvas();
         Prewarm(prewarmCount);
     }
 
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null;
+    }
     private void OnEnable()
     {
         UnitHealth.GlobalDamageTaken += HandleGlobalDamageTaken;
@@ -159,7 +167,7 @@ public class EnemyHealthBarSystem : MonoBehaviour
         if (!tracked.Unit.gameObject.activeInHierarchy)
             return true;
 
-        if (tracked.Unit.CurrentState == UnitState.Dead)
+        if (tracked.Unit.IsDead)
             return true;
 
         return now >= tracked.HideAtTime;
@@ -262,10 +270,20 @@ public class EnemyHealthBarSystem : MonoBehaviour
         if (cachedCamera != null && cachedCamera.isActiveAndEnabled)
             return;
 
-        cachedCamera = Camera.main;
+        if (worldCamera != null && worldCamera.isActiveAndEnabled)
+        {
+            cachedCamera = worldCamera;
+            return;
+        }
 
-        if (cachedCamera == null)
-            cachedCamera = FindObjectOfType<Camera>();
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null && mainCamera.isActiveAndEnabled)
+        {
+            cachedCamera = mainCamera;
+            return;
+        }
+
+        cachedCamera = null;
     }
 
     private void EnsureCanvas()

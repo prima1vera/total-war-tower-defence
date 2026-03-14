@@ -44,15 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7211e33915e4fd2876451a808a237e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxTrackedDeaths: 60
-  overflowToRemainsTransitionDuration: 3
-  remainsLifetimeAfterOverflow: 60
-  remainsAlpha: 0.85
-  remainsScaleMultiplier: 1
+  maxTrackedDeaths: 100
+  overflowToRemainsTransitionDuration: 1
+  remainsLifetimeAfterOverflow: 180
   remainsVariants:
-  - SourceSprite: {fileID: -186571565, guid: c3f9349128a97b94b8032d7e823a66b7, type: 3}
+  - SourceSprite: {fileID: -868966910, guid: ca1cfbc2cad744941a7bc463777d9a01, type: 3}
     RemainsSprite: {fileID: 21300000, guid: e2ae0418badb4d94b992b89d6db5fa46, type: 3}
-  - SourceSprite: {fileID: -484281770, guid: 2332ebc498d480c4bb1bd00fbb93d0e4, type: 3}
+  - SourceSprite: {fileID: 852976072, guid: 202243a863cf3f443b247ce359693bda, type: 3}
     RemainsSprite: {fileID: 21300000, guid: e2ae0418badb4d94b992b89d6db5fa46, type: 3}
   - SourceSprite: {fileID: 7675818124710891106, guid: 585632677c8fa4b408b686f5ee479870, type: 3}
     RemainsSprite: {fileID: 21300000, guid: 2643eae126eb47649998f9ca9e97259c, type: 3}
@@ -62,3 +60,6 @@ MonoBehaviour:
     RemainsSprite: {fileID: 21300000, guid: 3ffa011fb8760814ebba48bc06668513, type: 3}
   - SourceSprite: {fileID: -1448914209, guid: acbdc7269f83c6f4788fe388a4dbe0ba, type: 3}
     RemainsSprite: {fileID: 21300000, guid: 1300498fda846ec4daa719f44e11561f, type: 3}
+  prewarmCorpseCount: 100
+  bloodPoolPrewarmPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
+  bloodPoolPrewarmCount: 100

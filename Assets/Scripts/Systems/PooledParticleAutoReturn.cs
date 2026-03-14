@@ -34,7 +34,11 @@ public class PooledParticleAutoReturn : MonoBehaviour
         if (timer >= releaseAfter)
         {
             armed = false;
-            VfxPool.Instance.Release(gameObject);
+
+            if (VfxPool.TryGetInstance(out VfxPool vfxPool))
+                vfxPool.Release(gameObject);
+            else
+                Destroy(gameObject);
         }
     }
 

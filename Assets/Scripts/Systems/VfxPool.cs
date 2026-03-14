@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class VfxPool : MonoBehaviour
 {
-    private const string RuntimeObjectName = "[VfxPool]";
     private static VfxPool instance;
+    private static bool missingInstanceLogged;
 
     [SerializeField, Min(1)] private int initialPoolSizePerPrefab = 8;
     [SerializeField] private List<PrewarmEntry> prewarmOnAwake = new List<PrewarmEntry>(4);
@@ -16,18 +16,20 @@ public class VfxPool : MonoBehaviour
     {
         get
         {
-            if (instance != null)
-                return instance;
+            if (instance == null && !missingInstanceLogged)
+            {
+                missingInstanceLogged = true;
+                Debug.LogError("VfxPool instance is missing. Add a scene-wired VfxPool object to the scene.");
+            }
 
-            instance = FindObjectOfType<VfxPool>();
-            if (instance != null)
-                return instance;
-
-            GameObject runtimeObject = new GameObject(RuntimeObjectName);
-            instance = runtimeObject.AddComponent<VfxPool>();
-            DontDestroyOnLoad(runtimeObject);
             return instance;
         }
+    }
+
+    public static bool TryGetInstance(out VfxPool pool)
+    {
+        pool = instance;
+        return pool != null;
     }
 
     private void Awake()
@@ -39,8 +41,14 @@ public class VfxPool : MonoBehaviour
         }
 
         instance = this;
-        DontDestroyOnLoad(gameObject);
+        missingInstanceLogged = false;
         PrewarmConfiguredPrefabs();
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null;
     }
 
     public void Prewarm(GameObject prefab, int count)

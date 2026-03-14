@@ -9,7 +9,6 @@ public class Tower : MonoBehaviour
     public Transform firePoint;
 
     [SerializeField] private float targetRefreshInterval = 0.15f;
-    [SerializeField] private ArrowPool arrowPool;
     [SerializeField] private SpriteRenderer towerSpriteRenderer;
 
     [Header("Ground Visual")]
@@ -39,6 +38,7 @@ public class Tower : MonoBehaviour
     private Vector3 cachedBaseScale;
     private bool cachedBaseScaleInitialized;
     private TowerProjectilePoolKey currentProjectilePoolKey = TowerProjectilePoolKey.Base;
+    private ArrowPool runtimeArrowPool;
 
     public int Damage => Mathf.Max(1, damage);
     public float Range => Mathf.Max(0.1f, range);
@@ -120,10 +120,11 @@ public class Tower : MonoBehaviour
         if (profile.ArrowPrefab != null)
             arrowPrefab = profile.ArrowPrefab;
 
-        if (TowerProjectilePoolRegistry.TryGetPool(profile.ProjectilePoolKey, out ArrowPool resolvedPool) && resolvedPool != null)
-            arrowPool = resolvedPool;
-
         currentProjectilePoolKey = profile.ProjectilePoolKey;
+
+        if (TowerProjectilePoolRegistry.TryGetPool(currentProjectilePoolKey, out ArrowPool resolvedPool) && resolvedPool != null)
+            runtimeArrowPool = resolvedPool;
+
         ApplyGroundSprite(currentProjectilePoolKey);
 
         loggedInvalidPoolReference = false;
@@ -154,7 +155,7 @@ public class Tower : MonoBehaviour
             return false;
 
         float rangeSqr = Range * Range;
-        if (currentTarget.CurrentState == UnitState.Dead)
+        if (currentTarget.IsDead)
             return false;
 
         float distSqr = (currentTarget.transform.position - transform.position).sqrMagnitude;
@@ -321,19 +322,22 @@ public class Tower : MonoBehaviour
 
     private ArrowPool GetValidArrowPool()
     {
-        if (arrowPool == null)
+        if (runtimeArrowPool == null && TowerProjectilePoolRegistry.TryGetPool(currentProjectilePoolKey, out ArrowPool resolvedPool))
+            runtimeArrowPool = resolvedPool;
+
+        if (runtimeArrowPool == null)
             return null;
 
-        if (arrowPool.gameObject.scene.IsValid())
-            return arrowPool;
+        if (runtimeArrowPool.gameObject.scene.IsValid())
+            return runtimeArrowPool;
 
         if (!loggedInvalidPoolReference)
         {
-            Debug.LogWarning($"{name}: ArrowPool reference points to a prefab asset. Falling back to instantiate until a scene pool is resolved.", this);
+            Debug.LogWarning($"{name}: Resolved ArrowPool points to a prefab asset. Falling back to instantiate until a scene pool is resolved.", this);
             loggedInvalidPoolReference = true;
         }
 
-        arrowPool = null;
+        runtimeArrowPool = null;
         return null;
     }
 }

@@ -9695,7 +9695,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.829, y: 0.438, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6910683770737588276}
@@ -9743,7 +9743,7 @@ SpriteRenderer:
   m_SortingLayerID: 500341947
   m_SortingLayer: 4
   m_SortingOrder: 1
-  m_Sprite: {fileID: 1959878637, guid: 89da5f611cd71064d9ad364bddcd7d61, type: 3}
+  m_Sprite: {fileID: 1780689711, guid: 825c0a63600e0714bb5883fd084c2e27, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -9807,8 +9807,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.02277866, y: 0.018854618}
-  m_Size: {x: 0.38837212, y: 0.849375}
+  m_Offset: {x: -0.02277866, y: -0.10892263}
+  m_Size: {x: 0.38837212, y: 0.43768567}
   m_Direction: 0
 --- !u!114 &5190869859010253226
 MonoBehaviour:
@@ -9845,7 +9845,7 @@ MonoBehaviour:
   maxHealth: 80
   bloodPoolPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
   bloodSplashPrefab: {fileID: 6567675628769267437, guid: 626575ed6b0b8764db5d804dbe61ff9c, type: 3}
-  despawnToPoolDelay: 1.5
+  despawnToPoolDelay: 2
 --- !u!114 &-6560936230222391820
 MonoBehaviour:
   m_ObjectHideFlags: 0
