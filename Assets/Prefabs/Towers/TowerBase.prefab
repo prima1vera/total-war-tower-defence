@@ -159,8 +159,8 @@ MonoBehaviour:
   fireGroundSprite: {fileID: 1316506609, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   frostGroundSprite: {fileID: 390634003, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   ironGroundSprite: {fileID: 1410214893, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
-  groundScaleMultiplier: 1.33
-  levelScaleStep: 0.2
+  groundScaleMultiplier: 1
+  levelScaleStep: 0.33
   minAnimationCycleSeconds: 0.08
 --- !u!95 &4033096107844011754
 Animator:
@@ -256,7 +256,7 @@ Transform:
   m_GameObject: {fileID: 4579000000000000001}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.038, y: -0.181, z: 0}
+  m_LocalPosition: {x: -0.019, y: -0.197, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
