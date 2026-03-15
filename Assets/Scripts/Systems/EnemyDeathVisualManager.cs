@@ -67,7 +67,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
         manager = instance;
         return manager != null;
     }
-    public void SpawnDeathVisuals(Sprite corpseSprite, bool corpseFlipX, Vector3 corpsePosition, Vector3 corpseScale, int corpseSortingOrder, GameObject bloodPoolPrefab, Vector3 bloodPosition)
+    public void  SpawnDeathVisuals(Sprite corpseSprite, bool corpseFlipX, Vector3 corpsePosition, Vector3 corpseScale, int corpseSortingOrder, GameObject bloodPoolPrefab, Vector3 bloodPosition)
     {
         if (corpseSprite == null && bloodPoolPrefab == null)
             return;
@@ -99,7 +99,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
             bloodObject.transform.SetPositionAndRotation(bloodPosition, Quaternion.identity);
 
             SpriteRenderer bloodRenderer = bloodObject.GetComponent<SpriteRenderer>();
-            float targetScale = Random.Range(0.5f, 1.1f);
+            float targetScale = Random.Range(0.8f, 1.2f);
             StartCoroutine(AnimateBloodPool(bloodObject.transform, bloodRenderer, targetScale));
         }
 
