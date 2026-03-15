@@ -15,24 +15,33 @@ public class ArcherTower : MonoBehaviour
     [Header("Progress")]
     [SerializeField, Min(1)] private int visualLevel = 1;
 
+    [Header("Authoring")]
+    [SerializeField] private bool strictAuthoring = true;
+
     private UnitHealth currentTarget;
     private float targetRefreshTimer;
     private int lastKnownRegistryVersion = -1;
     private float shotCooldown;
+    private bool isAuthoringValid;
 
     public event Action<Vector2> ShotFired;
     public event Action<int> VisualLevelChanged;
 
     public int VisualLevel => Mathf.Max(1, visualLevel);
+    public float Range => Mathf.Max(0.1f, range);
 
     private void Awake()
     {
-        if (shotOrigin == null)
-            shotOrigin = transform;
+        isAuthoringValid = ValidateAuthoring();
+        if (!isAuthoringValid)
+            enabled = false;
     }
 
     private void OnEnable()
     {
+        if (!isAuthoringValid)
+            return;
+
         shotCooldown = 0f;
         targetRefreshTimer = 0f;
         lastKnownRegistryVersion = -1;
@@ -42,6 +51,9 @@ public class ArcherTower : MonoBehaviour
 
     private void Update()
     {
+        if (!isAuthoringValid)
+            return;
+
         targetRefreshTimer -= Time.deltaTime;
         shotCooldown -= Time.deltaTime;
 
@@ -74,14 +86,14 @@ public class ArcherTower : MonoBehaviour
 
     public bool TryGetAimDirection(out Vector2 direction)
     {
-        if (currentTarget == null)
+        if (!TryGetAimPoint(out Vector2 aimPoint))
         {
             direction = Vector2.zero;
             return false;
         }
 
         Vector2 origin = shotOrigin != null ? (Vector2)shotOrigin.position : (Vector2)transform.position;
-        direction = (Vector2)currentTarget.transform.position - origin;
+        direction = aimPoint - origin;
 
         if (direction.sqrMagnitude <= 0.0001f)
         {
@@ -93,6 +105,18 @@ public class ArcherTower : MonoBehaviour
         return true;
     }
 
+    public bool TryGetAimPoint(out Vector2 aimPoint)
+    {
+        if (currentTarget == null || currentTarget.IsDead)
+        {
+            aimPoint = Vector2.zero;
+            return false;
+        }
+
+        aimPoint = currentTarget.transform.position;
+        return true;
+    }
+
     public void EmitShot()
     {
         if (!TryGetAimDirection(out Vector2 direction))
@@ -101,18 +125,33 @@ public class ArcherTower : MonoBehaviour
         ShotFired?.Invoke(direction);
     }
 
+    private bool ValidateAuthoring()
+    {
+        if (shotOrigin != null)
+            return true;
+
+        if (!strictAuthoring)
+        {
+            shotOrigin = transform;
+            return true;
+        }
+
+        Debug.LogError($"{name}: ArcherTower.shotOrigin is not assigned. Assign explicit shot origin in prefab/scene.", this);
+        return false;
+    }
+
     private bool IsCurrentTargetValid()
     {
         if (currentTarget == null || currentTarget.IsDead)
             return false;
 
-        float rangeSqr = range * range;
+        float rangeSqr = Range * Range;
         float distSqr = (currentTarget.transform.position - transform.position).sqrMagnitude;
         return distSqr <= rangeSqr;
     }
 
     private void RefreshTarget()
     {
-        EnemyRegistry.TryGetNearestEnemy(transform.position, range, out currentTarget);
+        EnemyRegistry.TryGetNearestEnemy(transform.position, Range, out currentTarget);
     }
 }
