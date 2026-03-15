@@ -7,23 +7,26 @@ public class EnemyHealthBarSystem : MonoBehaviour
     private static EnemyHealthBarSystem instance;
     private static bool missingInstanceLogged;
 
+    [Header("Scene Wiring")]
+    [SerializeField] private Camera worldCamera;
+    [SerializeField] private RectTransform barsRoot;
+    [SerializeField] private EnemyHealthBarView barViewPrefab;
+
+    [Header("Behaviour")]
     [SerializeField, Min(1)] private int prewarmCount = 32;
     [SerializeField, Min(0.2f)] private float visibleDuration = 1.15f;
-    [SerializeField] private Vector2 barSize = new Vector2(52f, 7f);
     [SerializeField, Min(0f)] private float worldVerticalOffset = 0.35f;
-    [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.55f);
     [SerializeField] private Color fillColor = new Color(0.22f, 0.9f, 0.34f, 1f);
     [SerializeField] private Color lowHealthColor = new Color(1f, 0.28f, 0.2f, 1f);
-    [SerializeField] private Camera worldCamera;
 
     private readonly Stack<HealthBarView> pooledViews = new Stack<HealthBarView>(64);
     private readonly List<TrackedBar> activeBars = new List<TrackedBar>(128);
     private readonly Dictionary<UnitHealth, int> indexByUnit = new Dictionary<UnitHealth, int>(128);
 
-    private Canvas canvas;
-    private RectTransform canvasRect;
-    private RectTransform barsRoot;
-    private Camera cachedCamera;
+    private Camera cachedWorldCamera;
+    private Camera uiProjectionCamera;
+    private bool isWired;
+    private bool loggedMissingWorldCamera;
 
     public static EnemyHealthBarSystem Instance
     {
@@ -55,9 +58,15 @@ public class EnemyHealthBarSystem : MonoBehaviour
 
         instance = this;
         missingInstanceLogged = false;
-        cachedCamera = worldCamera;
 
-        EnsureCanvas();
+        isWired = ValidateSceneWiring();
+        if (!isWired)
+        {
+            enabled = false;
+            return;
+        }
+
+        cachedWorldCamera = worldCamera;
         Prewarm(prewarmCount);
     }
 
@@ -66,8 +75,12 @@ public class EnemyHealthBarSystem : MonoBehaviour
         if (instance == this)
             instance = null;
     }
+
     private void OnEnable()
     {
+        if (!isWired)
+            return;
+
         UnitHealth.GlobalDamageTaken += HandleGlobalDamageTaken;
         UnitHealth.GlobalUnitDied += HandleGlobalUnitDied;
     }
@@ -77,16 +90,16 @@ public class EnemyHealthBarSystem : MonoBehaviour
         UnitHealth.GlobalDamageTaken -= HandleGlobalDamageTaken;
         UnitHealth.GlobalUnitDied -= HandleGlobalUnitDied;
 
-        ReleaseAll();
+        if (isWired)
+            ReleaseAll();
     }
 
     private void LateUpdate()
     {
-        if (activeBars.Count == 0)
+        if (!isWired || activeBars.Count == 0)
             return;
 
-        EnsureCamera();
-        if (cachedCamera == null)
+        if (!EnsureWorldCamera())
             return;
 
         float now = Time.time;
@@ -135,6 +148,9 @@ public class EnemyHealthBarSystem : MonoBehaviour
         }
 
         HealthBarView view = AcquireView();
+        if (!view.IsValid)
+            return;
+
         SetFill(view, normalizedHealth);
 
         TrackedBar newTracked = new TrackedBar
@@ -151,8 +167,7 @@ public class EnemyHealthBarSystem : MonoBehaviour
         activeBars.Add(newTracked);
         indexByUnit[unit] = index;
 
-        EnsureCamera();
-        if (cachedCamera != null)
+        if (EnsureWorldCamera())
         {
             UpdateBarPosition(ref newTracked);
             activeBars[index] = newTracked;
@@ -185,7 +200,7 @@ public class EnemyHealthBarSystem : MonoBehaviour
         else
             worldPos.y += worldVerticalOffset;
 
-        Vector3 screenPos = cachedCamera.WorldToScreenPoint(worldPos);
+        Vector3 screenPos = cachedWorldCamera.WorldToScreenPoint(worldPos);
         if (screenPos.z <= 0f)
         {
             if (tracked.View.Root.gameObject.activeSelf)
@@ -197,23 +212,35 @@ public class EnemyHealthBarSystem : MonoBehaviour
         if (!tracked.View.Root.gameObject.activeSelf)
             tracked.View.Root.gameObject.SetActive(true);
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPos, null, out Vector2 localPos);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(barsRoot, screenPos, uiProjectionCamera, out Vector2 localPos);
         tracked.View.Root.anchoredPosition = localPos;
     }
 
     private HealthBarView AcquireView()
     {
-        EnsureCanvas();
+        while (pooledViews.Count > 0)
+        {
+            HealthBarView pooled = pooledViews.Pop();
+            if (!pooled.IsValid)
+                continue;
 
-        HealthBarView view = pooledViews.Count > 0 ? pooledViews.Pop() : CreateView();
-        view.Root.gameObject.SetActive(true);
-        view.Root.SetParent(barsRoot, false);
-        return view;
+            pooled.Root.gameObject.SetActive(true);
+            pooled.Root.SetParent(barsRoot, false);
+            return pooled;
+        }
+
+        HealthBarView created = CreateView();
+        if (!created.IsValid)
+            return default;
+
+        created.Root.gameObject.SetActive(true);
+        created.Root.SetParent(barsRoot, false);
+        return created;
     }
 
     private void ReleaseView(HealthBarView view)
     {
-        if (view.Root == null)
+        if (!view.IsValid)
             return;
 
         view.Root.gameObject.SetActive(false);
@@ -265,57 +292,76 @@ public class EnemyHealthBarSystem : MonoBehaviour
         indexByUnit.Clear();
     }
 
-    private void EnsureCamera()
+    private bool EnsureWorldCamera()
     {
-        if (cachedCamera != null && cachedCamera.isActiveAndEnabled)
-            return;
+        if (cachedWorldCamera != null && cachedWorldCamera.isActiveAndEnabled)
+            return true;
 
         if (worldCamera != null && worldCamera.isActiveAndEnabled)
         {
-            cachedCamera = worldCamera;
-            return;
+            cachedWorldCamera = worldCamera;
+            loggedMissingWorldCamera = false;
+            return true;
         }
 
-        Camera mainCamera = Camera.main;
-        if (mainCamera != null && mainCamera.isActiveAndEnabled)
+        cachedWorldCamera = null;
+
+        if (!loggedMissingWorldCamera)
         {
-            cachedCamera = mainCamera;
-            return;
+            loggedMissingWorldCamera = true;
+            Debug.LogError("EnemyHealthBarSystem: World Camera is not assigned or disabled. Assign Main Camera in inspector.", this);
         }
 
-        cachedCamera = null;
+        return false;
     }
 
-    private void EnsureCanvas()
+    private bool ValidateSceneWiring()
     {
-        if (canvas != null && barsRoot != null)
-            return;
+        bool valid = true;
 
-        GameObject canvasObject = new GameObject("EnemyHealthBarCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-        canvasObject.transform.SetParent(transform, false);
+        if (worldCamera == null)
+        {
+            Debug.LogError("EnemyHealthBarSystem: World Camera is not assigned.", this);
+            valid = false;
+        }
 
-        canvas = canvasObject.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 80;
+        if (barsRoot == null)
+        {
+            Debug.LogError("EnemyHealthBarSystem: Bars Root is not assigned.", this);
+            valid = false;
+        }
 
-        CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-        scaler.matchWidthOrHeight = 0.5f;
+        if (barViewPrefab == null)
+        {
+            Debug.LogError("EnemyHealthBarSystem: Bar View Prefab is not assigned.", this);
+            valid = false;
+        }
 
-        GraphicRaycaster raycaster = canvasObject.GetComponent<GraphicRaycaster>();
-        raycaster.enabled = false;
+        if (!valid)
+            return false;
 
-        canvasRect = canvas.GetComponent<RectTransform>();
+        Canvas canvas = barsRoot.GetComponentInParent<Canvas>();
+        if (canvas == null)
+        {
+            Debug.LogError("EnemyHealthBarSystem: Bars Root must be under a Canvas.", this);
+            return false;
+        }
 
-        GameObject barsRootObject = new GameObject("BarsRoot", typeof(RectTransform));
-        barsRoot = barsRootObject.GetComponent<RectTransform>();
-        barsRoot.SetParent(canvas.transform, false);
-        barsRoot.anchorMin = Vector2.zero;
-        barsRoot.anchorMax = Vector2.one;
-        barsRoot.offsetMin = Vector2.zero;
-        barsRoot.offsetMax = Vector2.zero;
+        if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            uiProjectionCamera = null;
+        else
+            uiProjectionCamera = canvas.worldCamera;
+
+        if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && uiProjectionCamera == null)
+            Debug.LogWarning("EnemyHealthBarSystem: Canvas is camera/world mode but Canvas.worldCamera is not assigned.", this);
+
+        if (!barViewPrefab.IsConfigured)
+        {
+            Debug.LogError("EnemyHealthBarSystem: Bar View Prefab is missing references. Open prefab and assign Root/FillRect/FillImage.", barViewPrefab);
+            return false;
+        }
+
+        return true;
     }
 
     private void Prewarm(int count)
@@ -323,50 +369,65 @@ public class EnemyHealthBarSystem : MonoBehaviour
         int target = Mathf.Max(0, count);
 
         while (pooledViews.Count < target)
-            pooledViews.Push(CreateView());
+        {
+            HealthBarView view = CreateView();
+            if (!view.IsValid)
+                break;
+
+            pooledViews.Push(view);
+        }
     }
 
     private HealthBarView CreateView()
     {
-        EnsureCanvas();
+        EnemyHealthBarView instanceView = Instantiate(barViewPrefab, barsRoot);
+        if (instanceView == null)
+            return default;
 
-        GameObject rootObject = new GameObject("EnemyHealthBar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        RectTransform root = rootObject.GetComponent<RectTransform>();
-        root.SetParent(barsRoot, false);
-        root.sizeDelta = barSize;
-        root.pivot = new Vector2(0.5f, 0f);
+        if (!instanceView.IsConfigured)
+        {
+            Debug.LogError("EnemyHealthBarSystem: Spawned health bar view is not configured.", instanceView);
+            Destroy(instanceView.gameObject);
+            return default;
+        }
 
-        Image background = rootObject.GetComponent<Image>();
-        background.raycastTarget = false;
-        background.color = backgroundColor;
+        RectTransform root = instanceView.Root;
+        RectTransform fillRect = instanceView.FillRect;
+        Image fillImage = instanceView.FillImage;
 
-        GameObject fillObject = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        RectTransform fillRect = fillObject.GetComponent<RectTransform>();
-        fillRect.SetParent(root, false);
-        fillRect.anchorMin = new Vector2(0f, 0f);
-        fillRect.anchorMax = new Vector2(0f, 1f);
-        fillRect.pivot = new Vector2(0f, 0.5f);
-        fillRect.anchoredPosition = Vector2.zero;
-        fillRect.sizeDelta = new Vector2(barSize.x, 0f);
+        float maxFillWidth = ResolveFillWidth(root, fillRect);
 
-        Image fillImage = fillObject.GetComponent<Image>();
-        fillImage.raycastTarget = false;
-        fillImage.color = fillColor;
-
-        rootObject.SetActive(false);
+        root.gameObject.SetActive(false);
 
         return new HealthBarView
         {
             Root = root,
             FillRect = fillRect,
-            FillImage = fillImage
+            FillImage = fillImage,
+            MaxFillWidth = maxFillWidth
         };
+    }
+
+    private static float ResolveFillWidth(RectTransform root, RectTransform fillRect)
+    {
+        float width = 0f;
+
+        if (fillRect != null)
+            width = fillRect.sizeDelta.x;
+
+        if (width <= 0.01f && fillRect != null)
+            width = fillRect.rect.width;
+
+        if (width <= 0.01f && root != null)
+            width = root.rect.width;
+
+        return Mathf.Max(1f, width);
     }
 
     private void SetFill(HealthBarView view, float normalizedHealth)
     {
         float clamped = Mathf.Clamp01(normalizedHealth);
-        float width = Mathf.Max(1f, barSize.x * clamped);
+        float width = Mathf.Max(1f, view.MaxFillWidth * clamped);
 
         view.FillRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
         view.FillImage.color = Color.Lerp(lowHealthColor, fillColor, clamped);
@@ -377,6 +438,9 @@ public class EnemyHealthBarSystem : MonoBehaviour
         public RectTransform Root;
         public RectTransform FillRect;
         public Image FillImage;
+        public float MaxFillWidth;
+
+        public bool IsValid => Root != null && FillRect != null && FillImage != null;
     }
 
     private struct TrackedBar
