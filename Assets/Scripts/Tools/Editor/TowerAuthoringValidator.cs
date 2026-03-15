@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -6,6 +6,7 @@ using UnityEngine;
 public static class TowerAuthoringValidator
 {
     private const string ValidationMenuPath = "TWTD/Validation/Validate Tower Authoring";
+    private const string SceneValidationMenuPath = "TWTD/Validation/Validate Open Scene Tower Wiring";
     private const string ShootArrowEventName = "ShootArrow";
 
     [MenuItem(ValidationMenuPath)]
@@ -16,8 +17,19 @@ public static class TowerAuthoringValidator
 
         int profileCount = ValidateAllEvolutionProfiles(ref errors, ref warnings);
         int treeCount = ValidateAllUpgradeTrees(ref errors, ref warnings);
+        int sceneTowerCount = ValidateOpenSceneTowerWiring(ref errors, ref warnings);
 
-        Debug.Log($"[TowerAuthoringValidator] Validation complete. Trees: {treeCount}, Profiles: {profileCount}, Errors: {errors}, Warnings: {warnings}.");
+        Debug.Log($"[TowerAuthoringValidator] Validation complete. Scene Towers: {sceneTowerCount}, Trees: {treeCount}, Profiles: {profileCount}, Errors: {errors}, Warnings: {warnings}.");
+    }
+
+    [MenuItem(SceneValidationMenuPath)]
+    private static void ValidateSceneOnly()
+    {
+        int errors = 0;
+        int warnings = 0;
+
+        int sceneTowerCount = ValidateOpenSceneTowerWiring(ref errors, ref warnings);
+        Debug.Log($"[TowerAuthoringValidator] Scene wiring validated. Towers: {sceneTowerCount}, Errors: {errors}, Warnings: {warnings}.");
     }
 
     [MenuItem("CONTEXT/TowerUpgradeTree/Validate Tree")]
@@ -80,6 +92,174 @@ public static class TowerAuthoringValidator
         }
 
         return guids.Length;
+    }
+
+    private static int ValidateOpenSceneTowerWiring(ref int errors, ref int warnings)
+    {
+        Tower[] towers = UnityEngine.Object.FindObjectsByType<Tower>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        TowerProjectilePoolRegistry registry = UnityEngine.Object.FindFirstObjectByType<TowerProjectilePoolRegistry>(FindObjectsInactive.Include);
+        ValidateProjectilePoolRegistry(registry, ref errors, ref warnings);
+
+        HashSet<TowerProjectilePoolKey> usedPoolKeys = CollectUsedPoolKeys();
+        ValidateRegistryCoverage(registry, usedPoolKeys, ref errors);
+
+        for (int i = 0; i < towers.Length; i++)
+            ValidateTowerSceneWiring(towers[i], ref errors, ref warnings);
+
+        if (towers.Length == 0)
+            LogWarning(null, ref warnings, "No Tower components found in open scenes.");
+
+        return towers.Length;
+    }
+
+    private static void ValidateProjectilePoolRegistry(TowerProjectilePoolRegistry registry, ref int errors, ref int warnings)
+    {
+        if (registry == null)
+        {
+            LogError(null, ref errors, "TowerProjectilePoolRegistry is missing in open scene.");
+            return;
+        }
+
+        SerializedObject so = new SerializedObject(registry);
+
+        ArrowPool basePool = GetPoolProperty(so, "basePool");
+        ArrowPool firePool = GetPoolProperty(so, "firePool");
+        ArrowPool frostPool = GetPoolProperty(so, "frostPool");
+        ArrowPool ironPool = GetPoolProperty(so, "ironPool");
+
+        if (basePool == null)
+            LogError(registry, ref errors, "TowerProjectilePoolRegistry.basePool is not assigned.");
+
+        ValidatePoolReference(basePool, registry, "basePool", ref errors);
+        ValidatePoolReference(firePool, registry, "firePool", ref errors);
+        ValidatePoolReference(frostPool, registry, "frostPool", ref errors);
+        ValidatePoolReference(ironPool, registry, "ironPool", ref errors);
+
+        if (firePool == null)
+            LogWarning(registry, ref warnings, "firePool is empty, Fire towers will fallback to basePool.");
+
+        if (frostPool == null)
+            LogWarning(registry, ref warnings, "frostPool is empty, Frost towers will fallback to basePool.");
+
+        if (ironPool == null)
+            LogWarning(registry, ref warnings, "ironPool is empty, Iron towers will fallback to basePool.");
+    }
+
+    private static void ValidateRegistryCoverage(TowerProjectilePoolRegistry registry, HashSet<TowerProjectilePoolKey> usedPoolKeys, ref int errors)
+    {
+        if (registry == null)
+            return;
+
+        SerializedObject so = new SerializedObject(registry);
+        ArrowPool basePool = GetPoolProperty(so, "basePool");
+        ArrowPool firePool = GetPoolProperty(so, "firePool");
+        ArrowPool frostPool = GetPoolProperty(so, "frostPool");
+        ArrowPool ironPool = GetPoolProperty(so, "ironPool");
+
+        foreach (TowerProjectilePoolKey key in usedPoolKeys)
+        {
+            bool hasCoverage = HasEffectivePoolCoverage(key, basePool, firePool, frostPool, ironPool);
+            if (!hasCoverage)
+                LogError(registry, ref errors, $"No effective scene pool coverage for key '{key}'. Assign specific pool or basePool.");
+        }
+    }
+
+    private static HashSet<TowerProjectilePoolKey> CollectUsedPoolKeys()
+    {
+        HashSet<TowerProjectilePoolKey> used = new HashSet<TowerProjectilePoolKey> { TowerProjectilePoolKey.Base };
+
+        string[] guids = AssetDatabase.FindAssets("t:TowerUpgradeTree");
+        for (int i = 0; i < guids.Length; i++)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+            TowerUpgradeTree tree = AssetDatabase.LoadAssetAtPath<TowerUpgradeTree>(path);
+            if (tree == null)
+                continue;
+
+            for (int levelIndex = 0; levelIndex < tree.LevelCount; levelIndex++)
+            {
+                if (!tree.TryGetLevel(levelIndex, out TowerUpgradeLevelDefinition level))
+                    continue;
+
+                if (level.EvolutionProfile != null)
+                    used.Add(level.EvolutionProfile.ProjectilePoolKey);
+            }
+        }
+
+        return used;
+    }
+
+    private static bool HasEffectivePoolCoverage(
+        TowerProjectilePoolKey key,
+        ArrowPool basePool,
+        ArrowPool firePool,
+        ArrowPool frostPool,
+        ArrowPool ironPool)
+    {
+        switch (key)
+        {
+            case TowerProjectilePoolKey.Fire:
+                return firePool != null || basePool != null;
+            case TowerProjectilePoolKey.Frost:
+                return frostPool != null || basePool != null;
+            case TowerProjectilePoolKey.Iron:
+                return ironPool != null || basePool != null;
+            default:
+                return basePool != null;
+        }
+    }
+
+    private static ArrowPool GetPoolProperty(SerializedObject so, string propertyName)
+    {
+        SerializedProperty property = so.FindProperty(propertyName);
+        return property != null ? property.objectReferenceValue as ArrowPool : null;
+    }
+
+    private static void ValidatePoolReference(ArrowPool pool, UnityEngine.Object context, string fieldName, ref int errors)
+    {
+        if (pool == null)
+            return;
+
+        if (!pool.gameObject.scene.IsValid())
+            LogError(context, ref errors, $"{fieldName} points to prefab asset. Assign scene instance instead.");
+    }
+
+    private static void ValidateTowerSceneWiring(Tower tower, ref int errors, ref int warnings)
+    {
+        if (tower == null)
+            return;
+
+        SerializedObject so = new SerializedObject(tower);
+
+        ValidateReferenceProperty(tower, so, "firePoint", "firePoint is not assigned.", ref errors);
+        ValidateReferenceProperty(tower, so, "towerSpriteRenderer", "towerSpriteRenderer is not assigned.", ref errors);
+        ValidateReferenceProperty(tower, so, "towerGroundRenderer", "towerGroundRenderer is not assigned.", ref errors);
+
+        if (tower.GetComponent<Animator>() == null)
+            LogError(tower, ref errors, "Animator component is missing. Shoot animation event cannot run.");
+
+        if (tower.GetComponent<Collider2D>() == null)
+            LogError(tower, ref errors, "Collider2D is missing. Tower selection raycast will fail.");
+
+        if (tower.GetComponent<TowerUpgradable>() == null)
+            LogWarning(tower, ref warnings, "TowerUpgradable component is missing. Upgrade panel flow may not work.");
+
+        int towerLayer = LayerMask.NameToLayer("Tower");
+        if (towerLayer >= 0 && tower.gameObject.layer != towerLayer)
+            LogWarning(tower, ref warnings, "Tower is not on 'Tower' layer. Selection input may miss this tower.");
+    }
+
+    private static void ValidateReferenceProperty(
+        UnityEngine.Object context,
+        SerializedObject serializedObject,
+        string propertyName,
+        string errorMessage,
+        ref int errors)
+    {
+        SerializedProperty property = serializedObject.FindProperty(propertyName);
+        if (property == null || property.objectReferenceValue == null)
+            LogError(context, ref errors, errorMessage);
     }
 
     private static void ValidateTree(TowerUpgradeTree tree, ref int errors, ref int warnings)
@@ -194,9 +374,6 @@ public static class TowerAuthoringValidator
 
     private static void ValidateProfile(TowerEvolutionProfile profile, ref int errors, ref int warnings)
     {
-        if (profile.ArrowPrefab == null)
-            LogWarning(profile, ref warnings, "Arrow prefab is not assigned (fallback instantiate will fail if pool is missing).");
-
         if (profile.TowerSprite == null)
             LogWarning(profile, ref warnings, "Tower sprite is not assigned.");
 
