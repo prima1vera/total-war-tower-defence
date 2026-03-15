@@ -153,14 +153,14 @@ MonoBehaviour:
   fireRate: 5
   firePoint: {fileID: 6024781246242465548}
   targetRefreshInterval: 0.15
-  towerSpriteRenderer: {fileID: 0}
+  towerSpriteRenderer: {fileID: 1552684744727991414}
   towerGroundRenderer: {fileID: 4579000000000000003}
   baseGroundSprite: {fileID: -673470162, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   fireGroundSprite: {fileID: 1316506609, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   frostGroundSprite: {fileID: 390634003, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   ironGroundSprite: {fileID: 1410214893, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   groundScaleMultiplier: 1
-  levelScaleStep: 0.33
+  levelScaleStep: 0.5
   minAnimationCycleSeconds: 0.08
 --- !u!95 &4033096107844011754
 Animator:

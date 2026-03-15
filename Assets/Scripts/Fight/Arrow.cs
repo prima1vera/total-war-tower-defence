@@ -52,6 +52,10 @@ public class Arrow : MonoBehaviour
     [SerializeField, Tooltip("When to start rotating the arrow towards its velocity.\n0 = rotate immediately, 0.1 = start rotating after 10% of flight.\nHelps close shots look less 'jerky'.")]
     private float rotationStartT = 0f;
 
+    [SerializeField, Range(-180f, 180f)]
+    [Tooltip("Sprite forward angle correction in degrees. Use if arrow art is authored with different forward axis.")]
+    private float modelForwardAngleOffset = 0f;
+
     [Header("VFX (Impact)")]
     [Tooltip("Small dust / hit spark prefab spawned at impact point (via VfxPool).")]
     public GameObject dustPrefab;
@@ -71,9 +75,6 @@ public class Arrow : MonoBehaviour
 
     // Look-ahead time for stable rotation (avoids jitter).
     private const float LookAhead = 0.015f;
-
-    // Clamp angle for very close shots so arrow doesn't visually "shoot upward".
-    private const float MaxCloseAngle = 12f;
 
     // Hit detection radius around arrow during flight (pierce hits).
     private const float FlightHitRadius = 0.3f;
@@ -134,11 +135,11 @@ public class Arrow : MonoBehaviour
         hitUnits.Clear();
 
         Vector2 dir = targetPos - startPos;
-        if (dir.sqrMagnitude > 0.0001f)
-        {
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            cachedTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        }
+        if (dir.sqrMagnitude <= 0.0001f)
+            dir = cachedTransform.right;
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + modelForwardAngleOffset;
+        cachedTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         // Precompute distance-based feel (one-time per shot)
         cachedDistance = Vector2.Distance(startPos, targetPos);
@@ -191,12 +192,7 @@ public class Arrow : MonoBehaviour
         if (dir.sqrMagnitude <= 0.00001f)
             return;
 
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-        // On very close shots keep angle mostly horizontal
-        if (cachedDistance <= minStraightDistance)
-            angle = ClampCloseShotAngle(angle, MaxCloseAngle);
-
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + modelForwardAngleOffset;
         cachedTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
@@ -268,22 +264,6 @@ public class Arrow : MonoBehaviour
 
         if (damageType == DamageType.Ice)
             status.ApplyFreeze(2f, 0.4f);
-    }
-
-    private static float ClampCloseShotAngle(float angleDeg, float maxCloseAngleDeg)
-    {
-        // Normalize to [-180..180]
-        angleDeg = Mathf.DeltaAngle(0f, angleDeg);
-
-        // If pointing mostly right (between -90..+90) clamp around 0
-        if (Mathf.Abs(angleDeg) <= 90f)
-            return Mathf.Clamp(angleDeg, -maxCloseAngleDeg, maxCloseAngleDeg);
-
-        // Otherwise pointing mostly left, clamp around 180/-180
-        // Convert to a "delta from 180", clamp that delta, then convert back.
-        float deltaFromLeft = Mathf.DeltaAngle(180f, angleDeg); // [-180..180] difference from 180
-        deltaFromLeft = Mathf.Clamp(deltaFromLeft, -maxCloseAngleDeg, maxCloseAngleDeg);
-        return 180f + deltaFromLeft;
     }
 
     private void Explode()

@@ -32,13 +32,13 @@ public class Tower : MonoBehaviour
     private Animator animator;
     private float fireClipLengthSeconds = 0.3f;
     private bool loggedInvalidPoolReference;
-    private bool loggedMissingGroundRenderer;
     private int currentVisualLevel = 1;
     private float currentLevelScaleMultiplier = 1f;
     private Vector3 cachedBaseScale;
     private bool cachedBaseScaleInitialized;
     private TowerProjectilePoolKey currentProjectilePoolKey = TowerProjectilePoolKey.Base;
     private ArrowPool runtimeArrowPool;
+    private bool isAuthoringValid;
 
     public int Damage => Mathf.Max(1, damage);
     public float Range => Mathf.Max(0.1f, range);
@@ -46,24 +46,23 @@ public class Tower : MonoBehaviour
 
     private void Awake()
     {
+        EnsureAnimator();
         CacheBaseScale();
+
+        isAuthoringValid = ValidateAuthoring();
+        if (!isAuthoringValid)
+            enabled = false;
     }
 
     private void Start()
     {
-        EnsureAnimator();
-        EnsureSpriteRenderer();
-        EnsureGroundRenderer();
+        if (!isAuthoringValid)
+            return;
+
         ApplyLevelScale(currentVisualLevel);
         ApplyGroundScale();
         ApplyGroundSprite(currentProjectilePoolKey);
         CacheFireClipLength();
-
-        if (firePoint == null)
-        {
-            firePoint = transform;
-            Debug.LogWarning($"{name}: firePoint is not assigned, fallback to tower transform.", this);
-        }
     }
 
     private void Update()
@@ -121,17 +120,16 @@ public class Tower : MonoBehaviour
             arrowPrefab = profile.ArrowPrefab;
 
         currentProjectilePoolKey = profile.ProjectilePoolKey;
+        runtimeArrowPool = null;
 
         if (TowerProjectilePoolRegistry.TryGetPool(currentProjectilePoolKey, out ArrowPool resolvedPool) && resolvedPool != null)
             runtimeArrowPool = resolvedPool;
 
         ApplyGroundSprite(currentProjectilePoolKey);
-
         loggedInvalidPoolReference = false;
 
         if (profile.TowerSprite != null)
         {
-            EnsureSpriteRenderer();
             if (towerSpriteRenderer != null)
                 towerSpriteRenderer.sprite = profile.TowerSprite;
         }
@@ -179,26 +177,40 @@ public class Tower : MonoBehaviour
             towerSpriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    private void EnsureGroundRenderer()
+    private bool ValidateAuthoring()
     {
-        if (towerGroundRenderer != null)
-            return;
+        bool valid = true;
 
-        Transform ground = transform.Find("TowerGround");
-        if (ground != null)
-            towerGroundRenderer = ground.GetComponent<SpriteRenderer>();
-
-        if (towerGroundRenderer == null && !loggedMissingGroundRenderer)
+        if (firePoint == null)
         {
-            Debug.LogWarning($"{name}: TowerGround renderer is not assigned. Ground visual won't update.", this);
-            loggedMissingGroundRenderer = true;
+            Debug.LogError($"{name}: firePoint is not assigned. Strict authoring requires explicit FirePoint wiring.", this);
+            valid = false;
         }
+
+        EnsureSpriteRenderer();
+        if (towerSpriteRenderer == null)
+        {
+            Debug.LogError($"{name}: towerSpriteRenderer is missing. Assign it explicitly (or keep SpriteRenderer on Tower).", this);
+            valid = false;
+        }
+
+        if (towerGroundRenderer == null)
+        {
+            Debug.LogError($"{name}: towerGroundRenderer is not assigned. Strict authoring disables runtime transform.Find fallback.", this);
+            valid = false;
+        }
+
+        if (animator == null)
+        {
+            Debug.LogError($"{name}: Animator is missing. Tower cannot trigger Shoot animation event.", this);
+            valid = false;
+        }
+
+        return valid;
     }
 
     private void ApplyGroundSprite(TowerProjectilePoolKey key)
     {
-        EnsureGroundRenderer();
-
         if (towerGroundRenderer == null)
             return;
 
@@ -227,8 +239,6 @@ public class Tower : MonoBehaviour
 
     private void ApplyGroundScale()
     {
-        EnsureGroundRenderer();
-
         if (towerGroundRenderer == null)
             return;
 
@@ -294,46 +304,59 @@ public class Tower : MonoBehaviour
         if (currentTarget == null)
             return;
 
-        Arrow arrow = null;
-        Vector3 spawnPosition = firePoint != null ? firePoint.position : transform.position;
         ArrowPool activePool = GetValidArrowPool();
+        if (activePool == null)
+            return;
 
-        if (activePool != null)
-        {
-            arrow = activePool.Spawn(spawnPosition, Quaternion.identity);
-        }
-        else if (arrowPrefab != null)
-        {
-            GameObject arrowGO = Instantiate(arrowPrefab, spawnPosition, Quaternion.identity);
-            arrow = arrowGO.GetComponent<Arrow>();
-        }
-
+        Vector3 spawnPosition = firePoint.position;
+        Arrow arrow = activePool.Spawn(spawnPosition, Quaternion.identity);
         if (arrow == null)
             return;
 
         arrow.damage = Damage;
         arrow.SetVisualScale(currentLevelScaleMultiplier);
 
-        Vector2 randomOffset = Random.insideUnitCircle * 0.5f;
-        Vector2 targetPoint = (Vector2)currentTarget.transform.position + randomOffset;
+        Vector2 baseTargetPoint = currentTarget.transform.position;
+        float distanceToTarget = Vector2.Distance(spawnPosition, baseTargetPoint);
+        float maxOffset = Mathf.Min(0.5f, distanceToTarget * 0.35f);
+
+        Vector2 targetPoint = baseTargetPoint;
+        if (maxOffset > 0.01f)
+            targetPoint += Random.insideUnitCircle * maxOffset;
+
+        if (((Vector2)spawnPosition - targetPoint).sqrMagnitude < 0.0025f)
+            targetPoint = baseTargetPoint;
 
         arrow.Launch(targetPoint);
     }
 
     private ArrowPool GetValidArrowPool()
     {
-        if (runtimeArrowPool == null && TowerProjectilePoolRegistry.TryGetPool(currentProjectilePoolKey, out ArrowPool resolvedPool))
-            runtimeArrowPool = resolvedPool;
-
         if (runtimeArrowPool == null)
-            return null;
+        {
+            if (!TowerProjectilePoolRegistry.TryGetPool(currentProjectilePoolKey, out ArrowPool resolvedPool) || resolvedPool == null)
+            {
+                if (!loggedInvalidPoolReference)
+                {
+                    Debug.LogError($"{name}: Projectile pool for key {currentProjectilePoolKey} is not resolved. Strict authoring forbids instantiate fallback.", this);
+                    loggedInvalidPoolReference = true;
+                }
+
+                return null;
+            }
+
+            runtimeArrowPool = resolvedPool;
+        }
 
         if (runtimeArrowPool.gameObject.scene.IsValid())
+        {
+            loggedInvalidPoolReference = false;
             return runtimeArrowPool;
+        }
 
         if (!loggedInvalidPoolReference)
         {
-            Debug.LogWarning($"{name}: Resolved ArrowPool points to a prefab asset. Falling back to instantiate until a scene pool is resolved.", this);
+            Debug.LogError($"{name}: Resolved ArrowPool points to a prefab asset. Assign a scene instance in TowerProjectilePoolRegistry.", this);
             loggedInvalidPoolReference = true;
         }
 
