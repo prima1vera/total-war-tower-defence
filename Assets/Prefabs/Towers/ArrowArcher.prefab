@@ -166,10 +166,23 @@ MonoBehaviour:
   impactWavePrefab: {fileID: 0}
   impactDecalPrefab: {fileID: 0}
   spawnBloodOnDirectHit: 1
+  directHitBloodFollowDuration: 1.1
+  directHitBloodUseLocalSimulation: 1
   spawnGroundBloodOnDirectHit: 1
+  directHitGroundBloodPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
+  directHitGroundBloodChance: 0.5
+  directHitGroundBloodJitter: 0.05
+  directHitGroundBloodScaleRange: {x: 0.2, y: 0.38}
+  directHitGroundBloodLifetimeRange: {x: 9, y: 16}
+  directHitGroundBloodSheetSprite: {fileID: 21300000, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  directHitGroundBloodSheetColumns: 4
+  directHitGroundBloodSheetRows: 4
+  directHitGroundBloodSheetPixelsPerUnit: 100
+  randomizeGroundBloodRotation: 1
+  groundBloodMaxRotation: 180
   spawnEmbeddedArrowOnDirectHit: 1
   spawnEmbeddedArrowOnGroundImpact: 1
-  embedIntoTargetOnDirectHit: 0
+  embedIntoTargetOnDirectHit: 1
   embeddedArrowPrefab: {fileID: 5000011111111111111, guid: 45e6ecf5e8794bb9afe0f33630e385f1, type: 3}
   embeddedArrowLifetime: 2.6
   embeddedArrowScale: {x: 1, y: 1, z: 1}

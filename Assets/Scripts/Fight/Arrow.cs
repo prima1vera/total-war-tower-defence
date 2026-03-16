@@ -68,7 +68,23 @@ public class Arrow : MonoBehaviour
 
     [Header("Archer Impact (Optional)")]
     [SerializeField] private bool spawnBloodOnDirectHit;
+    [SerializeField, Min(0f)] private float directHitBloodFollowDuration = 0.45f;
+    [SerializeField] private bool directHitBloodUseLocalSimulation = true;
+
     [SerializeField] private bool spawnGroundBloodOnDirectHit;
+    [SerializeField] private GameObject directHitGroundBloodPrefab;
+    [SerializeField, Range(0f, 1f)] private float directHitGroundBloodChance = 0.45f;
+    [SerializeField, Min(0f)] private float directHitGroundBloodJitter = 0.08f;
+    [SerializeField] private Vector2 directHitGroundBloodScaleRange = new Vector2(0.35f, 0.7f);
+    [SerializeField] private Vector2 directHitGroundBloodLifetimeRange = new Vector2(8f, 14f);
+
+    [SerializeField] private Sprite directHitGroundBloodSheetSprite;
+    [SerializeField, Min(1)] private int directHitGroundBloodSheetColumns = 4;
+    [SerializeField, Min(1)] private int directHitGroundBloodSheetRows = 4;
+    [SerializeField, Min(1f)] private float directHitGroundBloodSheetPixelsPerUnit = 100f;
+    [SerializeField] private bool randomizeGroundBloodRotation = true;
+    [SerializeField, Range(0f, 180f)] private float groundBloodMaxRotation = 180f;
+
     [SerializeField] private bool spawnEmbeddedArrowOnDirectHit;
     [SerializeField] private bool spawnEmbeddedArrowOnGroundImpact;
     [SerializeField] private bool embedIntoTargetOnDirectHit = true;
@@ -77,20 +93,11 @@ public class Arrow : MonoBehaviour
     [SerializeField] private Vector3 embeddedArrowScale = Vector3.one;
     [SerializeField] private Vector3 embeddedArrowLocalOffset;
 
-    // --- Non-serialized tuning constants (keeps inspector clean) ---
-    // Arc grows non-linearly with distance; >1 means arc grows slower at first then ramps up.
     private const float ArcPower = 1.35f;
-
-    // Travel time scaling curve; <1 makes mid distances slightly faster.
     private const float TravelPower = 0.75f;
-
-    // Look-ahead time for stable rotation (avoids jitter).
     private const float LookAhead = 0.015f;
-
-    // Hit detection radius around arrow during flight (pierce hits).
     private const float FlightHitRadius = 0.3f;
 
-    // --- Runtime state ---
     private Vector2 startPos;
     private Vector2 targetPos;
     private float timer;
@@ -107,12 +114,12 @@ public class Arrow : MonoBehaviour
     private float shotScaleMultiplier = 1f;
     private float scaledImpactRadius = 1.5f;
 
-    // Cached per-shot values
     private float cachedDistance;
     private float cachedArcHeight;
     private float cachedTravelTime;
     private Vector2 lastVelocityDirection = Vector2.right;
     private UnitHealth lastDirectHitTarget;
+    private Vector3 lastDirectHitPoint;
 
     private void Awake()
     {
@@ -147,6 +154,7 @@ public class Arrow : MonoBehaviour
         pierceCount = 0;
         hitUnits.Clear();
         lastDirectHitTarget = null;
+        lastDirectHitPoint = cachedTransform.position;
 
         Vector2 dir = targetPos - startPos;
         if (dir.sqrMagnitude <= 0.0001f)
@@ -157,18 +165,14 @@ public class Arrow : MonoBehaviour
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + modelForwardAngleOffset;
         cachedTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-        // Precompute distance-based feel (one-time per shot)
         cachedDistance = Vector2.Distance(startPos, targetPos);
 
-        // 0..1 distance ratio (below minStraightDistance => 0, at maxArcDistance => 1)
         float dist01 = Mathf.InverseLerp(minStraightDistance, maxArcDistance, cachedDistance);
         dist01 = Mathf.Clamp01(dist01);
 
-        // Arc amount: grows smoothly with distance
         float arc01 = Mathf.Pow(dist01, ArcPower);
         cachedArcHeight = maxArcHeight * arc01;
 
-        // Travel time: close shots faster, long shots slower
         float time01 = Mathf.Pow(dist01, TravelPower);
         cachedTravelTime = Mathf.Lerp(minTravelTime, maxTravelTime, time01);
         cachedTravelTime = Mathf.Max(0.01f, cachedTravelTime);
@@ -192,7 +196,6 @@ public class Arrow : MonoBehaviour
         cachedTransform.position = currentPos;
 
         UpdateRotation(t, currentPos);
-
         CheckUnits();
     }
 
@@ -218,10 +221,8 @@ public class Arrow : MonoBehaviour
     {
         t = Mathf.Clamp01(t);
 
-        // Base line (straight)
         Vector2 pos = Vector2.Lerp(startPos, targetPos, t);
 
-        // Arc (0 if close, >0 if farther)
         if (cachedArcHeight > 0.0001f)
         {
             float height = Mathf.Sin(t * Mathf.PI) * cachedArcHeight;
@@ -240,8 +241,7 @@ public class Arrow : MonoBehaviour
             cachedTransform.position,
             FlightHitRadius,
             hitBuffer,
-            unitLayer
-        );
+            unitLayer);
 
         for (int i = 0; i < hitCount; i++)
         {
@@ -253,13 +253,13 @@ public class Arrow : MonoBehaviour
             if (health == null)
                 continue;
 
-            // Prevent double hit on same target for this arrow
             if (!hitUnits.Add(health))
                 continue;
 
             pierceCount++;
             ApplyDamage(health);
             lastDirectHitTarget = health;
+            lastDirectHitPoint = ResolveDirectHitPoint(health);
 
             if (pierceCount >= maxPierce)
             {
@@ -285,6 +285,30 @@ public class Arrow : MonoBehaviour
             status.ApplyFreeze(2f, 0.4f);
     }
 
+    private Vector3 ResolveDirectHitPoint(UnitHealth health)
+    {
+        if (health == null)
+            return cachedTransform.position;
+
+        Collider2D targetCollider = health.CachedCollider;
+        if (targetCollider == null)
+            return health.transform.position;
+
+        Vector2 approach = lastVelocityDirection.sqrMagnitude > 0.0001f ? lastVelocityDirection : Vector2.right;
+
+        Vector2 probe = (Vector2)cachedTransform.position - approach * 0.25f;
+        Vector2 closest = targetCollider.ClosestPoint(probe);
+
+        if ((closest - probe).sqrMagnitude <= 0.00001f)
+        {
+            Vector2 alternateProbe = (Vector2)cachedTransform.position - approach * 0.55f;
+            closest = targetCollider.ClosestPoint(alternateProbe);
+        }
+
+        closest += approach * 0.02f;
+        return new Vector3(closest.x, closest.y, 0f);
+    }
+
     private void Explode(bool reachedPierceTarget)
     {
         if (hasImpacted)
@@ -292,7 +316,7 @@ public class Arrow : MonoBehaviour
 
         hasImpacted = true;
 
-        Vector3 impactPosition = cachedTransform.position;
+        Vector3 impactPosition = reachedPierceTarget ? lastDirectHitPoint : cachedTransform.position;
         UnitHealth hitTarget = reachedPierceTarget ? lastDirectHitTarget : null;
 
         Vector3 vfxScale = Vector3.one * GetImpactVfxScaleMultiplier();
@@ -332,8 +356,7 @@ public class Arrow : MonoBehaviour
             cachedTransform.position,
             scaledImpactRadius,
             hitBuffer,
-            unitLayer
-        );
+            unitLayer);
 
         for (int i = 0; i < hitCount; i++)
         {
@@ -361,16 +384,35 @@ public class Arrow : MonoBehaviour
             return;
 
         if (spawnBloodOnDirectHit && hitTarget.bloodSplashPrefab != null)
-            vfxPool.Spawn(hitTarget.bloodSplashPrefab, impactPosition, Quaternion.identity);
-
-        if (spawnGroundBloodOnDirectHit && hitTarget.bloodPoolPrefab != null)
         {
-            Vector3 bloodPosition = hitTarget.CachedCollider != null
-                ? hitTarget.CachedCollider.bounds.min
-                : hitTarget.transform.position;
+            Vector3 splashScale = Vector3.one * Random.Range(0.8f, 1.1f);
+            GameObject splash = vfxPool.Spawn(hitTarget.bloodSplashPrefab, impactPosition, Quaternion.identity, splashScale);
 
-            bloodPosition.z = 0f;
-            vfxPool.Spawn(hitTarget.bloodPoolPrefab, bloodPosition, Quaternion.identity);
+            if (splash != null)
+            {
+                if (directHitBloodUseLocalSimulation)
+                    SetParticleSimulationSpace(splash, ParticleSystemSimulationSpace.Local);
+
+                AttachInstanceToTarget(splash, hitTarget, impactPosition, directHitBloodFollowDuration);
+            }
+        }
+
+        if (spawnGroundBloodOnDirectHit && directHitGroundBloodPrefab != null && Random.value <= directHitGroundBloodChance)
+        {
+            Vector2 randomOffset = Random.insideUnitCircle * Mathf.Max(0f, directHitGroundBloodJitter);
+            Vector3 groundPosition = new Vector3(impactPosition.x + randomOffset.x, impactPosition.y + randomOffset.y - 0.03f, 0f);
+
+            float minScale = Mathf.Max(0.05f, Mathf.Min(directHitGroundBloodScaleRange.x, directHitGroundBloodScaleRange.y));
+            float maxScale = Mathf.Max(minScale, Mathf.Max(directHitGroundBloodScaleRange.x, directHitGroundBloodScaleRange.y));
+            float randomScale = Random.Range(minScale, maxScale);
+            Vector3 groundScale = new Vector3(randomScale, randomScale, 1f);
+
+            GameObject groundBlood = vfxPool.Spawn(directHitGroundBloodPrefab, groundPosition, Quaternion.identity, groundScale);
+            if (groundBlood != null)
+            {
+                ApplyGroundBloodVariant(groundBlood);
+                ArmGroundBloodLifetime(groundBlood);
+            }
         }
     }
 
@@ -396,12 +438,100 @@ public class Arrow : MonoBehaviour
         if (embedded == null)
             return;
 
+        bool attachedToTarget = false;
+
         if (embedIntoTargetOnDirectHit && hitTarget != null)
-            embedded.transform.SetParent(hitTarget.transform, true);
+        {
+            AttachInstanceToTarget(embedded, hitTarget, spawnPosition, 0f);
+            attachedToTarget = true;
+        }
 
         PooledTimedAutoReturn timedAutoReturn = embedded.GetComponent<PooledTimedAutoReturn>();
         if (timedAutoReturn != null)
-            timedAutoReturn.Arm(embeddedArrowLifetime);
+        {
+            if (attachedToTarget)
+            {
+                timedAutoReturn.enabled = false;
+            }
+            else
+            {
+                timedAutoReturn.enabled = true;
+                timedAutoReturn.Arm(embeddedArrowLifetime);
+            }
+        }
+    }
+
+    private void ApplyGroundBloodVariant(GameObject groundBlood)
+    {
+        if (groundBlood == null)
+            return;
+
+        SpriteRenderer renderer = groundBlood.GetComponent<SpriteRenderer>();
+        if (renderer != null && BloodDecalSpriteSheetCache.TryGetRandomSprite(
+                directHitGroundBloodSheetSprite != null ? directHitGroundBloodSheetSprite.texture : null,
+                directHitGroundBloodSheetColumns,
+                directHitGroundBloodSheetRows,
+                directHitGroundBloodSheetPixelsPerUnit,
+                out Sprite randomSprite)
+            && randomSprite != null)
+        {
+            renderer.sprite = randomSprite;
+        }
+
+        if (randomizeGroundBloodRotation)
+        {
+            float zRotation = Random.Range(-Mathf.Abs(groundBloodMaxRotation), Mathf.Abs(groundBloodMaxRotation));
+            groundBlood.transform.rotation = Quaternion.Euler(0f, 0f, zRotation);
+        }
+    }
+
+    private void ArmGroundBloodLifetime(GameObject groundBlood)
+    {
+        if (groundBlood == null)
+            return;
+
+        float minLifetime = Mathf.Max(0.1f, Mathf.Min(directHitGroundBloodLifetimeRange.x, directHitGroundBloodLifetimeRange.y));
+        float maxLifetime = Mathf.Max(minLifetime, Mathf.Max(directHitGroundBloodLifetimeRange.x, directHitGroundBloodLifetimeRange.y));
+        float chosenLifetime = Random.Range(minLifetime, maxLifetime);
+
+        PooledTimedAutoReturn timedAutoReturn = groundBlood.GetComponent<PooledTimedAutoReturn>();
+        if (timedAutoReturn == null)
+            timedAutoReturn = groundBlood.AddComponent<PooledTimedAutoReturn>();
+
+        timedAutoReturn.enabled = true;
+        timedAutoReturn.Arm(chosenLifetime);
+    }
+
+    private void AttachInstanceToTarget(GameObject instance, UnitHealth target, Vector3 worldAnchorPosition, float followDuration)
+    {
+        if (instance == null || target == null)
+            return;
+
+        Transform targetTransform = target.transform;
+        Vector3 offsetLocal = targetTransform.InverseTransformPoint(worldAnchorPosition);
+
+        PooledFollowTarget follower = instance.GetComponent<PooledFollowTarget>();
+        if (follower == null)
+            follower = instance.AddComponent<PooledFollowTarget>();
+
+        follower.Attach(targetTransform, offsetLocal, Mathf.Max(0f, followDuration), true);
+    }
+
+    private static void SetParticleSimulationSpace(GameObject effectObject, ParticleSystemSimulationSpace simulationSpace)
+    {
+        if (effectObject == null)
+            return;
+
+        ParticleSystem[] particleSystems = effectObject.GetComponentsInChildren<ParticleSystem>(true);
+        for (int i = 0; i < particleSystems.Length; i++)
+        {
+            ParticleSystem ps = particleSystems[i];
+            if (ps == null)
+                continue;
+
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpace = simulationSpace;
+        }
     }
 
     private float GetImpactVfxScaleMultiplier()
@@ -410,3 +540,4 @@ public class Arrow : MonoBehaviour
         return Mathf.Lerp(1f, shotScaleMultiplier, weight);
     }
 }
+

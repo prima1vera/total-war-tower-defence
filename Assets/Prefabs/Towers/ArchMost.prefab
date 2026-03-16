@@ -99,6 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archerTower: {fileID: 9012200566944679112}
   archerRenderer: {fileID: 7200011111111111111}
+  shotSource: {fileID: 7000011111111111111}
   profile: {fileID: 11400000, guid: d94c28c0e193e30488fe3653e9e4dd8b, type: 2}
   verticalBandThreshold: 0.35
   flipSideByAimX: 1
@@ -201,6 +202,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archerTower: {fileID: 9012200566944679112}
   archerRenderer: {fileID: 7200022222222222222}
+  shotSource: {fileID: 7000022222222222222}
   profile: {fileID: 11400000, guid: d94c28c0e193e30488fe3653e9e4dd8b, type: 2}
   verticalBandThreshold: 0.35
   flipSideByAimX: 1
@@ -303,6 +305,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archerTower: {fileID: 9012200566944679112}
   archerRenderer: {fileID: 7200033333333333333}
+  shotSource: {fileID: 7000033333333333333}
   profile: {fileID: 11400000, guid: d94c28c0e193e30488fe3653e9e4dd8b, type: 2}
   verticalBandThreshold: 0.35
   flipSideByAimX: 1
@@ -588,7 +591,7 @@ MonoBehaviour:
   range: 8
   targetRefreshInterval: 0.15
   shotsPerSecond: 1.15
-  autoShoot: 1
+  autoShoot: 0
   shotOrigin: {fileID: 7000022222222222222}
   visualLevel: 1
   strictAuthoring: 1
@@ -622,4 +625,6 @@ MonoBehaviour:
   intentionalMissChance: 0.28
   intentionalMissRadius: 0.5
   minDistanceForIntentionalMiss: 2
+  idleRetryDelay: 0.08
+  cadenceJitter: 0.22
 

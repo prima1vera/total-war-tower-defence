@@ -27,8 +27,13 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
     [SerializeField, Min(0f)] private float intentionalMissRadius = 0.45f;
     [SerializeField, Min(0f)] private float minDistanceForIntentionalMiss = 2f;
 
+    [Header("Cadence")]
+    [SerializeField, Min(0.02f)] private float idleRetryDelay = 0.08f;
+    [SerializeField, Range(0f, 0.75f)] private float cadenceJitter = 0.18f;
+
     private int currentVisualLevel = 1;
     private bool isAuthoringValid;
+    private float[] fireCooldowns;
 
     private void Awake()
     {
@@ -42,19 +47,34 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
         if (!isAuthoringValid)
             return;
 
-        archerTower.ShotFired += HandleShotFired;
         archerTower.VisualLevelChanged += HandleVisualLevelChanged;
-
         currentVisualLevel = archerTower.VisualLevel;
+
+        EnsureCooldownBuffer();
+        SeedFireCooldowns();
     }
 
     private void OnDisable()
     {
-        if (archerTower == null)
+        if (archerTower != null)
+            archerTower.VisualLevelChanged -= HandleVisualLevelChanged;
+    }
+
+    private void Update()
+    {
+        if (!isAuthoringValid || firePoints == null || firePoints.Length == 0)
             return;
 
-        archerTower.ShotFired -= HandleShotFired;
-        archerTower.VisualLevelChanged -= HandleVisualLevelChanged;
+        EnsureCooldownBuffer();
+
+        for (int i = 0; i < firePoints.Length; i++)
+        {
+            fireCooldowns[i] -= Time.deltaTime;
+            if (fireCooldowns[i] > 0f)
+                continue;
+
+            TryFireFromPoint(i);
+        }
     }
 
     private bool ValidateAuthoring()
@@ -98,28 +118,39 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
         currentVisualLevel = Mathf.Max(1, level);
     }
 
-    private void HandleShotFired(Vector2 _)
+    private void TryFireFromPoint(int firePointIndex)
     {
-        if (!archerTower.TryGetAimPoint(out Vector2 baseAimPoint))
+        Transform firePoint = firePoints[firePointIndex];
+        if (firePoint == null)
+        {
+            fireCooldowns[firePointIndex] = 0.25f;
             return;
+        }
+
+        if (!EnemyRegistry.TryGetNearestEnemy(firePoint.position, archerTower.Range, out UnitHealth target) || target == null || target.IsDead)
+        {
+            fireCooldowns[firePointIndex] = Mathf.Max(0.02f, idleRetryDelay);
+            return;
+        }
+
+        Vector2 baseAimPoint = target.transform.position;
+        Vector2 targetPoint = ResolveTargetPoint(baseAimPoint, firePoint.position);
+
+        Arrow arrow = arrowPool.Spawn(firePoint.position, Quaternion.identity);
+        if (arrow == null)
+        {
+            fireCooldowns[firePointIndex] = 0.1f;
+            return;
+        }
 
         float arrowScale = ResolveArrowScale();
+        ConfigureArrow(arrow, arrowScale);
+        arrow.Launch(targetPoint);
 
-        for (int i = 0; i < firePoints.Length; i++)
-        {
-            Transform firePoint = firePoints[i];
-            if (firePoint == null)
-                continue;
+        Vector2 shotDirection = targetPoint - (Vector2)firePoint.position;
+        archerTower.EmitShotFrom(firePoint.position, shotDirection);
 
-            Arrow arrow = arrowPool.Spawn(firePoint.position, Quaternion.identity);
-            if (arrow == null)
-                continue;
-
-            ConfigureArrow(arrow, arrowScale);
-
-            Vector2 targetPoint = ResolveTargetPoint(baseAimPoint, firePoint.position);
-            arrow.Launch(targetPoint);
-        }
+        fireCooldowns[firePointIndex] = ResolveShotIntervalWithJitter();
     }
 
     private void ConfigureArrow(Arrow arrow, float scale)
@@ -168,5 +199,45 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
 
         float missOffsetDistance = Random.Range(intentionalMissRadius * 0.35f, intentionalMissRadius);
         return targetPoint + missOffsetDir * missOffsetDistance;
+    }
+
+    private void EnsureCooldownBuffer()
+    {
+        if (firePoints == null || firePoints.Length == 0)
+        {
+            fireCooldowns = null;
+            return;
+        }
+
+        if (fireCooldowns != null && fireCooldowns.Length == firePoints.Length)
+            return;
+
+        fireCooldowns = new float[firePoints.Length];
+    }
+
+    private void SeedFireCooldowns()
+    {
+        if (fireCooldowns == null)
+            return;
+
+        float baseInterval = ResolveBaseShotInterval();
+        for (int i = 0; i < fireCooldowns.Length; i++)
+            fireCooldowns[i] = Random.Range(0f, baseInterval);
+    }
+
+    private float ResolveBaseShotInterval()
+    {
+        return 1f / Mathf.Max(0.05f, archerTower != null ? archerTower.ShotsPerSecond : 1f);
+    }
+
+    private float ResolveShotIntervalWithJitter()
+    {
+        float baseInterval = ResolveBaseShotInterval();
+        float jitter = Mathf.Clamp(cadenceJitter, 0f, 0.75f);
+
+        if (jitter <= 0.001f)
+            return baseInterval;
+
+        return baseInterval * Random.Range(1f - jitter, 1f + jitter);
     }
 }

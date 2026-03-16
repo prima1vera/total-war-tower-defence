@@ -6,6 +6,7 @@ public class TowerArcherVisualPresenter : MonoBehaviour
     [SerializeField] private ArcherTower archerTower;
     [SerializeField] private SpriteRenderer archerRenderer;
     [SerializeField] private TowerArcherVisualProfile profile;
+    [SerializeField] private Transform shotSource;
 
     [Header("Direction")]
     [SerializeField, Range(0f, 1f)] private float verticalBandThreshold = 0.35f;
@@ -44,7 +45,7 @@ public class TowerArcherVisualPresenter : MonoBehaviour
         if (!isWired)
             return;
 
-        archerTower.ShotFired += HandleShotFired;
+        archerTower.ShotFiredFrom += HandleShotFiredFrom;
         archerTower.VisualLevelChanged += HandleVisualLevelChanged;
 
         ApplyLevel(archerTower.VisualLevel);
@@ -56,7 +57,7 @@ public class TowerArcherVisualPresenter : MonoBehaviour
     {
         if (archerTower != null)
         {
-            archerTower.ShotFired -= HandleShotFired;
+            archerTower.ShotFiredFrom -= HandleShotFiredFrom;
             archerTower.VisualLevelChanged -= HandleVisualLevelChanged;
         }
     }
@@ -94,6 +95,9 @@ public class TowerArcherVisualPresenter : MonoBehaviour
             valid = false;
         }
 
+        if (shotSource == null)
+            shotSource = transform;
+
         return valid;
     }
 
@@ -101,6 +105,18 @@ public class TowerArcherVisualPresenter : MonoBehaviour
     {
         ApplyLevel(level);
         BeginIdle();
+    }
+
+    private void HandleShotFiredFrom(Vector2 origin, Vector2 direction)
+    {
+        if (shotSource != null)
+        {
+            float sourceDistanceSqr = ((Vector2)shotSource.position - origin).sqrMagnitude;
+            if (sourceDistanceSqr > 0.0004f)
+                return;
+        }
+
+        HandleShotFired(direction);
     }
 
     private void HandleShotFired(Vector2 direction)
@@ -276,4 +292,3 @@ public class TowerArcherVisualPresenter : MonoBehaviour
         return direction.x < 0f;
     }
 }
-

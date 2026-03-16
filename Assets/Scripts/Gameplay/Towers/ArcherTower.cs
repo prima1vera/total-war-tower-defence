@@ -25,10 +25,12 @@ public class ArcherTower : MonoBehaviour
     private bool isAuthoringValid;
 
     public event Action<Vector2> ShotFired;
+    public event Action<Vector2, Vector2> ShotFiredFrom;
     public event Action<int> VisualLevelChanged;
 
     public int VisualLevel => Mathf.Max(1, visualLevel);
     public float Range => Mathf.Max(0.1f, range);
+    public float ShotsPerSecond => Mathf.Max(0.05f, shotsPerSecond);
 
     private void Awake()
     {
@@ -71,7 +73,7 @@ public class ArcherTower : MonoBehaviour
             return;
 
         EmitShot();
-        shotCooldown = 1f / Mathf.Max(0.05f, shotsPerSecond);
+        shotCooldown = 1f / ShotsPerSecond;
     }
 
     public void SetVisualLevel(int level)
@@ -122,7 +124,18 @@ public class ArcherTower : MonoBehaviour
         if (!TryGetAimDirection(out Vector2 direction))
             return;
 
-        ShotFired?.Invoke(direction);
+        Vector2 origin = shotOrigin != null ? (Vector2)shotOrigin.position : (Vector2)transform.position;
+        EmitShotFrom(origin, direction);
+    }
+
+    public void EmitShotFrom(Vector2 origin, Vector2 direction)
+    {
+        if (direction.sqrMagnitude <= 0.0001f)
+            return;
+
+        Vector2 normalizedDirection = direction.normalized;
+        ShotFired?.Invoke(normalizedDirection);
+        ShotFiredFrom?.Invoke(origin, normalizedDirection);
     }
 
     private bool ValidateAuthoring()

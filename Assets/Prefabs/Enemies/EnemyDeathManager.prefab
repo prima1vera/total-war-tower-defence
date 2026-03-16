@@ -67,3 +67,9 @@ MonoBehaviour:
   prewarmCorpseCount: 100
   bloodPoolPrewarmPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
   bloodPoolPrewarmCount: 100
+  bloodDecalSpriteSheet: {fileID: 21300000, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  bloodDecalColumns: 4
+  bloodDecalRows: 4
+  bloodDecalPixelsPerUnit: 100
+  randomizeBloodDecalRotation: 1
+  bloodDecalMaxRotation: 180
