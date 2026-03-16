@@ -169,17 +169,28 @@ MonoBehaviour:
   directHitBloodFollowDuration: 1.1
   directHitBloodUseLocalSimulation: 1
   spawnGroundBloodOnDirectHit: 1
-  directHitGroundBloodPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
-  directHitGroundBloodChance: 0.5
+  directHitGroundBloodPrefab: {fileID: 7924102300927368246, guid: eca0691a01d8452581805f5a62bb00ab, type: 3}
+  directHitGroundBloodChance: 0.55
   directHitGroundBloodJitter: 0.05
-  directHitGroundBloodScaleRange: {x: 0.2, y: 0.38}
-  directHitGroundBloodLifetimeRange: {x: 9, y: 16}
-  directHitGroundBloodSheetSprite: {fileID: 21300000, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  directHitGroundBloodSheetColumns: 4
-  directHitGroundBloodSheetRows: 4
-  directHitGroundBloodSheetPixelsPerUnit: 100
-  randomizeGroundBloodRotation: 1
-  groundBloodMaxRotation: 180
+  directHitGroundBloodScaleRange: {x: 0.12, y: 0.22}
+  directHitGroundBloodLifetimeRange: {x: 7, y: 13}
+  directHitGroundBloodVariants:
+  - {fileID: 1648438383, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1186700707, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1709951694, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1924922355, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -507077819, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 1135868401, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1108779382, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -665182365, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 1401955938, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 206978548, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1679737679, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 1683276007, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 1608892624, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1751352846, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 1733435953, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -283905027, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
   spawnEmbeddedArrowOnDirectHit: 1
   spawnEmbeddedArrowOnGroundImpact: 1
   embedIntoTargetOnDirectHit: 1
@@ -187,6 +198,7 @@ MonoBehaviour:
   embeddedArrowLifetime: 2.6
   embeddedArrowScale: {x: 1, y: 1, z: 1}
   embeddedArrowLocalOffset: {x: 0.02, y: -0.01, z: 0}
+  strictAuthoring: 1
 --- !u!96 &1995411345173283066
 TrailRenderer:
   serializedVersion: 3
@@ -300,5 +312,4 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
-
 

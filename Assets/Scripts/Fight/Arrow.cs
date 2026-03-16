@@ -78,12 +78,7 @@ public class Arrow : MonoBehaviour
     [SerializeField] private Vector2 directHitGroundBloodScaleRange = new Vector2(0.35f, 0.7f);
     [SerializeField] private Vector2 directHitGroundBloodLifetimeRange = new Vector2(8f, 14f);
 
-    [SerializeField] private Sprite directHitGroundBloodSheetSprite;
-    [SerializeField, Min(1)] private int directHitGroundBloodSheetColumns = 4;
-    [SerializeField, Min(1)] private int directHitGroundBloodSheetRows = 4;
-    [SerializeField, Min(1f)] private float directHitGroundBloodSheetPixelsPerUnit = 100f;
-    [SerializeField] private bool randomizeGroundBloodRotation = true;
-    [SerializeField, Range(0f, 180f)] private float groundBloodMaxRotation = 180f;
+    [SerializeField] private Sprite[] directHitGroundBloodVariants;
 
     [SerializeField] private bool spawnEmbeddedArrowOnDirectHit;
     [SerializeField] private bool spawnEmbeddedArrowOnGroundImpact;
@@ -92,6 +87,9 @@ public class Arrow : MonoBehaviour
     [SerializeField, Min(0.05f)] private float embeddedArrowLifetime = 2.4f;
     [SerializeField] private Vector3 embeddedArrowScale = Vector3.one;
     [SerializeField] private Vector3 embeddedArrowLocalOffset;
+
+    [Header("Authoring")]
+    [SerializeField] private bool strictAuthoring = true;
 
     private const float ArcPower = 1.35f;
     private const float TravelPower = 0.75f;
@@ -467,22 +465,15 @@ public class Arrow : MonoBehaviour
             return;
 
         SpriteRenderer renderer = groundBlood.GetComponent<SpriteRenderer>();
-        if (renderer != null && BloodDecalSpriteSheetCache.TryGetRandomSprite(
-                directHitGroundBloodSheetSprite != null ? directHitGroundBloodSheetSprite.texture : null,
-                directHitGroundBloodSheetColumns,
-                directHitGroundBloodSheetRows,
-                directHitGroundBloodSheetPixelsPerUnit,
-                out Sprite randomSprite)
-            && randomSprite != null)
+        if (renderer != null && directHitGroundBloodVariants != null && directHitGroundBloodVariants.Length > 0)
         {
-            renderer.sprite = randomSprite;
+            Sprite variant = directHitGroundBloodVariants[Random.Range(0, directHitGroundBloodVariants.Length)];
+            if (variant != null)
+                renderer.sprite = variant;
         }
 
-        if (randomizeGroundBloodRotation)
-        {
-            float zRotation = Random.Range(-Mathf.Abs(groundBloodMaxRotation), Mathf.Abs(groundBloodMaxRotation));
-            groundBlood.transform.rotation = Quaternion.Euler(0f, 0f, zRotation);
-        }
+        // Blood decals are authored as pre-rotated sprites, so keep world rotation fixed.
+        groundBlood.transform.rotation = Quaternion.identity;
     }
 
     private void ArmGroundBloodLifetime(GameObject groundBlood)
@@ -496,7 +487,12 @@ public class Arrow : MonoBehaviour
 
         PooledTimedAutoReturn timedAutoReturn = groundBlood.GetComponent<PooledTimedAutoReturn>();
         if (timedAutoReturn == null)
-            timedAutoReturn = groundBlood.AddComponent<PooledTimedAutoReturn>();
+        {
+            if (strictAuthoring)
+                Debug.LogError($"{name}: {groundBlood.name} is missing PooledTimedAutoReturn. Wire it on prefab.", groundBlood);
+
+            return;
+        }
 
         timedAutoReturn.enabled = true;
         timedAutoReturn.Arm(chosenLifetime);
@@ -512,7 +508,12 @@ public class Arrow : MonoBehaviour
 
         PooledFollowTarget follower = instance.GetComponent<PooledFollowTarget>();
         if (follower == null)
-            follower = instance.AddComponent<PooledFollowTarget>();
+        {
+            if (strictAuthoring)
+                Debug.LogError($"{name}: {instance.name} is missing PooledFollowTarget. Wire it on prefab.", instance);
+
+            return;
+        }
 
         follower.Attach(targetTransform, offsetLocal, Mathf.Max(0f, followDuration), true);
     }

@@ -17,12 +17,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
 
     [Header("Blood Variants")]
-    [SerializeField] private Sprite bloodDecalSpriteSheet;
-    [SerializeField, Min(1)] private int bloodDecalColumns = 4;
-    [SerializeField, Min(1)] private int bloodDecalRows = 4;
-    [SerializeField, Min(1f)] private float bloodDecalPixelsPerUnit = 100f;
-    [SerializeField] private bool randomizeBloodDecalRotation = true;
-    [SerializeField, Range(0f, 180f)] private float bloodDecalMaxRotation = 180f;
+    [SerializeField] private Sprite[] bloodDecalVariants;
+    [SerializeField] private Vector2 bloodDecalScaleRange = new Vector2(0.45f, 0.75f);
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
     private readonly Dictionary<Sprite, Sprite> remainsVariantLookup = new Dictionary<Sprite, Sprite>(8);
     private readonly Dictionary<GameObject, Stack<GameObject>> bloodPoolByPrefab = new Dictionary<GameObject, Stack<GameObject>>(4);
@@ -107,9 +103,9 @@ public class EnemyDeathVisualManager : MonoBehaviour
             bloodObject.transform.SetPositionAndRotation(bloodPosition, Quaternion.identity);
 
             SpriteRenderer bloodRenderer = bloodObject.GetComponent<SpriteRenderer>();
-            ApplyRandomBloodDecalVariant(bloodObject.transform, bloodRenderer);
+            ApplyBloodDecalVariant(bloodObject.transform, bloodRenderer);
 
-            float targetScale = Random.Range(0.8f, 1.2f);
+            float targetScale = ResolveBloodDecalScale();
             StartCoroutine(AnimateBloodPool(bloodObject.transform, bloodRenderer, targetScale));
         }
 
@@ -333,24 +329,29 @@ public class EnemyDeathVisualManager : MonoBehaviour
     }
 
 
-    private void ApplyRandomBloodDecalVariant(Transform bloodTransform, SpriteRenderer bloodRenderer)
+    private void ApplyBloodDecalVariant(Transform bloodTransform, SpriteRenderer bloodRenderer)
     {
         if (bloodTransform == null || bloodRenderer == null)
             return;
 
-        if (BloodDecalSpriteSheetCache.TryGetRandomSprite(bloodDecalSpriteSheet != null ? bloodDecalSpriteSheet.texture : null, bloodDecalColumns, bloodDecalRows, bloodDecalPixelsPerUnit, out Sprite randomSprite) && randomSprite != null)
-            bloodRenderer.sprite = randomSprite;
+        if (bloodDecalVariants != null && bloodDecalVariants.Length > 0)
+        {
+            Sprite variant = bloodDecalVariants[Random.Range(0, bloodDecalVariants.Length)];
+            if (variant != null)
+                bloodRenderer.sprite = variant;
+        }
 
-        if (randomizeBloodDecalRotation)
-        {
-            float zRotation = Random.Range(-Mathf.Abs(bloodDecalMaxRotation), Mathf.Abs(bloodDecalMaxRotation));
-            bloodTransform.rotation = Quaternion.Euler(0f, 0f, zRotation);
-        }
-        else
-        {
-            bloodTransform.rotation = Quaternion.identity;
-        }
+        // Decals are already authored with desired orientation.
+        bloodTransform.rotation = Quaternion.identity;
     }
+
+    private float ResolveBloodDecalScale()
+    {
+        float minScale = Mathf.Max(0.05f, Mathf.Min(bloodDecalScaleRange.x, bloodDecalScaleRange.y));
+        float maxScale = Mathf.Max(minScale, Mathf.Max(bloodDecalScaleRange.x, bloodDecalScaleRange.y));
+        return Random.Range(minScale, maxScale);
+    }
+
     private IEnumerator AnimateBloodPool(Transform blood, SpriteRenderer spriteRenderer, float targetScale)
     {
         float startUniform = Random.Range(0.05f, 0.15f);
@@ -434,6 +435,4 @@ public class EnemyDeathVisualManager : MonoBehaviour
         }
     }
 }
-
-
 
