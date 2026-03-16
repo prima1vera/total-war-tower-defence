@@ -167,6 +167,40 @@ MonoBehaviour:
   decalAlpha: 1
   decalSquash: 0.6
   decalScaleMultiplier: 1
+  spawnBloodOnDirectHit: 0
+  directHitBloodFollowDuration: 0.45
+  directHitBloodUseLocalSimulation: 1
+  spawnGroundBloodOnDirectHit: 1
+  directHitGroundBloodPrefab: {fileID: 7924102300927368246, guid: eca0691a01d8452581805f5a62bb00ab, type: 3}
+  directHitGroundBloodChance: 0.48
+  directHitGroundBloodJitter: 0.05
+  directHitGroundBloodScaleRange: {x: 0.11, y: 0.2}
+  directHitGroundBloodLifetimeRange: {x: 7, y: 13}
+  directHitGroundBloodVariants:
+  - {fileID: 1648438383, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1186700707, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1709951694, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1924922355, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -507077819, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 1135868401, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1108779382, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -665182365, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 1401955938, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 206978548, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1679737679, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 1683276007, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 1608892624, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -1751352846, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 1733435953, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: -283905027, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  spawnEmbeddedArrowOnDirectHit: 0
+  spawnEmbeddedArrowOnGroundImpact: 0
+  embedIntoTargetOnDirectHit: 1
+  embeddedArrowPrefab: {fileID: 0}
+  embeddedArrowLifetime: 2.4
+  embeddedArrowScale: {x: 1, y: 1, z: 1}
+  embeddedArrowLocalOffset: {x: 0, y: 0, z: 0}
+  strictAuthoring: 1
 --- !u!96 &4872866415376078430
 TrailRenderer:
   serializedVersion: 3

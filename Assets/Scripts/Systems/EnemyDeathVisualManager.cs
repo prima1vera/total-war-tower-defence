@@ -18,7 +18,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
     [Header("Blood Variants")]
     [SerializeField] private Sprite[] bloodDecalVariants;
-    [SerializeField] private Vector2 bloodDecalScaleRange = new Vector2(0.45f, 0.75f);
+    [SerializeField] private Vector2 bloodDecalScaleRange = new Vector2(0.22f, 0.36f);
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
     private readonly Dictionary<Sprite, Sprite> remainsVariantLookup = new Dictionary<Sprite, Sprite>(8);
     private readonly Dictionary<GameObject, Stack<GameObject>> bloodPoolByPrefab = new Dictionary<GameObject, Stack<GameObject>>(4);
@@ -435,4 +435,5 @@ public class EnemyDeathVisualManager : MonoBehaviour
         }
     }
 }
+
 

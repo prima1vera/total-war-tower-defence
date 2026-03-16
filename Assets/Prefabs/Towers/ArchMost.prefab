@@ -99,8 +99,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archerTower: {fileID: 9012200566944679112}
   archerRenderer: {fileID: 7200011111111111111}
-  shotSource: {fileID: 7000011111111111111}
   profile: {fileID: 11400000, guid: d94c28c0e193e30488fe3653e9e4dd8b, type: 2}
+  shotSource: {fileID: 7000011111111111111}
   verticalBandThreshold: 0.35
   flipSideByAimX: 1
 --- !u!1 &7100022222222222222
@@ -130,7 +130,7 @@ Transform:
   m_GameObject: {fileID: 7100022222222222222}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.35, z: 0}
+  m_LocalPosition: {x: 0, y: 0.234, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -202,8 +202,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archerTower: {fileID: 9012200566944679112}
   archerRenderer: {fileID: 7200022222222222222}
-  shotSource: {fileID: 7000022222222222222}
   profile: {fileID: 11400000, guid: d94c28c0e193e30488fe3653e9e4dd8b, type: 2}
+  shotSource: {fileID: 7000022222222222222}
   verticalBandThreshold: 0.35
   flipSideByAimX: 1
 --- !u!1 &7100033333333333333
@@ -233,7 +233,7 @@ Transform:
   m_GameObject: {fileID: 7100033333333333333}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.17, z: 0}
+  m_LocalPosition: {x: 0, y: -0.097, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -305,8 +305,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archerTower: {fileID: 9012200566944679112}
   archerRenderer: {fileID: 7200033333333333333}
-  shotSource: {fileID: 7000033333333333333}
   profile: {fileID: 11400000, guid: d94c28c0e193e30488fe3653e9e4dd8b, type: 2}
+  shotSource: {fileID: 7000033333333333333}
   verticalBandThreshold: 0.35
   flipSideByAimX: 1
 --- !u!1 &7100044444444444444
@@ -627,4 +627,3 @@ MonoBehaviour:
   minDistanceForIntentionalMiss: 2
   idleRetryDelay: 0.08
   cadenceJitter: 0.22
-

@@ -84,5 +84,6 @@ MonoBehaviour:
   - {fileID: -1751352846, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
   - {fileID: 1733435953, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
   - {fileID: -283905027, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  bloodDecalScaleRange: {x: 0.45, y: 0.75}
+  bloodDecalScaleRange: {x: 0.22, y: 0.36}
+
 
