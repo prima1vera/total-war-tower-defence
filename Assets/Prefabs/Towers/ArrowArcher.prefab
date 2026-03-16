@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.593, y: 0.058, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -148,7 +148,7 @@ MonoBehaviour:
   damageType: 0
   knockbackForce: 0.15
   maxPierce: 1
-  impactRadius: 0.05
+  impactRadius: 0.06
   impactRadiusScaleWeight: 0
   impactVfxScaleWeight: 0
   unitLayer:
@@ -157,14 +157,23 @@ MonoBehaviour:
   maxHitColliders: 24
   minStraightDistance: 0.8
   maxArcDistance: 6
-  maxArcHeight: 0.6
-  minTravelTime: 0.1
-  maxTravelTime: 0.45
-  rotationStartT: 0
+  maxArcHeight: 1.75
+  minTravelTime: 0.32
+  maxTravelTime: 1.05
+  rotationStartT: 0.08
   modelForwardAngleOffset: 0
   dustPrefab: {fileID: 2408689374836223538, guid: b92c8a1c6a875fd409b91b1ef31a322b, type: 3}
   impactWavePrefab: {fileID: 0}
   impactDecalPrefab: {fileID: 0}
+  spawnBloodOnDirectHit: 1
+  spawnGroundBloodOnDirectHit: 1
+  spawnEmbeddedArrowOnDirectHit: 1
+  spawnEmbeddedArrowOnGroundImpact: 1
+  embedIntoTargetOnDirectHit: 0
+  embeddedArrowPrefab: {fileID: 5000011111111111111, guid: 45e6ecf5e8794bb9afe0f33630e385f1, type: 3}
+  embeddedArrowLifetime: 2.6
+  embeddedArrowScale: {x: 1, y: 1, z: 1}
+  embeddedArrowLocalOffset: {x: 0.02, y: -0.01, z: 0}
 --- !u!96 &1995411345173283066
 TrailRenderer:
   serializedVersion: 3
@@ -278,3 +287,5 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+
+

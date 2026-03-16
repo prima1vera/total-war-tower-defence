@@ -22,6 +22,11 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
     [Header("Spread")]
     [SerializeField, Min(0f)] private float aimPointJitter = 0.12f;
 
+    [Header("Miss Feel")]
+    [SerializeField, Range(0f, 1f)] private float intentionalMissChance = 0.2f;
+    [SerializeField, Min(0f)] private float intentionalMissRadius = 0.45f;
+    [SerializeField, Min(0f)] private float minDistanceForIntentionalMiss = 2f;
+
     private int currentVisualLevel = 1;
     private bool isAuthoringValid;
 
@@ -112,10 +117,7 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
 
             ConfigureArrow(arrow, arrowScale);
 
-            Vector2 targetPoint = baseAimPoint;
-            if (aimPointJitter > 0.001f)
-                targetPoint += UnityEngine.Random.insideUnitCircle * aimPointJitter;
-
+            Vector2 targetPoint = ResolveTargetPoint(baseAimPoint, firePoint.position);
             arrow.Launch(targetPoint);
         }
     }
@@ -140,5 +142,31 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
         float levelMultiplier = 1f + Mathf.Max(0f, levelScaleStep) * Mathf.Max(0, currentVisualLevel - 1);
         return scale * levelMultiplier;
     }
-}
 
+    private Vector2 ResolveTargetPoint(Vector2 baseAimPoint, Vector2 firePointPosition)
+    {
+        Vector2 targetPoint = baseAimPoint;
+
+        if (aimPointJitter > 0.001f)
+            targetPoint += Random.insideUnitCircle * aimPointJitter;
+
+        if (intentionalMissChance <= 0.001f || intentionalMissRadius <= 0.001f)
+            return targetPoint;
+
+        float distanceToTarget = Vector2.Distance(firePointPosition, baseAimPoint);
+        if (distanceToTarget < minDistanceForIntentionalMiss)
+            return targetPoint;
+
+        if (Random.value > intentionalMissChance)
+            return targetPoint;
+
+        Vector2 missOffsetDir = Random.insideUnitCircle;
+        if (missOffsetDir.sqrMagnitude <= 0.0001f)
+            missOffsetDir = Vector2.right;
+        else
+            missOffsetDir.Normalize();
+
+        float missOffsetDistance = Random.Range(intentionalMissRadius * 0.35f, intentionalMissRadius);
+        return targetPoint + missOffsetDir * missOffsetDistance;
+    }
+}

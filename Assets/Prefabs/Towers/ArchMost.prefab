@@ -615,7 +615,11 @@ MonoBehaviour:
   knockbackForce: 0.15
   maxPierce: 1
   impactRadius: 0.05
-  baseArrowScale: 0.48
+  baseArrowScale: 1.8
   scaleArrowWithLevel: 1
   levelScaleStep: 0.1
-  aimPointJitter: 0.12
+  aimPointJitter: 0.08
+  intentionalMissChance: 0.28
+  intentionalMissRadius: 0.5
+  minDistanceForIntentionalMiss: 2
+

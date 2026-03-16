@@ -66,6 +66,17 @@ public class Arrow : MonoBehaviour
     [Header("VFX (Ground Decal)")]
     public GameObject impactDecalPrefab;
 
+    [Header("Archer Impact (Optional)")]
+    [SerializeField] private bool spawnBloodOnDirectHit;
+    [SerializeField] private bool spawnGroundBloodOnDirectHit;
+    [SerializeField] private bool spawnEmbeddedArrowOnDirectHit;
+    [SerializeField] private bool spawnEmbeddedArrowOnGroundImpact;
+    [SerializeField] private bool embedIntoTargetOnDirectHit = true;
+    [SerializeField] private GameObject embeddedArrowPrefab;
+    [SerializeField, Min(0.05f)] private float embeddedArrowLifetime = 2.4f;
+    [SerializeField] private Vector3 embeddedArrowScale = Vector3.one;
+    [SerializeField] private Vector3 embeddedArrowLocalOffset;
+
     // --- Non-serialized tuning constants (keeps inspector clean) ---
     // Arc grows non-linearly with distance; >1 means arc grows slower at first then ramps up.
     private const float ArcPower = 1.35f;
@@ -100,6 +111,8 @@ public class Arrow : MonoBehaviour
     private float cachedDistance;
     private float cachedArcHeight;
     private float cachedTravelTime;
+    private Vector2 lastVelocityDirection = Vector2.right;
+    private UnitHealth lastDirectHitTarget;
 
     private void Awake()
     {
@@ -133,10 +146,13 @@ public class Arrow : MonoBehaviour
         hasImpacted = false;
         pierceCount = 0;
         hitUnits.Clear();
+        lastDirectHitTarget = null;
 
         Vector2 dir = targetPos - startPos;
         if (dir.sqrMagnitude <= 0.0001f)
             dir = cachedTransform.right;
+
+        lastVelocityDirection = dir.normalized;
 
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + modelForwardAngleOffset;
         cachedTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
@@ -168,7 +184,7 @@ public class Arrow : MonoBehaviour
 
         if (t >= 1f)
         {
-            Explode();
+            Explode(false);
             return;
         }
 
@@ -191,6 +207,8 @@ public class Arrow : MonoBehaviour
         Vector2 dir = nextPos - currentPos;
         if (dir.sqrMagnitude <= 0.00001f)
             return;
+
+        lastVelocityDirection = dir.normalized;
 
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + modelForwardAngleOffset;
         cachedTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
@@ -241,10 +259,11 @@ public class Arrow : MonoBehaviour
 
             pierceCount++;
             ApplyDamage(health);
+            lastDirectHitTarget = health;
 
             if (pierceCount >= maxPierce)
             {
-                Explode();
+                Explode(true);
                 return;
             }
         }
@@ -266,26 +285,32 @@ public class Arrow : MonoBehaviour
             status.ApplyFreeze(2f, 0.4f);
     }
 
-    private void Explode()
+    private void Explode(bool reachedPierceTarget)
     {
         if (hasImpacted)
             return;
 
         hasImpacted = true;
 
+        Vector3 impactPosition = cachedTransform.position;
+        UnitHealth hitTarget = reachedPierceTarget ? lastDirectHitTarget : null;
+
         Vector3 vfxScale = Vector3.one * GetImpactVfxScaleMultiplier();
 
         if (VfxPool.TryGetInstance(out VfxPool vfxPool))
         {
             if (dustPrefab != null)
-                vfxPool.Spawn(dustPrefab, cachedTransform.position, Quaternion.identity, vfxScale);
+                vfxPool.Spawn(dustPrefab, impactPosition, Quaternion.identity, vfxScale);
 
             if (impactWavePrefab != null)
-                vfxPool.Spawn(impactWavePrefab, cachedTransform.position, Quaternion.identity, vfxScale);
+                vfxPool.Spawn(impactWavePrefab, impactPosition, Quaternion.identity, vfxScale);
 
             if (impactDecalPrefab != null)
-                vfxPool.Spawn(impactDecalPrefab, cachedTransform.position, Quaternion.identity, vfxScale);
+                vfxPool.Spawn(impactDecalPrefab, impactPosition, Quaternion.identity, vfxScale);
         }
+
+        HandleOptionalDirectHitPresentation(hitTarget, impactPosition);
+        HandleOptionalEmbeddedArrow(hitTarget, impactPosition);
 
         ExplodeAreaDamage();
 
@@ -322,6 +347,61 @@ public class Arrow : MonoBehaviour
 
             ApplyDamage(health);
         }
+    }
+
+    private void HandleOptionalDirectHitPresentation(UnitHealth hitTarget, Vector3 impactPosition)
+    {
+        if (hitTarget == null)
+            return;
+
+        if (!spawnBloodOnDirectHit && !spawnGroundBloodOnDirectHit)
+            return;
+
+        if (!VfxPool.TryGetInstance(out VfxPool vfxPool))
+            return;
+
+        if (spawnBloodOnDirectHit && hitTarget.bloodSplashPrefab != null)
+            vfxPool.Spawn(hitTarget.bloodSplashPrefab, impactPosition, Quaternion.identity);
+
+        if (spawnGroundBloodOnDirectHit && hitTarget.bloodPoolPrefab != null)
+        {
+            Vector3 bloodPosition = hitTarget.CachedCollider != null
+                ? hitTarget.CachedCollider.bounds.min
+                : hitTarget.transform.position;
+
+            bloodPosition.z = 0f;
+            vfxPool.Spawn(hitTarget.bloodPoolPrefab, bloodPosition, Quaternion.identity);
+        }
+    }
+
+    private void HandleOptionalEmbeddedArrow(UnitHealth hitTarget, Vector3 impactPosition)
+    {
+        if (embeddedArrowPrefab == null)
+            return;
+
+        bool spawnOnDirectHit = hitTarget != null && spawnEmbeddedArrowOnDirectHit;
+        bool spawnOnGroundImpact = hitTarget == null && spawnEmbeddedArrowOnGroundImpact;
+        if (!spawnOnDirectHit && !spawnOnGroundImpact)
+            return;
+
+        if (!VfxPool.TryGetInstance(out VfxPool vfxPool))
+            return;
+
+        Quaternion rotation = Quaternion.AngleAxis(
+            Mathf.Atan2(lastVelocityDirection.y, lastVelocityDirection.x) * Mathf.Rad2Deg + modelForwardAngleOffset,
+            Vector3.forward);
+
+        Vector3 spawnPosition = impactPosition + embeddedArrowLocalOffset;
+        GameObject embedded = vfxPool.Spawn(embeddedArrowPrefab, spawnPosition, rotation, embeddedArrowScale);
+        if (embedded == null)
+            return;
+
+        if (embedIntoTargetOnDirectHit && hitTarget != null)
+            embedded.transform.SetParent(hitTarget.transform, true);
+
+        PooledTimedAutoReturn timedAutoReturn = embedded.GetComponent<PooledTimedAutoReturn>();
+        if (timedAutoReturn != null)
+            timedAutoReturn.Arm(embeddedArrowLifetime);
     }
 
     private float GetImpactVfxScaleMultiplier()
