@@ -52,6 +52,14 @@ public class Arrow : MonoBehaviour
     [SerializeField, Tooltip("When to start rotating the arrow towards its velocity.\n0 = rotate immediately, 0.1 = start rotating after 10% of flight.\nHelps close shots look less 'jerky'.")]
     private float rotationStartT = 0f;
 
+    [SerializeField, Min(0.01f)]
+    [Tooltip("Radius used for direct-hit probing during flight. Smaller = less early hit feeling.")]
+    private float directHitProbeRadius = 0.11f;
+
+    [SerializeField]
+    [Tooltip("Forward probe offset from arrow center toward tip. Positive values make contact happen closer to arrow tip.")]
+    private float directHitProbeForwardOffset = 0.08f;
+
     [SerializeField, Range(-180f, 180f)]
     [Tooltip("Sprite forward angle correction in degrees. Use if arrow art is authored with different forward axis.")]
     private float modelForwardAngleOffset = 0f;
@@ -89,7 +97,10 @@ public class Arrow : MonoBehaviour
     [SerializeField, Min(0.05f)] private float embeddedArrowLifetime = 2.4f;
     [SerializeField] private Vector3 embeddedArrowScale = Vector3.one;
     [SerializeField] private Vector3 embeddedArrowLocalOffset;
-    [SerializeField, Min(1)] private int maxEmbeddedArrowsPerTarget = 4;
+    [Tooltip("Maximum embedded arrows kept on one target at the same time.")]
+    [SerializeField, Min(1)] private int maxEmbeddedArrowsPerTarget = 7;
+    [Tooltip("When max is reached, oldest embedded arrows are released so new arrows can stick.")]
+    [SerializeField] private bool recycleOldestEmbeddedArrow = true;
     [SerializeField, Min(0f)] private float embeddedArrowSpreadRadius = 0.12f;
     [SerializeField, Min(0f)] private float embeddedArrowMinSpacing = 0.07f;
     [SerializeField, Min(1)] private int embeddedArrowPlacementAttempts = 7;
@@ -101,7 +112,7 @@ public class Arrow : MonoBehaviour
     private const float ArcPower = 1.35f;
     private const float TravelPower = 0.75f;
     private const float LookAhead = 0.015f;
-    private const float FlightHitRadius = 0.3f;
+
 
     private Vector2 startPos;
     private Vector2 targetPos;
@@ -246,9 +257,16 @@ public class Arrow : MonoBehaviour
         if (hitBuffer == null || hitBuffer.Length == 0)
             return;
 
+        Vector2 probeDirection = lastVelocityDirection.sqrMagnitude > 0.0001f
+            ? lastVelocityDirection
+            : (Vector2)cachedTransform.right;
+
+        Vector2 probeCenter = (Vector2)cachedTransform.position + probeDirection * Mathf.Max(0f, directHitProbeForwardOffset);
+        float probeRadius = Mathf.Max(0.01f, directHitProbeRadius);
+
         int hitCount = Physics2D.OverlapCircleNonAlloc(
-            cachedTransform.position,
-            FlightHitRadius,
+            probeCenter,
+            probeRadius,
             hitBuffer,
             unitLayer);
 
@@ -534,7 +552,19 @@ public class Arrow : MonoBehaviour
 
         int maxPerTarget = Mathf.Max(1, maxEmbeddedArrowsPerTarget);
         if (state.Records.Count >= maxPerTarget)
-            return false;
+        {
+            if (!recycleOldestEmbeddedArrow)
+                return false;
+
+            while (state.Records.Count >= maxPerTarget)
+            {
+                if (!TryReleaseOldestEmbeddedArrow(state))
+                    break;
+            }
+
+            if (state.Records.Count >= maxPerTarget)
+                return false;
+        }
 
         Vector3 targetPosition = target.transform.position;
         Vector3 baseOffset = impactPosition - targetPosition;
@@ -636,6 +666,29 @@ public class Arrow : MonoBehaviour
             state.Records.RemoveAt(i);
         }
     }
+    private static bool TryReleaseOldestEmbeddedArrow(EmbeddedTargetState state)
+    {
+        if (state == null || state.Records.Count == 0)
+            return false;
+
+        EmbeddedArrowRecord oldest = state.Records[0];
+        state.Records.RemoveAt(0);
+
+        GameObject instance = oldest.Instance;
+        if (instance == null || !instance.activeInHierarchy)
+            return true;
+
+        PooledFollowTarget follower = instance.GetComponent<PooledFollowTarget>();
+        if (follower != null)
+            follower.enabled = false;
+
+        if (VfxPool.TryGetInstance(out VfxPool vfxPool))
+            vfxPool.Release(instance);
+        else
+            Object.Destroy(instance);
+
+        return true;
+    }
 
     private void ApplyGroundBloodVariant(GameObject groundBlood)
     {
@@ -736,3 +789,8 @@ public class Arrow : MonoBehaviour
         }
     }
 }
+
+
+
+
+
