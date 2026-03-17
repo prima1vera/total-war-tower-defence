@@ -51,7 +51,7 @@ MonoBehaviour:
   - SourceSprite: {fileID: -868966910, guid: ca1cfbc2cad744941a7bc463777d9a01, type: 3}
     RemainsSprite: {fileID: 21300000, guid: e2ae0418badb4d94b992b89d6db5fa46, type: 3}
   - SourceSprite: {fileID: 852976072, guid: 202243a863cf3f443b247ce359693bda, type: 3}
-    RemainsSprite: {fileID: 21300000, guid: e2ae0418badb4d94b992b89d6db5fa46, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: ffeaa26c9a947924695fe9fbc4a846e6, type: 3}
   - SourceSprite: {fileID: 2061388563, guid: b5aeebe569319b649b3775f3d9dc1e8e, type: 3}
     RemainsSprite: {fileID: 21300000, guid: 366d36388c4ce354ab6806e6f7b17517, type: 3}
   - SourceSprite: {fileID: -2044723188, guid: c8ca667ea4270cb449e7a46d8aa59d46, type: 3}
@@ -68,22 +68,28 @@ MonoBehaviour:
   bloodPoolPrewarmPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
   bloodPoolPrewarmCount: 100
   bloodDecalVariants:
-  - {fileID: 1648438383, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1186700707, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1709951694, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1924922355, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -507077819, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 1135868401, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1108779382, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -665182365, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 1401955938, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 206978548, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1679737679, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 1683276007, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 1608892624, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1751352846, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 1733435953, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -283905027, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  bloodDecalScaleRange: {x: 0.22, y: 0.36}
-
-
+  - {fileID: 904556495, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -1649139191, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 1359364042, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 127719275, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -25850772, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -1465256451, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -2122540427, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -8707995, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -1228684913, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 2038799502, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 622022122, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 669430243, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -1445311529, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -862863462, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -2040928815, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -2085106146, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  bloodDecalScaleRange: {x: 0.25, y: 0.35}
+  deathBloodSpawnChance: 1
+  clusterBloodPrefab: {fileID: 7924102300927368246, guid: eca0691a01d8452581805f5a62bb00ab, type: 3}
+  clusterBloodChance: 1
+  clusterWindowSeconds: 0.5
+  clusterScanRadius: 0.5
+  clusterThreshold: 10
+  clusterBloodScaleRange: {x: 0.8, y: 1}
+  clusterBloodLifetimeRange: {x: 120, y: 180}

@@ -3,15 +3,20 @@ using UnityEngine;
 public class PooledFollowTarget : MonoBehaviour
 {
     private Transform target;
+    private UnitHealth targetHealth;
     private Vector3 localOffset;
     private float followDuration;
     private float elapsed;
     private bool releaseWhenTargetLost;
+
+    [SerializeField] private bool releaseWhenUnitDies = true;
+
     private bool isFollowing;
 
     public void Attach(Transform followTarget, Vector3 offsetInTargetLocalSpace, float durationSeconds, bool releaseOnTargetLost)
     {
         target = followTarget;
+        targetHealth = target != null ? target.GetComponent<UnitHealth>() : null;
         localOffset = offsetInTargetLocalSpace;
         followDuration = durationSeconds;
         elapsed = 0f;
@@ -27,7 +32,10 @@ public class PooledFollowTarget : MonoBehaviour
         if (!isFollowing)
             return;
 
-        if (target == null || !target.gameObject.activeInHierarchy)
+        bool lostTarget = target == null || !target.gameObject.activeInHierarchy;
+        bool deadTarget = releaseWhenUnitDies && targetHealth != null && targetHealth.IsDead;
+
+        if (lostTarget || deadTarget)
         {
             isFollowing = false;
 
@@ -59,5 +67,6 @@ public class PooledFollowTarget : MonoBehaviour
     {
         isFollowing = false;
         target = null;
+        targetHealth = null;
     }
 }

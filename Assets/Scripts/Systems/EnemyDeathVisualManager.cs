@@ -15,14 +15,25 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [SerializeField] private GameObject bloodPoolPrewarmPrefab;
     [SerializeField, Min(0)] private int bloodPoolPrewarmCount = 24;
 
-
     [Header("Blood Variants")]
     [SerializeField] private Sprite[] bloodDecalVariants;
     [SerializeField] private Vector2 bloodDecalScaleRange = new Vector2(0.22f, 0.36f);
+
+    [Header("Death Blood Behavior")]
+    [SerializeField, Range(0f, 1f)] private float deathBloodSpawnChance = 0.35f;
+    [SerializeField] private GameObject clusterBloodPrefab;
+    [SerializeField, Range(0f, 1f)] private float clusterBloodChance = 0.35f;
+    [SerializeField, Min(0.1f)] private float clusterWindowSeconds = 2.5f;
+    [SerializeField, Min(0.1f)] private float clusterScanRadius = 1.35f;
+    [SerializeField, Min(2)] private int clusterThreshold = 4;
+    [SerializeField] private Vector2 clusterBloodScaleRange = new Vector2(0.28f, 0.45f);
+    [SerializeField] private Vector2 clusterBloodLifetimeRange = new Vector2(20f, 38f);
+
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
     private readonly Dictionary<Sprite, Sprite> remainsVariantLookup = new Dictionary<Sprite, Sprite>(8);
     private readonly Dictionary<GameObject, Stack<GameObject>> bloodPoolByPrefab = new Dictionary<GameObject, Stack<GameObject>>(4);
     private readonly Stack<GameObject> corpseVisualPool = new Stack<GameObject>(64);
+    private readonly Queue<RecentDeathEntry> recentDeaths = new Queue<RecentDeathEntry>(64);
 
     private WaitForSeconds cachedRemainsLifetimeWait;
     private float cachedRemainsLifetime = -1f;
@@ -71,12 +82,21 @@ public class EnemyDeathVisualManager : MonoBehaviour
         manager = instance;
         return manager != null;
     }
-    public void  SpawnDeathVisuals(Sprite corpseSprite, bool corpseFlipX, Vector3 corpsePosition, Vector3 corpseScale, int corpseSortingOrder, GameObject bloodPoolPrefab, Vector3 bloodPosition)
+
+    public void SpawnDeathVisuals(
+        Sprite corpseSprite,
+        bool corpseFlipX,
+        Vector3 corpsePosition,
+        Vector3 corpseScale,
+        int corpseSortingOrder,
+        GameObject bloodPoolPrefab,
+        Vector3 bloodPosition)
     {
         if (corpseSprite == null && bloodPoolPrefab == null)
             return;
 
         EnforceCap();
+        RegisterRecentDeath(bloodPosition);
 
         GameObject corpseObject = null;
         SpriteRenderer corpseRenderer = null;
@@ -97,7 +117,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
         }
 
         GameObject bloodObject = null;
-        if (bloodPoolPrefab != null)
+        bool shouldSpawnDeathBlood = bloodPoolPrefab != null && Random.value <= deathBloodSpawnChance;
+        if (shouldSpawnDeathBlood)
         {
             bloodObject = AcquireBloodVisual(bloodPoolPrefab);
             bloodObject.transform.SetPositionAndRotation(bloodPosition, Quaternion.identity);
@@ -108,6 +129,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
             float targetScale = ResolveBloodDecalScale();
             StartCoroutine(AnimateBloodPool(bloodObject.transform, bloodRenderer, targetScale));
         }
+
+        TrySpawnClusterBlood(bloodPosition, bloodPoolPrefab);
 
         activeVisuals.Enqueue(new DeathVisualEntry(corpseObject, corpseRenderer, bloodObject, corpseSprite, corpseSortingOrder, bloodPoolPrefab));
     }
@@ -138,8 +161,91 @@ public class EnemyDeathVisualManager : MonoBehaviour
     private void PrewarmPools()
     {
         PrewarmCorpsePool(prewarmCorpseCount);
-
         PrewarmBloodPool(bloodPoolPrewarmCount);
+    }
+
+    private void RegisterRecentDeath(Vector3 position)
+    {
+        float now = Time.time;
+        recentDeaths.Enqueue(new RecentDeathEntry(position, now));
+        PruneRecentDeaths(now);
+    }
+
+    private void PruneRecentDeaths(float now)
+    {
+        float window = Mathf.Max(0.1f, clusterWindowSeconds);
+        while (recentDeaths.Count > 0 && now - recentDeaths.Peek().Time > window)
+            recentDeaths.Dequeue();
+
+        int maxEntries = Mathf.Max(16, maxTrackedDeaths * 2);
+        while (recentDeaths.Count > maxEntries)
+            recentDeaths.Dequeue();
+    }
+
+    private void TrySpawnClusterBlood(Vector3 bloodPosition, GameObject fallbackPrefab)
+    {
+        GameObject sourcePrefab = clusterBloodPrefab != null ? clusterBloodPrefab : fallbackPrefab;
+        if (sourcePrefab == null)
+            return;
+
+        if (Random.value > clusterBloodChance)
+            return;
+
+        float now = Time.time;
+        PruneRecentDeaths(now);
+
+        float scanRadius = Mathf.Max(0.1f, clusterScanRadius);
+        float scanRadiusSq = scanRadius * scanRadius;
+
+        int nearbyDeaths = 0;
+        foreach (RecentDeathEntry entry in recentDeaths)
+        {
+            if ((entry.Position - bloodPosition).sqrMagnitude > scanRadiusSq)
+                continue;
+
+            nearbyDeaths++;
+            if (nearbyDeaths >= clusterThreshold)
+                break;
+        }
+
+        if (nearbyDeaths < Mathf.Max(2, clusterThreshold))
+            return;
+
+        if (!VfxPool.TryGetInstance(out VfxPool vfxPool))
+            return;
+
+        Vector2 jitter = Random.insideUnitCircle * Mathf.Min(0.15f, scanRadius * 0.25f);
+        Vector3 spawnPosition = new Vector3(bloodPosition.x + jitter.x, bloodPosition.y + jitter.y - 0.02f, 0f);
+
+        float scale = ResolveRangeValue(clusterBloodScaleRange, 0.1f);
+        GameObject clusterBlood = vfxPool.Spawn(sourcePrefab, spawnPosition, Quaternion.identity, new Vector3(scale, scale, 1f));
+        if (clusterBlood == null)
+            return;
+
+        SpriteRenderer clusterRenderer = clusterBlood.GetComponent<SpriteRenderer>();
+        ApplyBloodDecalVariant(clusterBlood.transform, clusterRenderer);
+        ArmClusterBloodLifetime(clusterBlood);
+    }
+
+    private void ArmClusterBloodLifetime(GameObject clusterBlood)
+    {
+        if (clusterBlood == null)
+            return;
+
+        float lifetime = ResolveRangeValue(clusterBloodLifetimeRange, 0.2f);
+        PooledTimedAutoReturn timedAutoReturn = clusterBlood.GetComponent<PooledTimedAutoReturn>();
+
+        if (timedAutoReturn != null)
+        {
+            timedAutoReturn.enabled = true;
+            timedAutoReturn.Arm(lifetime);
+            return;
+        }
+
+        if (VfxPool.TryGetInstance(out VfxPool vfxPool))
+            vfxPool.Release(clusterBlood);
+        else
+            Destroy(clusterBlood);
     }
 
     private GameObject AcquireCorpseVisual()
@@ -328,7 +434,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
             ReleaseCorpseVisual(corpseRenderer.gameObject);
     }
 
-
     private void ApplyBloodDecalVariant(Transform bloodTransform, SpriteRenderer bloodRenderer)
     {
         if (bloodTransform == null || bloodRenderer == null)
@@ -347,9 +452,14 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
     private float ResolveBloodDecalScale()
     {
-        float minScale = Mathf.Max(0.05f, Mathf.Min(bloodDecalScaleRange.x, bloodDecalScaleRange.y));
-        float maxScale = Mathf.Max(minScale, Mathf.Max(bloodDecalScaleRange.x, bloodDecalScaleRange.y));
-        return Random.Range(minScale, maxScale);
+        return ResolveRangeValue(bloodDecalScaleRange, 0.05f);
+    }
+
+    private static float ResolveRangeValue(Vector2 range, float minClamp)
+    {
+        float min = Mathf.Max(minClamp, Mathf.Min(range.x, range.y));
+        float max = Mathf.Max(min, Mathf.Max(range.x, range.y));
+        return Random.Range(min, max);
     }
 
     private IEnumerator AnimateBloodPool(Transform blood, SpriteRenderer spriteRenderer, float targetScale)
@@ -414,7 +524,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
         public Sprite RemainsSprite;
     }
 
-
     private readonly struct DeathVisualEntry
     {
         public readonly GameObject CorpseObject;
@@ -434,6 +543,16 @@ public class EnemyDeathVisualManager : MonoBehaviour
             BloodSourcePrefab = bloodSourcePrefab;
         }
     }
+
+    private readonly struct RecentDeathEntry
+    {
+        public readonly Vector3 Position;
+        public readonly float Time;
+
+        public RecentDeathEntry(Vector3 position, float time)
+        {
+            Position = position;
+            Time = time;
+        }
+    }
 }
-
-
