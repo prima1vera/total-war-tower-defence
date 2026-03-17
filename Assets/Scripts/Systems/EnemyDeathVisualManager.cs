@@ -21,20 +21,38 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [SerializeField] private Vector2 bloodDecalScaleRange = new Vector2(0.22f, 0.36f);
 
     [Header("Death Blood Behavior")]
+    [Tooltip("Chance to spawn a death blood decal when an enemy dies (0 = never, 1 = always).")]
     [SerializeField, Range(0f, 1f)] private float deathBloodSpawnChance = 0.35f;
+    [Tooltip("Optional prefab used for dense-kill cluster blood. If empty, uses regular death blood prefab.")]
     [SerializeField] private GameObject clusterBloodPrefab;
+    [Tooltip("Chance to attempt extra cluster blood when many enemies die in one area.")]
     [SerializeField, Range(0f, 1f)] private float clusterBloodChance = 0.35f;
+    [Tooltip("Time window (seconds) used to count nearby recent deaths for cluster detection.")]
     [SerializeField, Min(0.1f)] private float clusterWindowSeconds = 2.5f;
+    [Tooltip("Radius around current death used to detect clustered kills.")]
     [SerializeField, Min(0.1f)] private float clusterScanRadius = 1.35f;
+    [Tooltip("Minimum nearby deaths in the time window required to spawn cluster blood.")]
     [SerializeField, Min(2)] private int clusterThreshold = 4;
     [SerializeField] private Vector2 clusterBloodScaleRange = new Vector2(0.28f, 0.45f);
     [SerializeField] private Vector2 clusterBloodLifetimeRange = new Vector2(20f, 38f);
 
     [Header("Death Blood Flow")]
+    [Tooltip("If enabled, death blood starts from enemy right side and settles to the left (screen-space feel).")]
     [SerializeField] private bool deathBloodFlowRightToLeft = true;
+    [Tooltip("How far blood travels while flowing before it settles. Larger values = longer smear.")]
     [SerializeField] private Vector2 deathBloodFlowDistanceRange = new Vector2(0.08f, 0.18f);
+    [Tooltip("Random vertical offset for blood flow start, to avoid identical-looking streaks.")]
     [SerializeField] private Vector2 deathBloodFlowVerticalJitterRange = new Vector2(-0.02f, 0.03f);
+    [Tooltip("Final horizontal offset of the blood puddle relative to death point.")]
     [SerializeField] private Vector2 deathBloodSettleHorizontalOffsetRange = new Vector2(-0.06f, 0.02f);
+
+    [Header("Death Blood Flow Timing")]
+    [Tooltip("Multiplier for blood growth/flow duration. Higher values = slower blood spreading.")]
+    [SerializeField] private Vector2 deathBloodFlowDurationMultiplierRange = new Vector2(2.4f, 4.35f);
+    [Tooltip("Random delay before a blood decal starts growing. Adds natural desync.")]
+    [SerializeField] private Vector2 deathBloodFlowStartDelayRange = new Vector2(0f, 0.12f);
+    [Tooltip("Final alpha range of spawned blood decals (lower = more transparent).")]
+    [SerializeField] private Vector2 deathBloodFlowEndAlphaRange = new Vector2(0.78f, 0.96f);
 
     private readonly Queue<DeathVisualEntry> activeVisuals = new Queue<DeathVisualEntry>(80);
     private readonly Dictionary<Sprite, Sprite> remainsVariantLookup = new Dictionary<Sprite, Sprite>(8);
@@ -131,13 +149,14 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
             Vector3 settlePosition = ResolveDeathBloodSettlePosition(bloodPosition);
             Vector3 startPosition = ResolveDeathBloodStartPosition(settlePosition);
-            bloodObject.transform.SetPositionAndRotation(startPosition, Quaternion.identity);
-
             SpriteRenderer bloodRenderer = bloodObject.GetComponent<SpriteRenderer>();
             ApplyBloodDecalVariant(bloodObject.transform, bloodRenderer);
 
             float targetScale = ResolveBloodDecalScale();
-            StartCoroutine(AnimateBloodPool(bloodObject.transform, bloodRenderer, targetScale, settlePosition));
+            float startScale = ResolveDeathBloodStartScale(targetScale);
+            InitializeBloodPoolVisualState(bloodObject.transform, bloodRenderer, startPosition, startScale);
+
+            StartCoroutine(AnimateBloodPool(bloodObject.transform, bloodRenderer, startScale, targetScale, settlePosition));
         }
 
         TrySpawnClusterBlood(bloodPosition, bloodPoolPrefab);
@@ -284,6 +303,29 @@ public class EnemyDeathVisualManager : MonoBehaviour
             settlePosition.x + flowDistance * horizontalDirection,
             settlePosition.y + yJitter,
             0f);
+    }
+
+    private float ResolveDeathBloodStartScale(float targetScale)
+    {
+        float minScale = Mathf.Min(0.15f, targetScale * 0.35f);
+        float maxScale = Mathf.Min(targetScale, Mathf.Max(minScale, 0.2f));
+        return Random.Range(minScale, maxScale);
+    }
+
+    private static void InitializeBloodPoolVisualState(Transform bloodTransform, SpriteRenderer bloodRenderer, Vector3 startPosition, float startScale)
+    {
+        if (bloodTransform == null)
+            return;
+
+        bloodTransform.SetPositionAndRotation(startPosition, Quaternion.identity);
+        bloodTransform.localScale = new Vector3(startScale, startScale, 1f);
+
+        if (bloodRenderer == null)
+            return;
+
+        Color color = bloodRenderer.color;
+        color.a = 0f;
+        bloodRenderer.color = color;
     }
 
     private GameObject AcquireCorpseVisual()
@@ -546,18 +588,24 @@ public class EnemyDeathVisualManager : MonoBehaviour
         return Random.Range(min, max);
     }
 
-    private IEnumerator AnimateBloodPool(Transform blood, SpriteRenderer spriteRenderer, float targetScale, Vector3 settlePosition)
+    private IEnumerator AnimateBloodPool(Transform blood, SpriteRenderer spriteRenderer, float startScaleUniform, float targetScale, Vector3 settlePosition)
     {
-        float startUniform = Random.Range(0.05f, 0.15f);
+        float startDelay = ResolveRangeValue(deathBloodFlowStartDelayRange, 0f);
+        float delayed = 0f;
+        while (delayed < startDelay)
+        {
+            delayed += Time.deltaTime;
+            yield return null;
+        }
 
-        Vector3 startScale = new Vector3(startUniform, startUniform, 1f);
+        Vector3 startScale = new Vector3(startScaleUniform, startScaleUniform, 1f);
         Vector3 endScale = new Vector3(targetScale, targetScale, 1f);
 
         float duration = Mathf.Lerp(0.25f, 0.95f, Mathf.InverseLerp(0.35f, 1.05f, targetScale));
-        duration *= Random.Range(1.9f, 3.25f);
+        duration *= ResolveRangeValue(deathBloodFlowDurationMultiplierRange, 0.1f);
 
         float startAlpha = 0f;
-        float endAlpha = Random.Range(0.8f, 1f);
+        float endAlpha = Mathf.Clamp01(ResolveRangeValue(deathBloodFlowEndAlphaRange, 0f));
 
         if (spriteRenderer != null)
         {

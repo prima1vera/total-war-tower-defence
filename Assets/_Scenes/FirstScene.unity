@@ -11332,6 +11332,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7429450009831727654}
     - target: {fileID: 5942774154070165696, guid: 8a21a6b4b32f672408ae61b3aa1e8ce0, type: 3}
+      propertyPath: enemyFamily
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5942774154070165696, guid: 8a21a6b4b32f672408ae61b3aa1e8ce0, type: 3}
       propertyPath: enemyPrefab
       value: 
       objectReference: {fileID: 8051200457295428929, guid: b9e8ab41d0c2a2148806d6d434aa0241, type: 3}
@@ -11731,12 +11735,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 255493462}
     - target: {fileID: 775380276772531923, guid: 4f50d7fab22cd4b47a79e18691ce93b7, type: 3}
+      propertyPath: enemyFamily
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 775380276772531923, guid: 4f50d7fab22cd4b47a79e18691ce93b7, type: 3}
       propertyPath: enemyPrefab
       value: 
       objectReference: {fileID: 8051200457295428929, guid: 8254c6cc6278d5045b15c9dd2dbf88b3, type: 3}
     - target: {fileID: 775380276772531923, guid: 4f50d7fab22cd4b47a79e18691ce93b7, type: 3}
       propertyPath: spawnInterval
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 775380276772531923, guid: 4f50d7fab22cd4b47a79e18691ce93b7, type: 3}
+      propertyPath: waveSpawnWeight
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 775380276772531923, guid: 4f50d7fab22cd4b47a79e18691ce93b7, type: 3}
       propertyPath: spawnPoints.Array.size
@@ -11968,177 +11980,9 @@ PrefabInstance:
       value: EnemyDeathManager
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: clusterThreshold
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: clusterScanRadius
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: clusterBloodChance
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: clusterWindowSeconds
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: deathBloodSpawnChance
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalScaleRange.x
-      value: 0.22
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalScaleRange.y
-      value: 0.33
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: clusterBloodScaleRange.x
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: clusterBloodScaleRange.y
+      propertyPath: deathBloodFlowStartDelayRange.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: clusterBloodLifetimeRange.x
-      value: 120
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.size
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[0]
-      value: 
-      objectReference: {fileID: 904556495, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[1]
-      value: 
-      objectReference: {fileID: 1359364042, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[2]
-      value: 
-      objectReference: {fileID: 127719275, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[3]
-      value: 
-      objectReference: {fileID: -25850772, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[4]
-      value: 
-      objectReference: {fileID: -1465256451, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[5]
-      value: 
-      objectReference: {fileID: -2122540427, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[6]
-      value: 
-      objectReference: {fileID: -8707995, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[7]
-      value: 
-      objectReference: {fileID: -1228684913, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[8]
-      value: 
-      objectReference: {fileID: 2038799502, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[9]
-      value: 
-      objectReference: {fileID: 622022122, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[10]
-      value: 
-      objectReference: {fileID: 669430243, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[11]
-      value: 
-      objectReference: {fileID: -1445311529, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[12]
-      value: 
-      objectReference: {fileID: -1649139191, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[13]
-      value: 
-      objectReference: {fileID: -862863462, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[14]
-      value: 
-      objectReference: {fileID: -2040928815, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[15]
-      value: 
-      objectReference: {fileID: -2085106146, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[16]
-      value: 
-      objectReference: {fileID: 1648438383, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[17]
-      value: 
-      objectReference: {fileID: -1186700707, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[18]
-      value: 
-      objectReference: {fileID: -1709951694, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[19]
-      value: 
-      objectReference: {fileID: -1924922355, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[20]
-      value: 
-      objectReference: {fileID: -507077819, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[21]
-      value: 
-      objectReference: {fileID: 1135868401, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[22]
-      value: 
-      objectReference: {fileID: -1108779382, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[23]
-      value: 
-      objectReference: {fileID: -665182365, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[24]
-      value: 
-      objectReference: {fileID: 1401955938, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[25]
-      value: 
-      objectReference: {fileID: 206978548, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[26]
-      value: 
-      objectReference: {fileID: -1679737679, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[27]
-      value: 
-      objectReference: {fileID: 1683276007, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[28]
-      value: 
-      objectReference: {fileID: 1608892624, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[29]
-      value: 
-      objectReference: {fileID: -1751352846, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[30]
-      value: 
-      objectReference: {fileID: 1733435953, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
-      propertyPath: bloodDecalVariants.Array.data[31]
-      value: 
-      objectReference: {fileID: -283905027, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
