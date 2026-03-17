@@ -99,4 +99,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 12
+  smoothDisappear: 1
+  disappearDuration: 2.4
+  fadeAlpha: 1
+  shrinkScale: 1
+  endScaleMultiplier: 0.1
+
 

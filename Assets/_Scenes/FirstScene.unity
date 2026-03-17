@@ -11969,11 +11969,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterThreshold
-      value: 10
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterScanRadius
-      value: 0.5
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterBloodChance
@@ -11981,7 +11981,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterWindowSeconds
-      value: 0.5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: deathBloodSpawnChance
@@ -11989,19 +11989,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalScaleRange.x
-      value: 0.25
+      value: 0.22
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalScaleRange.y
-      value: 0.35
+      value: 0.33
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterBloodScaleRange.x
-      value: 0.8
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterBloodScaleRange.y
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterBloodLifetimeRange.x
@@ -12009,7 +12009,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.size
-      value: 16
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[0]
@@ -12018,51 +12018,51 @@ PrefabInstance:
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[1]
       value: 
-      objectReference: {fileID: -1649139191, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: 1359364042, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[2]
       value: 
-      objectReference: {fileID: 1359364042, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: 127719275, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[3]
       value: 
-      objectReference: {fileID: 127719275, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: -25850772, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[4]
       value: 
-      objectReference: {fileID: -25850772, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: -1465256451, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[5]
       value: 
-      objectReference: {fileID: -1465256451, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: -2122540427, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[6]
       value: 
-      objectReference: {fileID: -2122540427, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: -8707995, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[7]
       value: 
-      objectReference: {fileID: -8707995, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: -1228684913, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[8]
       value: 
-      objectReference: {fileID: -1228684913, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: 2038799502, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[9]
       value: 
-      objectReference: {fileID: 2038799502, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: 622022122, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[10]
       value: 
-      objectReference: {fileID: 622022122, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: 669430243, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[11]
       value: 
-      objectReference: {fileID: 669430243, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: -1445311529, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[12]
       value: 
-      objectReference: {fileID: -1445311529, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+      objectReference: {fileID: -1649139191, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodDecalVariants.Array.data[13]
       value: 
