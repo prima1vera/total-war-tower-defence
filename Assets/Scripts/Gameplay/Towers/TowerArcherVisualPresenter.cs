@@ -3,12 +3,19 @@ using UnityEngine;
 public class TowerArcherVisualPresenter : MonoBehaviour
 {
     [Header("Scene Wiring")]
+    [Tooltip("Owning ArcherTower used as source of aim and shot events.")]
     [SerializeField] private ArcherTower archerTower;
+    [Tooltip("Sprite renderer that displays archer idle/attack frame sets.")]
     [SerializeField] private SpriteRenderer archerRenderer;
+    [Tooltip("Directional sprite profile with per-level idle/pre-attack/attack frames.")]
     [SerializeField] private TowerArcherVisualProfile profile;
+    [Tooltip("Shot source transform for filtering shot events to this presenter only.")]
+    [SerializeField] private Transform shotSource;
 
     [Header("Direction")]
+    [Tooltip("Y-direction threshold separating Up/Down bands from Side band.")]
     [SerializeField, Range(0f, 1f)] private float verticalBandThreshold = 0.35f;
+    [Tooltip("If enabled, side animations flip by aim X sign instead of requiring dedicated left/right sets.")]
     [SerializeField] private bool flipSideByAimX = true;
 
     private TowerArcherLevelVisual activeLevelVisual;
@@ -44,7 +51,7 @@ public class TowerArcherVisualPresenter : MonoBehaviour
         if (!isWired)
             return;
 
-        archerTower.ShotFired += HandleShotFired;
+        archerTower.ShotFiredFrom += HandleShotFiredFrom;
         archerTower.VisualLevelChanged += HandleVisualLevelChanged;
 
         ApplyLevel(archerTower.VisualLevel);
@@ -56,7 +63,7 @@ public class TowerArcherVisualPresenter : MonoBehaviour
     {
         if (archerTower != null)
         {
-            archerTower.ShotFired -= HandleShotFired;
+            archerTower.ShotFiredFrom -= HandleShotFiredFrom;
             archerTower.VisualLevelChanged -= HandleVisualLevelChanged;
         }
     }
@@ -94,6 +101,9 @@ public class TowerArcherVisualPresenter : MonoBehaviour
             valid = false;
         }
 
+        if (shotSource == null)
+            shotSource = transform;
+
         return valid;
     }
 
@@ -101,6 +111,18 @@ public class TowerArcherVisualPresenter : MonoBehaviour
     {
         ApplyLevel(level);
         BeginIdle();
+    }
+
+    private void HandleShotFiredFrom(Vector2 origin, Vector2 direction)
+    {
+        if (shotSource != null)
+        {
+            float sourceDistanceSqr = ((Vector2)shotSource.position - origin).sqrMagnitude;
+            if (sourceDistanceSqr > 0.0004f)
+                return;
+        }
+
+        HandleShotFired(direction);
     }
 
     private void HandleShotFired(Vector2 direction)

@@ -48,12 +48,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   waves:
-  - enemyCount: 10
+  - enemyCount: 50
     spawnInterval: 0.7
     startDelay: 1
-  - enemyCount: 40
-    spawnInterval: 0.6
-    startDelay: 1.5
-  - enemyCount: 160
-    spawnInterval: 0.5
-    startDelay: 2
+  - enemyCount: 200
+    spawnInterval: 0.7
+    startDelay: 1

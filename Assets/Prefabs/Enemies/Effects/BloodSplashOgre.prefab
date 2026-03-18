@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8739886801270593624}
   - component: {fileID: 2701482561356381987}
   - component: {fileID: 179565954872716785}
+  - component: {fileID: 6401783743201105332}
   m_Layer: 21
   m_Name: BloodSplashOgre
   m_TagString: Untagged
@@ -4845,3 +4846,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   includeChildren: 1
   extraDelay: 0.05
+
+--- !u!114 &6401783743201105332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6567675628769267437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80890b5e3eec4d8e8cc6a68e0b5fb43d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  releaseWhenUnitDies: 1
+
+
