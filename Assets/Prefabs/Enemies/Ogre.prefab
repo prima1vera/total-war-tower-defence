@@ -9807,8 +9807,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.02277866, y: -0.10892263}
-  m_Size: {x: 0.38837212, y: 0.43768567}
+  m_Offset: {x: -0.012928804, y: -0.049208116}
+  m_Size: {x: 0.25314826, y: 0.30802992}
   m_Direction: 0
 --- !u!114 &5190869859010253226
 MonoBehaviour:
@@ -9862,10 +9862,10 @@ MonoBehaviour:
   freezeTint: {r: 0.4, g: 0.8, b: 1, a: 1}
   hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
   hitFlashDuration: 0.1
-  hitFlashStrength: 1
+  hitFlashStrength: 0.8
   burnTickColor: {r: 0.99215686, g: 0.92229563, b: 0, a: 1}
   burnTickDuration: 0.2
-  burnTickStrength: 1
+  burnTickStrength: 0.8
   fireEffect: {fileID: 6702332221611775603}
   frostEffectPrefab: {fileID: 4952141576655577673}
 --- !u!114 &649036997620235078

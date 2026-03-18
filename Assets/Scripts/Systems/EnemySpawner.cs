@@ -2,13 +2,29 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
+    public enum EnemyFamily
+    {
+        Auto = 0,
+        Small = 1,
+        Ogre = 2
+    }
+
     [SerializeField] private EnemyPool enemyPool;
     [SerializeField] private GameObject enemyPrefab;
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private bool autoSpawn = true;
     [SerializeField] private float spawnInterval = 1f;
 
+    [Header("Wave Composition")]
+    [Tooltip("Category used by WaveManager composition. Auto infers Ogre by prefab/pool name, otherwise Small.")]
+    [SerializeField] private EnemyFamily enemyFamily = EnemyFamily.Auto;
+    [Tooltip("Relative spawn weight for this spawner within its family. 2 means this spawner is picked ~2x more often than weight 1.")]
+    [SerializeField, Min(0f)] private float waveSpawnWeight = 1f;
+
     private float spawnTimer;
+
+    public float WaveSpawnWeight => Mathf.Max(0f, waveSpawnWeight);
+    public bool IsOgreSpawner => ResolveEnemyFamily() == EnemyFamily.Ogre;
 
     void Update()
     {
@@ -23,7 +39,6 @@ public class EnemySpawner : MonoBehaviour
         spawnTimer = Mathf.Max(0.05f, spawnInterval);
     }
 
-
     public void SetAutoSpawn(bool value)
     {
         autoSpawn = value;
@@ -32,6 +47,7 @@ public class EnemySpawner : MonoBehaviour
     }
 
     public bool IsAutoSpawnEnabled => autoSpawn;
+
     public GameObject SpawnEnemy()
     {
         Transform spawnPoint = ResolveSpawnPoint();
@@ -45,6 +61,28 @@ public class EnemySpawner : MonoBehaviour
             return null;
 
         return Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+    }
+
+    private EnemyFamily ResolveEnemyFamily()
+    {
+        if (enemyFamily != EnemyFamily.Auto)
+            return enemyFamily;
+
+        if (HasOgreHint(enemyPrefab != null ? enemyPrefab.name : null))
+            return EnemyFamily.Ogre;
+
+        if (enemyPool != null && HasOgreHint(enemyPool.name))
+            return EnemyFamily.Ogre;
+
+        return EnemyFamily.Small;
+    }
+
+    private static bool HasOgreHint(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return false;
+
+        return value.IndexOf("ogre", System.StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     private Transform ResolveSpawnPoint()

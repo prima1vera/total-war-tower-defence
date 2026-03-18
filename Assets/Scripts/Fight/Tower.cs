@@ -322,7 +322,7 @@ public class Tower : MonoBehaviour
 
         Vector2 targetPoint = baseTargetPoint;
         if (maxOffset > 0.01f)
-            targetPoint += Random.insideUnitCircle * maxOffset;
+            targetPoint += UnityEngine.Random.insideUnitCircle * maxOffset;
 
         if (((Vector2)spawnPosition - targetPoint).sqrMagnitude < 0.0025f)
             targetPoint = baseTargetPoint;

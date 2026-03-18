@@ -45,13 +45,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxTrackedDeaths: 100
+  maxTrackedRemains: 180
   overflowToRemainsTransitionDuration: 1
-  remainsLifetimeAfterOverflow: 180
+  overflowBloodFadeDuration: 1.25
   remainsVariants:
   - SourceSprite: {fileID: -868966910, guid: ca1cfbc2cad744941a7bc463777d9a01, type: 3}
     RemainsSprite: {fileID: 21300000, guid: e2ae0418badb4d94b992b89d6db5fa46, type: 3}
   - SourceSprite: {fileID: 852976072, guid: 202243a863cf3f443b247ce359693bda, type: 3}
-    RemainsSprite: {fileID: 21300000, guid: e2ae0418badb4d94b992b89d6db5fa46, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: ffeaa26c9a947924695fe9fbc4a846e6, type: 3}
+  - SourceSprite: {fileID: 2061388563, guid: b5aeebe569319b649b3775f3d9dc1e8e, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: 366d36388c4ce354ab6806e6f7b17517, type: 3}
+  - SourceSprite: {fileID: -2044723188, guid: c8ca667ea4270cb449e7a46d8aa59d46, type: 3}
+    RemainsSprite: {fileID: 21300000, guid: 4326f2bd67e30bc4f88db817e59e4e1c, type: 3}
   - SourceSprite: {fileID: 7675818124710891106, guid: 585632677c8fa4b408b686f5ee479870, type: 3}
     RemainsSprite: {fileID: 21300000, guid: 2643eae126eb47649998f9ca9e97259c, type: 3}
   - SourceSprite: {fileID: 1395571263, guid: 57b9b0d67c6f5a243aa5451ea150fa15, type: 3}
@@ -63,3 +68,30 @@ MonoBehaviour:
   prewarmCorpseCount: 100
   bloodPoolPrewarmPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
   bloodPoolPrewarmCount: 100
+  bloodDecalVariants:
+  - {fileID: 904556495, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 1359364042, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 127719275, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -25850772, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -1465256451, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -2122540427, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -8707995, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -1228684913, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 2038799502, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 622022122, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 669430243, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  bloodDecalScaleRange: {x: 0.22, y: 0.33}
+  maxTrackedGroundBloodDecals: 220
+  deathBloodSpawnChance: 1
+  clusterBloodChance: 1
+  clusterWindowSeconds: 2
+  clusterScanRadius: 1.5
+  clusterThreshold: 4
+  clusterBloodScaleRange: {x: 0.25, y: 0.5}
+  deathBloodFlowRightToLeft: 1
+  deathBloodFlowDistanceRange: {x: 0.08, y: 0.18}
+  deathBloodFlowVerticalJitterRange: {x: -0.02, y: 0.03}
+  deathBloodSettleHorizontalOffsetRange: {x: -0.06, y: 0.02}
+  deathBloodFlowDurationMultiplierRange: {x: 2.4, y: 4.35}
+  deathBloodFlowStartDelayRange: {x: 0, y: 0.5}
+  deathBloodFlowEndAlphaRange: {x: 0.78, y: 0.96}
