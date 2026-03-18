@@ -12551,6 +12551,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyDeathManager
       objectReference: {fileID: 0}
+    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
+      propertyPath: maxTrackedGroundBloodDecals
+      value: 1000
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
