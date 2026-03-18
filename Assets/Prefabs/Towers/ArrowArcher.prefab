@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.593, y: 0.058, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
-  m_SortingLayer: 5
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d82e222f47a15ad4e9e8e0d1e9520912, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -123,7 +123,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.14, y: 0.06}
+    oldSize: {x: 0.96, y: 0.64}
     newSize: {x: 0.1, y: 0.04}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -161,6 +161,8 @@ MonoBehaviour:
   minTravelTime: 0.32
   maxTravelTime: 1.05
   rotationStartT: 0.08
+  directHitProbeRadius: 0.11
+  directHitProbeForwardOffset: 0.08
   modelForwardAngleOffset: 0
   dustPrefab: {fileID: 2408689374836223538, guid: b92c8a1c6a875fd409b91b1ef31a322b, type: 3}
   impactWavePrefab: {fileID: 0}
@@ -174,30 +176,38 @@ MonoBehaviour:
   directHitGroundBloodJitter: 0.05
   directHitGroundBloodScaleRange: {x: 0.12, y: 0.22}
   directHitGroundBloodLifetimeRange: {x: 7, y: 13}
+  directHitGroundBloodEveryMinHits: 5
+  directHitGroundBloodEveryMaxHits: 10
   directHitGroundBloodVariants:
-  - {fileID: 1648438383, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1186700707, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1709951694, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1924922355, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -507077819, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 1135868401, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1108779382, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -665182365, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 1401955938, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 206978548, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1679737679, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 1683276007, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 1608892624, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -1751352846, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: 1733435953, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
-  - {fileID: -283905027, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
+  - {fileID: 904556495, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -1649139191, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 1359364042, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 127719275, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -25850772, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -1465256451, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -2122540427, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -8707995, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -1228684913, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 2038799502, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 622022122, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: 669430243, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -1445311529, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -862863462, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -2040928815, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
+  - {fileID: -2085106146, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
   spawnEmbeddedArrowOnDirectHit: 1
   spawnEmbeddedArrowOnGroundImpact: 1
   embedIntoTargetOnDirectHit: 1
   embeddedArrowPrefab: {fileID: 5000011111111111111, guid: 45e6ecf5e8794bb9afe0f33630e385f1, type: 3}
   embeddedArrowLifetime: 2.6
-  embeddedArrowScale: {x: 0.2, y: 0.2, z: 0.2}
+  embeddedArrowScale: {x: 0.3, y: 0.3, z: 0.3}
   embeddedArrowLocalOffset: {x: 0.02, y: -0.01, z: 0}
+  maxEmbeddedArrowsPerTarget: 7
+  recycleOldestEmbeddedArrow: 1
+  embeddedArrowSpreadRadius: 0.12
+  embeddedArrowMinSpacing: 0.07
+  embeddedArrowPlacementAttempts: 7
+  embeddedArrowMaxTargetOffset: 0.65
   strictAuthoring: 1
 --- !u!96 &1995411345173283066
 TrailRenderer:
@@ -239,7 +249,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
-  m_SortingLayer: 5
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Time: 0.25
   m_PreviewTimeScale: 1

@@ -74,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
-  m_SortingLayer: 5
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 107656489ced7ec4dae1d9a9abd8b7e5, type: 3}
   m_Color: {r: 0.9622642, g: 0.6660956, b: 0.56737274, a: 1}
@@ -119,18 +119,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.07210064, y: 0.08652067}
   m_SpriteTilingProperty:
-    border: {x: 0.29999998, y: 0.44, z: 0.26, w: 0.48}
+    border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.2, y: 1.6}
+    oldSize: {x: 2.4, y: 1.6}
     newSize: {x: 3.2, y: 1.6}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.29, y: 0.52}
+  m_Size: {x: 1.2517529, y: 0.31811905}
   m_EdgeRadius: 0
 --- !u!114 &1292995990306549658
 MonoBehaviour:
@@ -149,6 +149,8 @@ MonoBehaviour:
   knockbackForce: 0
   maxPierce: 5
   impactRadius: 0.5
+  impactRadiusScaleWeight: 1
+  impactVfxScaleWeight: 1
   unitLayer:
     serializedVersion: 2
     m_Bits: 2097152
@@ -159,14 +161,12 @@ MonoBehaviour:
   minTravelTime: 0.18
   maxTravelTime: 0.6
   rotationStartT: 0
+  directHitProbeRadius: 0.11
+  directHitProbeForwardOffset: 0.08
+  modelForwardAngleOffset: 0
   dustPrefab: {fileID: 3219098132114001834, guid: 290ec3fd510c06e449a8ffd91b5b6829, type: 3}
   impactWavePrefab: {fileID: 6863645735893471128, guid: 58ee468152474d04984ad6892510c0b6, type: 3}
-  waveDuration: 1
   impactDecalPrefab: {fileID: 6863645735893471128, guid: bbdf46ce298112247a6cedc4db5cc15b, type: 3}
-  decalDuration: 10
-  decalAlpha: 1
-  decalSquash: 0.6
-  decalScaleMultiplier: 1
   spawnBloodOnDirectHit: 0
   directHitBloodFollowDuration: 0.45
   directHitBloodUseLocalSimulation: 1
@@ -176,6 +176,8 @@ MonoBehaviour:
   directHitGroundBloodJitter: 0.05
   directHitGroundBloodScaleRange: {x: 0.11, y: 0.2}
   directHitGroundBloodLifetimeRange: {x: 7, y: 13}
+  directHitGroundBloodEveryMinHits: 5
+  directHitGroundBloodEveryMaxHits: 10
   directHitGroundBloodVariants:
   - {fileID: 1648438383, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
   - {fileID: -1186700707, guid: 09570a66c527b9b4c9bd7a4dce7e4fa0, type: 3}
@@ -200,6 +202,12 @@ MonoBehaviour:
   embeddedArrowLifetime: 2.4
   embeddedArrowScale: {x: 1, y: 1, z: 1}
   embeddedArrowLocalOffset: {x: 0, y: 0, z: 0}
+  maxEmbeddedArrowsPerTarget: 7
+  recycleOldestEmbeddedArrow: 1
+  embeddedArrowSpreadRadius: 0.12
+  embeddedArrowMinSpacing: 0.07
+  embeddedArrowPlacementAttempts: 7
+  embeddedArrowMaxTargetOffset: 0.65
   strictAuthoring: 1
 --- !u!96 &1086319384668999527
 TrailRenderer:
@@ -241,7 +249,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
-  m_SortingLayer: 5
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Time: 0.25
   m_PreviewTimeScale: 1
