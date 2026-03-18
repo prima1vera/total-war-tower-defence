@@ -3,32 +3,49 @@ using UnityEngine;
 public class ArcherTowerProjectileEmitter : MonoBehaviour
 {
     [Header("Scene Wiring")]
+    [Tooltip("Owning ArcherTower component (targeting/cadence source).")]
     [SerializeField] private ArcherTower archerTower;
+    [Tooltip("Arrow pool used to spawn archer projectiles (scene-wired, no Instantiate fallback).")]
     [SerializeField] private ArrowPool arrowPool;
+    [Tooltip("Volley fire points (usually one per visible archer slot).")]
     [SerializeField] private Transform[] firePoints;
 
     [Header("Projectile")]
+    [Tooltip("Direct hit damage per emitted arrow.")]
     [SerializeField, Min(1)] private int damage = 1;
+    [Tooltip("Damage type propagated to Arrow (Normal/Fire/Ice).")]
     [SerializeField] private DamageType damageType = DamageType.Normal;
+    [Tooltip("Knockback force applied on arrow hit.")]
     [SerializeField, Min(0f)] private float knockbackForce = 0.15f;
+    [Tooltip("How many enemies one arrow can pierce before impact.")]
     [SerializeField, Min(1)] private int maxPierce = 1;
+    [Tooltip("AoE radius applied by emitted arrows on impact.")]
     [SerializeField, Min(0f)] private float impactRadius = 0.05f;
 
     [Header("Visual")]
+    [Tooltip("Base scale for archer arrows before optional level scaling.")]
     [SerializeField, Min(0.1f)] private float baseArrowScale = 0.48f;
+    [Tooltip("If enabled, projectile size increases with tower visual level.")]
     [SerializeField] private bool scaleArrowWithLevel = true;
+    [Tooltip("Per-level additional scale step when level scaling is enabled.")]
     [SerializeField, Min(0f)] private float levelScaleStep = 0.1f;
 
     [Header("Spread")]
+    [Tooltip("Random offset around target point to avoid laser-perfect grouping.")]
     [SerializeField, Min(0f)] private float aimPointJitter = 0.12f;
 
     [Header("Miss Feel")]
+    [Tooltip("Chance to intentionally miss for less robotic volleys (applied only at longer distances).")]
     [SerializeField, Range(0f, 1f)] private float intentionalMissChance = 0.2f;
+    [Tooltip("Radius of intentional miss offset around the target point.")]
     [SerializeField, Min(0f)] private float intentionalMissRadius = 0.45f;
+    [Tooltip("Minimum distance required before intentional miss logic can apply.")]
     [SerializeField, Min(0f)] private float minDistanceForIntentionalMiss = 2f;
 
     [Header("Cadence")]
+    [Tooltip("Retry delay for a fire point when no target is currently available.")]
     [SerializeField, Min(0.02f)] private float idleRetryDelay = 0.08f;
+    [Tooltip("Random spread around base interval so archers do not fire in perfect sync.")]
     [SerializeField, Range(0f, 0.75f)] private float cadenceJitter = 0.18f;
 
     private int currentVisualLevel = 1;
@@ -241,3 +258,4 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
         return baseInterval * Random.Range(1f - jitter, 1f + jitter);
     }
 }
+

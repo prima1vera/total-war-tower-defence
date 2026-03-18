@@ -171,38 +171,19 @@ MonoBehaviour:
   directHitBloodFollowDuration: 0.45
   directHitBloodUseLocalSimulation: 1
   spawnGroundBloodOnDirectHit: 1
-  directHitGroundBloodPrefab: {fileID: 7924102300927368246, guid: eca0691a01d8452581805f5a62bb00ab, type: 3}
+  directHitGroundBloodPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
   directHitGroundBloodChance: 0.85
   directHitGroundBloodJitter: 0.045
   directHitGroundBloodScaleRange: {x: 0.11, y: 0.2}
-  directHitGroundBloodLifetimeRange: {x: 7, y: 13}
   directHitGroundBloodEveryMinHits: 5
   directHitGroundBloodEveryMaxHits: 10
-  directHitGroundBloodVariants:
-  - {fileID: 904556495, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -1649139191, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: 1359364042, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: 127719275, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -25850772, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -1465256451, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -2122540427, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -8707995, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -1228684913, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: 2038799502, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: 622022122, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: 669430243, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -1445311529, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -862863462, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -2040928815, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -2085106146, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
   spawnEmbeddedArrowOnDirectHit: 0
   spawnEmbeddedArrowOnGroundImpact: 0
   embedIntoTargetOnDirectHit: 1
   embeddedArrowPrefab: {fileID: 0}
-  embeddedArrowLifetime: 2.4
-  embeddedArrowScale: {x: 1, y: 1, z: 1}
   embeddedArrowLocalOffset: {x: 0, y: 0, z: 0}
   maxEmbeddedArrowsPerTarget: 7
+  maxEmbeddedArrowsOnScene: 120
   recycleOldestEmbeddedArrow: 1
   embeddedArrowSpreadRadius: 0.12
   embeddedArrowMinSpacing: 0.07
@@ -322,3 +303,5 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+
+

@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxTrackedDeaths: 100
+  maxTrackedRemains: 180
   overflowToRemainsTransitionDuration: 1
-  remainsLifetimeAfterOverflow: 180
   overflowBloodFadeDuration: 1.25
   remainsVariants:
   - SourceSprite: {fileID: -868966910, guid: ca1cfbc2cad744941a7bc463777d9a01, type: 3}
@@ -81,15 +81,17 @@ MonoBehaviour:
   - {fileID: 622022122, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
   - {fileID: 669430243, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
   bloodDecalScaleRange: {x: 0.22, y: 0.33}
+  maxTrackedGroundBloodDecals: 220
   deathBloodSpawnChance: 1
-  clusterBloodPrefab: {fileID: 7924102300927368246, guid: eca0691a01d8452581805f5a62bb00ab, type: 3}
   clusterBloodChance: 1
   clusterWindowSeconds: 2
   clusterScanRadius: 1.5
   clusterThreshold: 4
   clusterBloodScaleRange: {x: 0.25, y: 0.5}
-  clusterBloodLifetimeRange: {x: 120, y: 180}
   deathBloodFlowRightToLeft: 1
   deathBloodFlowDistanceRange: {x: 0.08, y: 0.18}
   deathBloodFlowVerticalJitterRange: {x: -0.02, y: 0.03}
   deathBloodSettleHorizontalOffsetRange: {x: -0.06, y: 0.02}
+  deathBloodFlowDurationMultiplierRange: {x: 2.4, y: 4.35}
+  deathBloodFlowStartDelayRange: {x: 0, y: 0.5}
+  deathBloodFlowEndAlphaRange: {x: 0.78, y: 0.96}

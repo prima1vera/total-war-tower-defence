@@ -3,13 +3,19 @@ using UnityEngine;
 public class TowerArcherVisualPresenter : MonoBehaviour
 {
     [Header("Scene Wiring")]
+    [Tooltip("Owning ArcherTower used as source of aim and shot events.")]
     [SerializeField] private ArcherTower archerTower;
+    [Tooltip("Sprite renderer that displays archer idle/attack frame sets.")]
     [SerializeField] private SpriteRenderer archerRenderer;
+    [Tooltip("Directional sprite profile with per-level idle/pre-attack/attack frames.")]
     [SerializeField] private TowerArcherVisualProfile profile;
+    [Tooltip("Shot source transform for filtering shot events to this presenter only.")]
     [SerializeField] private Transform shotSource;
 
     [Header("Direction")]
+    [Tooltip("Y-direction threshold separating Up/Down bands from Side band.")]
     [SerializeField, Range(0f, 1f)] private float verticalBandThreshold = 0.35f;
+    [Tooltip("If enabled, side animations flip by aim X sign instead of requiring dedicated left/right sets.")]
     [SerializeField] private bool flipSideByAimX = true;
 
     private TowerArcherLevelVisual activeLevelVisual;
@@ -292,3 +298,4 @@ public class TowerArcherVisualPresenter : MonoBehaviour
         return direction.x < 0f;
     }
 }
+

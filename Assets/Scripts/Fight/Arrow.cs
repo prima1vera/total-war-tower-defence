@@ -75,35 +75,51 @@ public class Arrow : MonoBehaviour
     public GameObject impactDecalPrefab;
 
     [Header("Archer Impact (Optional)")]
+    [Tooltip("Spawn blood splash particles attached to hit target on direct hit.")]
     [SerializeField] private bool spawnBloodOnDirectHit;
+    [Tooltip("How long direct-hit blood particles stay attached to moving target.")]
     [SerializeField, Min(0f)] private float directHitBloodFollowDuration = 0.45f;
+    [Tooltip("Switch particle systems to Local simulation while attached to target.")]
     [SerializeField] private bool directHitBloodUseLocalSimulation = true;
 
+    [Tooltip("Spawn ground blood decal on direct hit (managed by EnemyDeathVisualManager cap).")]
     [SerializeField] private bool spawnGroundBloodOnDirectHit;
+    [Tooltip("Ground blood decal prefab used for direct-hit blood marks.")]
     [SerializeField] private GameObject directHitGroundBloodPrefab;
+    [Tooltip("Chance to spawn direct-hit ground blood when cadence condition passes.")]
     [SerializeField, Range(0f, 1f)] private float directHitGroundBloodChance = 0.45f;
+    [Tooltip("Random position jitter for direct-hit ground blood spawn.")]
     [SerializeField, Min(0f)] private float directHitGroundBloodJitter = 0.08f;
+    [Tooltip("Scale range for spawned direct-hit ground blood decals.")]
     [SerializeField] private Vector2 directHitGroundBloodScaleRange = new Vector2(0.35f, 0.7f);
-    [SerializeField] private Vector2 directHitGroundBloodLifetimeRange = new Vector2(8f, 14f);
+    [Tooltip("Cadence limiter: ground blood appears every N direct hits.")]
     [SerializeField, Min(1)] private int directHitGroundBloodEveryMinHits = 5;
+    [Tooltip("Cadence limiter upper bound: random N between Min/Max each cycle.")]
     [SerializeField, Min(1)] private int directHitGroundBloodEveryMaxHits = 10;
 
-    [SerializeField] private Sprite[] directHitGroundBloodVariants;
-
+    [Tooltip("Allow embedded arrow spawn when direct hit happens.")]
     [SerializeField] private bool spawnEmbeddedArrowOnDirectHit;
+    [Tooltip("Allow embedded arrow spawn when projectile impacts ground (miss / no direct hit).")]
     [SerializeField] private bool spawnEmbeddedArrowOnGroundImpact;
+    [Tooltip("Attach embedded arrows to hit target transform (instead of leaving on ground).")]
     [SerializeField] private bool embedIntoTargetOnDirectHit = true;
+    [Tooltip("Embedded arrow prefab used for stuck-arrow visuals.")]
     [SerializeField] private GameObject embeddedArrowPrefab;
-    [SerializeField, Min(0.05f)] private float embeddedArrowLifetime = 2.4f;
-    [SerializeField] private Vector3 embeddedArrowScale = Vector3.one;
+    [Tooltip("Local offset applied at embedded arrow spawn point.")]
     [SerializeField] private Vector3 embeddedArrowLocalOffset;
     [Tooltip("Maximum embedded arrows kept on one target at the same time.")]
     [SerializeField, Min(1)] private int maxEmbeddedArrowsPerTarget = 7;
+    [Tooltip("Maximum embedded arrows kept on whole battlefield. Oldest are recycled first.")]
+    [SerializeField, Min(1)] private int maxEmbeddedArrowsOnScene = 120;
     [Tooltip("When max is reached, oldest embedded arrows are released so new arrows can stick.")]
     [SerializeField] private bool recycleOldestEmbeddedArrow = true;
+    [Tooltip("Random spread radius applied to embedded arrow placement around hit point.")]
     [SerializeField, Min(0f)] private float embeddedArrowSpreadRadius = 0.12f;
+    [Tooltip("Minimum spacing between embedded arrows on same target.")]
     [SerializeField, Min(0f)] private float embeddedArrowMinSpacing = 0.07f;
+    [Tooltip("Placement attempts before fallback to unclamped base hit offset.")]
     [SerializeField, Min(1)] private int embeddedArrowPlacementAttempts = 7;
+    [Tooltip("Max offset distance from target center for embedded arrow attachment.")]
     [SerializeField, Min(0.05f)] private float embeddedArrowMaxTargetOffset = 0.65f;
 
     [Header("Authoring")]
@@ -140,6 +156,7 @@ public class Arrow : MonoBehaviour
     private static int directHitGroundBloodCounter;
     private static int nextDirectHitGroundBloodThreshold = -1;
     private static readonly Dictionary<int, EmbeddedTargetState> EmbeddedByTarget = new Dictionary<int, EmbeddedTargetState>(64);
+    private static readonly Queue<GameObject> EmbeddedSceneQueue = new Queue<GameObject>(160);
 
     private void Awake()
     {
@@ -410,13 +427,7 @@ public class Arrow : MonoBehaviour
         if (hitTarget == null)
             return;
 
-        if (!spawnBloodOnDirectHit && !spawnGroundBloodOnDirectHit)
-            return;
-
-        if (!VfxPool.TryGetInstance(out VfxPool vfxPool))
-            return;
-
-        if (spawnBloodOnDirectHit && hitTarget.bloodSplashPrefab != null)
+        if (spawnBloodOnDirectHit && hitTarget.bloodSplashPrefab != null && VfxPool.TryGetInstance(out VfxPool vfxPool))
         {
             Vector3 splashScale = Vector3.one * Random.Range(0.8f, 1.1f);
             GameObject splash = vfxPool.Spawn(hitTarget.bloodSplashPrefab, impactPosition, Quaternion.identity, splashScale);
@@ -439,20 +450,24 @@ public class Arrow : MonoBehaviour
         if (!canSpawnGroundBlood)
             return;
 
+        if (!EnemyDeathVisualManager.TryGetInstance(out EnemyDeathVisualManager deathVisualManager))
+        {
+            if (strictAuthoring)
+                Debug.LogError($"{name}: EnemyDeathVisualManager is missing. Ground blood requires scene-wired EnemyDeathManager.", this);
+
+            return;
+        }
+
         Vector2 randomOffset = Random.insideUnitCircle * Mathf.Max(0f, directHitGroundBloodJitter);
         Vector3 groundPosition = new Vector3(impactPosition.x + randomOffset.x, impactPosition.y + randomOffset.y - 0.03f, 0f);
 
         float minScale = Mathf.Max(0.05f, Mathf.Min(directHitGroundBloodScaleRange.x, directHitGroundBloodScaleRange.y));
         float maxScale = Mathf.Max(minScale, Mathf.Max(directHitGroundBloodScaleRange.x, directHitGroundBloodScaleRange.y));
         float randomScale = Random.Range(minScale, maxScale);
-        Vector3 groundScale = new Vector3(randomScale, randomScale, 1f);
 
-        GameObject groundBlood = vfxPool.Spawn(directHitGroundBloodPrefab, groundPosition, Quaternion.identity, groundScale);
-        if (groundBlood == null)
-            return;
-
-        ApplyGroundBloodVariant(groundBlood);
-        ArmGroundBloodLifetime(groundBlood);
+        bool spawned = deathVisualManager.TrySpawnManagedGroundBlood(directHitGroundBloodPrefab, groundPosition, randomScale);
+        if (!spawned && strictAuthoring)
+            Debug.LogError($"{name}: Failed to spawn managed direct-hit blood decal.", this);
     }
 
     private bool ShouldSpawnGroundBloodByCadence()
@@ -490,35 +505,25 @@ public class Arrow : MonoBehaviour
             Vector3.forward);
 
         Vector3 spawnPosition = impactPosition + embeddedArrowLocalOffset;
-        GameObject embedded = vfxPool.Spawn(embeddedArrowPrefab, spawnPosition, rotation, embeddedArrowScale);
+        Vector3 prefabScale = embeddedArrowPrefab.transform.localScale;
+        GameObject embedded = vfxPool.Spawn(embeddedArrowPrefab, spawnPosition, rotation, prefabScale);
         if (embedded == null)
             return;
 
-        bool attachedToTarget = false;
+        DisableTimedAutoReturn(embedded);
 
+        bool attachedToTarget = false;
         if (embedIntoTargetOnDirectHit && hitTarget != null)
         {
             attachedToTarget = TryAttachEmbeddedArrowToTarget(embedded, hitTarget, spawnPosition);
             if (!attachedToTarget)
             {
-                vfxPool.Release(embedded);
+                ReleaseEmbeddedArrowInstance(embedded);
                 return;
             }
         }
 
-        PooledTimedAutoReturn timedAutoReturn = embedded.GetComponent<PooledTimedAutoReturn>();
-        if (timedAutoReturn != null)
-        {
-            if (attachedToTarget)
-            {
-                timedAutoReturn.enabled = false;
-            }
-            else
-            {
-                timedAutoReturn.enabled = true;
-                timedAutoReturn.Arm(embeddedArrowLifetime);
-            }
-        }
+        RegisterEmbeddedArrowOnScene(embedded, Mathf.Max(1, maxEmbeddedArrowsOnScene));
     }
 
     private bool TryAttachEmbeddedArrowToTarget(GameObject embedded, UnitHealth target, Vector3 impactPosition)
@@ -674,9 +679,47 @@ public class Arrow : MonoBehaviour
         EmbeddedArrowRecord oldest = state.Records[0];
         state.Records.RemoveAt(0);
 
-        GameObject instance = oldest.Instance;
+        ReleaseEmbeddedArrowInstance(oldest.Instance);
+        return true;
+    }
+
+    private static void RegisterEmbeddedArrowOnScene(GameObject instance, int cap)
+    {
+        if (instance == null)
+            return;
+
+        CompactEmbeddedSceneQueue();
+        EmbeddedSceneQueue.Enqueue(instance);
+
+        int safeCap = Mathf.Max(1, cap);
+        while (EmbeddedSceneQueue.Count > safeCap)
+        {
+            GameObject oldest = EmbeddedSceneQueue.Dequeue();
+            ReleaseEmbeddedArrowInstance(oldest);
+            CompactEmbeddedSceneQueue();
+        }
+    }
+
+    private static void CompactEmbeddedSceneQueue()
+    {
+        int count = EmbeddedSceneQueue.Count;
+        if (count == 0)
+            return;
+
+        for (int i = 0; i < count; i++)
+        {
+            GameObject candidate = EmbeddedSceneQueue.Dequeue();
+            if (candidate == null || !candidate.activeInHierarchy)
+                continue;
+
+            EmbeddedSceneQueue.Enqueue(candidate);
+        }
+    }
+
+    private static void ReleaseEmbeddedArrowInstance(GameObject instance)
+    {
         if (instance == null || !instance.activeInHierarchy)
-            return true;
+            return;
 
         PooledFollowTarget follower = instance.GetComponent<PooledFollowTarget>();
         if (follower != null)
@@ -686,49 +729,17 @@ public class Arrow : MonoBehaviour
             vfxPool.Release(instance);
         else
             Object.Destroy(instance);
-
-        return true;
     }
 
-    private void ApplyGroundBloodVariant(GameObject groundBlood)
+    private static void DisableTimedAutoReturn(GameObject instance)
     {
-        if (groundBlood == null)
+        if (instance == null)
             return;
 
-        SpriteRenderer renderer = groundBlood.GetComponent<SpriteRenderer>();
-        if (renderer != null && directHitGroundBloodVariants != null && directHitGroundBloodVariants.Length > 0)
-        {
-            Sprite variant = directHitGroundBloodVariants[Random.Range(0, directHitGroundBloodVariants.Length)];
-            if (variant != null)
-                renderer.sprite = variant;
-        }
-
-        // Blood decals are authored as pre-rotated sprites, so keep world rotation fixed.
-        groundBlood.transform.rotation = Quaternion.identity;
+        PooledTimedAutoReturn timedAutoReturn = instance.GetComponent<PooledTimedAutoReturn>();
+        if (timedAutoReturn != null)
+            timedAutoReturn.enabled = false;
     }
-
-    private void ArmGroundBloodLifetime(GameObject groundBlood)
-    {
-        if (groundBlood == null)
-            return;
-
-        float minLifetime = Mathf.Max(0.1f, Mathf.Min(directHitGroundBloodLifetimeRange.x, directHitGroundBloodLifetimeRange.y));
-        float maxLifetime = Mathf.Max(minLifetime, Mathf.Max(directHitGroundBloodLifetimeRange.x, directHitGroundBloodLifetimeRange.y));
-        float chosenLifetime = Random.Range(minLifetime, maxLifetime);
-
-        PooledTimedAutoReturn timedAutoReturn = groundBlood.GetComponent<PooledTimedAutoReturn>();
-        if (timedAutoReturn == null)
-        {
-            if (strictAuthoring)
-                Debug.LogError($"{name}: {groundBlood.name} is missing PooledTimedAutoReturn. Wire it on prefab.", groundBlood);
-
-            return;
-        }
-
-        timedAutoReturn.enabled = true;
-        timedAutoReturn.Arm(chosenLifetime);
-    }
-
     private bool AttachInstanceToTarget(GameObject instance, UnitHealth target, Vector3 worldOffset, float followDuration)
     {
         if (instance == null || target == null)
@@ -789,6 +800,12 @@ public class Arrow : MonoBehaviour
         }
     }
 }
+
+
+
+
+
+
 
 
 

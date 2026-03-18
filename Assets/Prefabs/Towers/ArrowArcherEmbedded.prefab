@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5000022222222222222}
   - component: {fileID: 5000033333333333333}
-  - component: {fileID: 5000044444444444444}
   - component: {fileID: 5000055555555555555}
   m_Layer: 23
   m_Name: ArrowArcherEmbedded
@@ -86,24 +85,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &5000044444444444444
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5000011111111111111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a2e9bdee17444c4a2c1ef6b6d8777a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lifetime: 2.4
-  smoothDisappear: 1
-  disappearDuration: 30
-  fadeAlpha: 1
-  shrinkScale: 1
-  endScaleMultiplier: 1
 --- !u!114 &5000055555555555555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,3 +98,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   releaseWhenUnitDies: 1
+

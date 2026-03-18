@@ -4,18 +4,25 @@ using UnityEngine;
 public class ArcherTower : MonoBehaviour
 {
     [Header("Targeting")]
+    [Tooltip("Target acquisition radius for this archer tower.")]
     [SerializeField, Min(0.1f)] private float range = 8f;
+    [Tooltip("How often tower re-evaluates best target. Lower = more responsive, higher = cheaper CPU.")]
     [SerializeField, Min(0.02f)] private float targetRefreshInterval = 0.15f;
 
     [Header("Visual Shot Rhythm")]
+    [Tooltip("Visual shot cadence shared across emitter fire points (shots per second).")]
     [SerializeField, Min(0.05f)] private float shotsPerSecond = 1.25f;
+    [Tooltip("If enabled, tower auto-fires as soon as it has a valid target and cooldown is ready.")]
     [SerializeField] private bool autoShoot = true;
+    [Tooltip("Main aiming origin used for direction estimation and visual presenter.")]
     [SerializeField] private Transform shotOrigin;
 
     [Header("Progress")]
+    [Tooltip("Current visual level used by archer presenter/emitter scaling.")]
     [SerializeField, Min(1)] private int visualLevel = 1;
 
     [Header("Authoring")]
+    [Tooltip("If enabled, missing required references become hard errors and component disables itself.")]
     [SerializeField] private bool strictAuthoring = true;
 
     private UnitHealth currentTarget;
@@ -168,3 +175,5 @@ public class ArcherTower : MonoBehaviour
         EnemyRegistry.TryGetNearestEnemy(transform.position, Range, out currentTarget);
     }
 }
+
+
