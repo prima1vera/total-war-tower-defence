@@ -14,8 +14,17 @@ public class PooledFollowTarget : MonoBehaviour
     private bool releaseWhenTargetLost;
 
     [SerializeField] private bool releaseWhenUnitDies = true;
+    [SerializeField] private bool syncSortingWithTarget = true;
+    [SerializeField] private int sortingOrderOffset = 1;
 
     private bool isFollowing;
+    private SpriteRenderer selfSpriteRenderer;
+    private SpriteRenderer targetSpriteRenderer;
+
+    private void Awake()
+    {
+        selfSpriteRenderer = GetComponent<SpriteRenderer>();
+    }
 
     public void Attach(
         Transform followTarget,
@@ -26,6 +35,7 @@ public class PooledFollowTarget : MonoBehaviour
     {
         target = followTarget;
         targetHealth = target != null ? target.GetComponent<UnitHealth>() : null;
+        targetSpriteRenderer = target != null ? target.GetComponent<SpriteRenderer>() : null;
 
         followLocalOffset = useLocalSpaceOffset;
         if (followLocalOffset)
@@ -39,7 +49,10 @@ public class PooledFollowTarget : MonoBehaviour
         isFollowing = target != null;
 
         if (isFollowing)
+        {
             transform.position = ResolveTargetPosition();
+            SyncSortingFromTarget();
+        }
     }
 
     private void Update()
@@ -76,6 +89,7 @@ public class PooledFollowTarget : MonoBehaviour
         }
 
         transform.position = ResolveTargetPosition();
+        SyncSortingFromTarget();
     }
 
     private Vector3 ResolveTargetPosition()
@@ -89,10 +103,21 @@ public class PooledFollowTarget : MonoBehaviour
         return target.position + worldOffset;
     }
 
+    private void SyncSortingFromTarget()
+    {
+        if (!syncSortingWithTarget || selfSpriteRenderer == null || targetSpriteRenderer == null)
+            return;
+
+        selfSpriteRenderer.sortingLayerID = targetSpriteRenderer.sortingLayerID;
+        selfSpriteRenderer.sortingOrder = targetSpriteRenderer.sortingOrder + sortingOrderOffset;
+    }
+
     private void OnDisable()
     {
         isFollowing = false;
         target = null;
         targetHealth = null;
+        targetSpriteRenderer = null;
     }
 }
+

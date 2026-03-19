@@ -64,6 +64,18 @@ public class Arrow : MonoBehaviour
     [Tooltip("Sprite forward angle correction in degrees. Use if arrow art is authored with different forward axis.")]
     private float modelForwardAngleOffset = 0f;
 
+    [Header("Rendering")]
+    [Tooltip("If enabled, arrow switches between Units_Alive and Projectiles layers based on arc height.")]
+    [SerializeField] private bool useAdaptiveFlightSorting = true;
+    [Tooltip("Normalized arc height threshold to move arrow to Projectiles layer while it is high in the air.")]
+    [SerializeField, Range(0f, 1f)] private float highArcProjectilesThreshold = 0.42f;
+    [Tooltip("Sorting order offset used while arrow is in flight.")]
+    [SerializeField] private int flightSortingOrderOffset = 1;
+    [Tooltip("Sorting order offset for embedded arrows attached to a living target.")]
+    [SerializeField] private int embeddedOnTargetSortingOrderOffset = 1;
+    [Tooltip("Sorting order offset for embedded arrows stuck on ground.")]
+    [SerializeField] private int embeddedGroundSortingOrderOffset = 0;
+
     [Header("VFX (Impact)")]
     [Tooltip("Small dust / hit spark prefab spawned at impact point (via VfxPool).")]
     public GameObject dustPrefab;
@@ -128,6 +140,11 @@ public class Arrow : MonoBehaviour
     private const float ArcPower = 1.35f;
     private const float TravelPower = 0.75f;
     private const float LookAhead = 0.015f;
+    private const float SortingOrderYMultiplier = 100f;
+
+    private const string SortingLayerUnitsAlive = "Units_Alive";
+    private const string SortingLayerProjectiles = "Projectiles";
+    private const string SortingLayerUnitsDead = "Units_Dead";
 
 
     private Vector2 startPos;
@@ -141,6 +158,8 @@ public class Arrow : MonoBehaviour
     private ArrowPool ownerPool;
     private Collider2D[] hitBuffer;
     private Transform cachedTransform;
+    private SpriteRenderer cachedSpriteRenderer;
+    private TrailRenderer cachedTrailRenderer;
     private Vector3 cachedBaseScale;
 
     private float shotScaleMultiplier = 1f;
@@ -161,6 +180,8 @@ public class Arrow : MonoBehaviour
     private void Awake()
     {
         cachedTransform = transform;
+        cachedSpriteRenderer = GetComponent<SpriteRenderer>();
+        cachedTrailRenderer = GetComponent<TrailRenderer>();
         cachedBaseScale = cachedTransform.localScale;
         scaledImpactRadius = impactRadius;
 
@@ -213,6 +234,8 @@ public class Arrow : MonoBehaviour
         float time01 = Mathf.Pow(dist01, TravelPower);
         cachedTravelTime = Mathf.Lerp(minTravelTime, maxTravelTime, time01);
         cachedTravelTime = Mathf.Max(0.01f, cachedTravelTime);
+
+        ApplyFlightSorting(0f);
     }
 
     private void Update()
@@ -231,6 +254,7 @@ public class Arrow : MonoBehaviour
 
         Vector2 currentPos = EvaluatePosition(t);
         cachedTransform.position = currentPos;
+        ApplyFlightSorting(t);
 
         UpdateRotation(t, currentPos);
         CheckUnits();
@@ -523,6 +547,7 @@ public class Arrow : MonoBehaviour
             }
         }
 
+        ConfigureEmbeddedArrowRendering(embedded, hitTarget, spawnPosition, attachedToTarget);
         RegisterEmbeddedArrowOnScene(embedded, Mathf.Max(1, maxEmbeddedArrowsOnScene));
     }
 
@@ -775,6 +800,73 @@ public class Arrow : MonoBehaviour
             ParticleSystem.MainModule main = ps.main;
             main.simulationSpace = simulationSpace;
         }
+    }
+
+    private void ApplyFlightSorting(float t)
+    {
+        string sortingLayer = ResolveFlightSortingLayerName(t);
+        int sortingOrder = ResolveSortingOrder(cachedTransform.position.y, flightSortingOrderOffset);
+
+        ApplyRendererSorting(cachedSpriteRenderer, sortingLayer, sortingOrder);
+        ApplyRendererSorting(cachedTrailRenderer, sortingLayer, sortingOrder);
+    }
+
+    private string ResolveFlightSortingLayerName(float t)
+    {
+        if (!useAdaptiveFlightSorting)
+            return SortingLayerUnitsAlive;
+
+        if (cachedArcHeight <= 0.0001f)
+            return SortingLayerUnitsAlive;
+
+        float normalizedHeight = Mathf.Sin(Mathf.Clamp01(t) * Mathf.PI);
+        return normalizedHeight >= highArcProjectilesThreshold
+            ? SortingLayerProjectiles
+            : SortingLayerUnitsAlive;
+    }
+
+    private void ConfigureEmbeddedArrowRendering(GameObject embedded, UnitHealth hitTarget, Vector3 impactPosition, bool attachedToTarget)
+    {
+        if (embedded == null)
+            return;
+
+        SpriteRenderer embeddedRenderer = embedded.GetComponent<SpriteRenderer>();
+        if (embeddedRenderer == null)
+            return;
+
+        if (attachedToTarget && hitTarget != null)
+        {
+            SpriteRenderer targetRenderer = hitTarget.GetComponent<SpriteRenderer>();
+            if (targetRenderer != null)
+            {
+                embeddedRenderer.sortingLayerID = targetRenderer.sortingLayerID;
+                embeddedRenderer.sortingOrder = targetRenderer.sortingOrder + embeddedOnTargetSortingOrderOffset;
+            }
+            else
+            {
+                embeddedRenderer.sortingLayerName = SortingLayerUnitsAlive;
+                embeddedRenderer.sortingOrder = ResolveSortingOrder(hitTarget.transform.position.y, embeddedOnTargetSortingOrderOffset);
+            }
+
+            return;
+        }
+
+        embeddedRenderer.sortingLayerName = SortingLayerUnitsDead;
+        embeddedRenderer.sortingOrder = ResolveSortingOrder(impactPosition.y, embeddedGroundSortingOrderOffset);
+    }
+
+    private static void ApplyRendererSorting(Renderer renderer, string sortingLayerName, int sortingOrder)
+    {
+        if (renderer == null)
+            return;
+
+        renderer.sortingLayerName = sortingLayerName;
+        renderer.sortingOrder = sortingOrder;
+    }
+
+    private static int ResolveSortingOrder(float worldY, int offset)
+    {
+        return Mathf.RoundToInt(-worldY * SortingOrderYMultiplier) + offset;
     }
 
     private float GetImpactVfxScaleMultiplier()

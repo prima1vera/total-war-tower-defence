@@ -12,7 +12,7 @@ public class ImpactDecalVfx : MonoBehaviour
 
     [Header("Scale")]
     [SerializeField] private float startScale = 1f;
-    [SerializeField] private float endScale = 0.1f;
+    [SerializeField] private float endScale = 1.1f;
 
     [Header("Ground Shape")]
     [SerializeField, Range(0.1f, 1f)] private float groundSquash = 0.6f;

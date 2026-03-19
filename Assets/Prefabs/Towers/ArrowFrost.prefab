@@ -73,8 +73,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1411873953
-  m_SortingLayer: 6
+  m_SortingLayerID: 500341947
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 107656489ced7ec4dae1d9a9abd8b7e5, type: 3}
   m_Color: {r: 0.6247775, g: 0.6417468, b: 0.9811321, a: 1}
@@ -149,8 +149,8 @@ MonoBehaviour:
   knockbackForce: 1
   maxPierce: 3
   impactRadius: 0.75
-  impactRadiusScaleWeight: 1
-  impactVfxScaleWeight: 1
+  impactRadiusScaleWeight: 0.5
+  impactVfxScaleWeight: 0.5
   unitLayer:
     serializedVersion: 2
     m_Bits: 2097152
@@ -164,6 +164,11 @@ MonoBehaviour:
   directHitProbeRadius: 0.11
   directHitProbeForwardOffset: 0.08
   modelForwardAngleOffset: 0
+  useAdaptiveFlightSorting: 1
+  highArcProjectilesThreshold: 0.42
+  flightSortingOrderOffset: 1
+  embeddedOnTargetSortingOrderOffset: 1
+  embeddedGroundSortingOrderOffset: 0
   dustPrefab: {fileID: 8298402269546787181, guid: c1bd8d9833f221a46b7cdd8db323329a, type: 3}
   impactWavePrefab: {fileID: 6863645735893471128, guid: 6495ae220ea14fe45b88f07743ab89a2, type: 3}
   impactDecalPrefab: {fileID: 6863645735893471128, guid: 68be0868497e369459c7a30e6ff0cce7, type: 3}
@@ -229,8 +234,8 @@ TrailRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1411873953
-  m_SortingLayer: 6
+  m_SortingLayerID: 500341947
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Time: 0.25
   m_PreviewTimeScale: 1
@@ -303,6 +308,3 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
-
-
-
