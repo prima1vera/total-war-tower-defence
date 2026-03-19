@@ -8,6 +8,21 @@ public class EnemyDeathVisualManager : MonoBehaviour
 {
     private static EnemyDeathVisualManager instance;
     private static bool missingInstanceLogged;
+    private bool isApplyingPresetInValidate;
+
+    private enum VisualTuningPreset
+    {
+        Custom = 0,
+        Light = 1,
+        Cinematic = 2,
+        Gore = 3
+    }
+
+    [Header("Preset")]
+    [Tooltip("Select one of built-in tuning presets. Use Custom to keep manual values.")]
+    [SerializeField] private VisualTuningPreset authoringPreset = VisualTuningPreset.Custom;
+    [Tooltip("If enabled, selected preset is auto-applied in editor on every validation.")]
+    [SerializeField] private bool autoApplySelectedPresetInEditor;
 
     [Header("Death Tracking")]
     [Tooltip("How many fresh corpse visuals can stay active before oldest deaths overflow to remains.")]
@@ -99,10 +114,120 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
     private void OnValidate()
     {
+        if (isApplyingPresetInValidate)
+            return;
+
+        if (autoApplySelectedPresetInEditor && authoringPreset != VisualTuningPreset.Custom)
+            ApplyPreset(authoringPreset);
+
         RebuildRemainsVariantLookup();
         maxTrackedDeaths = Mathf.Max(1, maxTrackedDeaths);
         maxTrackedRemains = Mathf.Max(1, maxTrackedRemains);
         maxTrackedGroundBloodDecals = Mathf.Max(1, maxTrackedGroundBloodDecals);
+    }
+
+    [ContextMenu("Presets/Apply Selected Preset")]
+    private void ApplySelectedPresetFromContextMenu()
+    {
+        ApplyPreset(authoringPreset);
+    }
+
+    [ContextMenu("Presets/Apply Light")]
+    private void ApplyLightPresetFromContextMenu()
+    {
+        ApplyPreset(VisualTuningPreset.Light);
+    }
+
+    [ContextMenu("Presets/Apply Cinematic")]
+    private void ApplyCinematicPresetFromContextMenu()
+    {
+        ApplyPreset(VisualTuningPreset.Cinematic);
+    }
+
+    [ContextMenu("Presets/Apply Gore")]
+    private void ApplyGorePresetFromContextMenu()
+    {
+        ApplyPreset(VisualTuningPreset.Gore);
+    }
+
+    private void ApplyPreset(VisualTuningPreset preset)
+    {
+        if (preset == VisualTuningPreset.Custom)
+            return;
+
+        isApplyingPresetInValidate = true;
+        authoringPreset = preset;
+
+        switch (preset)
+        {
+            case VisualTuningPreset.Light:
+                maxTrackedDeaths = 70;
+                maxTrackedRemains = 110;
+                maxTrackedGroundBloodDecals = 110;
+                overflowToRemainsTransitionDuration = 0.7f;
+                overflowBloodFadeDuration = 0.85f;
+                deathBloodSpawnChance = 0.45f;
+                clusterBloodChance = 0.2f;
+                clusterWindowSeconds = 1.2f;
+                clusterScanRadius = 1.0f;
+                clusterThreshold = 6;
+                bloodDecalScaleRange = new Vector2(0.16f, 0.25f);
+                clusterBloodScaleRange = new Vector2(0.2f, 0.32f);
+                deathBloodFlowDistanceRange = new Vector2(0.04f, 0.10f);
+                deathBloodFlowVerticalJitterRange = new Vector2(-0.015f, 0.02f);
+                deathBloodSettleHorizontalOffsetRange = new Vector2(-0.04f, 0.015f);
+                deathBloodFlowDurationMultiplierRange = new Vector2(1.6f, 2.6f);
+                deathBloodFlowStartDelayRange = new Vector2(0f, 0.06f);
+                deathBloodFlowEndAlphaRange = new Vector2(0.55f, 0.75f);
+                deathBloodFlowRightToLeft = true;
+                break;
+
+            case VisualTuningPreset.Cinematic:
+                maxTrackedDeaths = 100;
+                maxTrackedRemains = 180;
+                maxTrackedGroundBloodDecals = 220;
+                overflowToRemainsTransitionDuration = 1f;
+                overflowBloodFadeDuration = 1.25f;
+                deathBloodSpawnChance = 0.75f;
+                clusterBloodChance = 0.6f;
+                clusterWindowSeconds = 1.8f;
+                clusterScanRadius = 1.3f;
+                clusterThreshold = 5;
+                bloodDecalScaleRange = new Vector2(0.2f, 0.32f);
+                clusterBloodScaleRange = new Vector2(0.25f, 0.45f);
+                deathBloodFlowDistanceRange = new Vector2(0.08f, 0.18f);
+                deathBloodFlowVerticalJitterRange = new Vector2(-0.02f, 0.03f);
+                deathBloodSettleHorizontalOffsetRange = new Vector2(-0.06f, 0.02f);
+                deathBloodFlowDurationMultiplierRange = new Vector2(2.2f, 3.8f);
+                deathBloodFlowStartDelayRange = new Vector2(0f, 0.12f);
+                deathBloodFlowEndAlphaRange = new Vector2(0.72f, 0.9f);
+                deathBloodFlowRightToLeft = true;
+                break;
+
+            case VisualTuningPreset.Gore:
+                maxTrackedDeaths = 130;
+                maxTrackedRemains = 260;
+                maxTrackedGroundBloodDecals = 380;
+                overflowToRemainsTransitionDuration = 1.15f;
+                overflowBloodFadeDuration = 1.8f;
+                deathBloodSpawnChance = 1f;
+                clusterBloodChance = 1f;
+                clusterWindowSeconds = 2.8f;
+                clusterScanRadius = 1.75f;
+                clusterThreshold = 3;
+                bloodDecalScaleRange = new Vector2(0.24f, 0.38f);
+                clusterBloodScaleRange = new Vector2(0.32f, 0.6f);
+                deathBloodFlowDistanceRange = new Vector2(0.12f, 0.26f);
+                deathBloodFlowVerticalJitterRange = new Vector2(-0.03f, 0.05f);
+                deathBloodSettleHorizontalOffsetRange = new Vector2(-0.1f, 0.02f);
+                deathBloodFlowDurationMultiplierRange = new Vector2(2.8f, 5.2f);
+                deathBloodFlowStartDelayRange = new Vector2(0f, 0.16f);
+                deathBloodFlowEndAlphaRange = new Vector2(0.85f, 1f);
+                deathBloodFlowRightToLeft = true;
+                break;
+        }
+
+        isApplyingPresetInValidate = false;
     }
 
     public static EnemyDeathVisualManager Instance
@@ -833,4 +958,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
         }
     }
 }
+
+
+
+
 
