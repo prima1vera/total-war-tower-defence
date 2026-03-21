@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3725c61aa6156eb4299d5ac5787feb21
+guid: f9b706c0acd160348a3e929f7d76ec5b
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Tower_Base_128_NE_new_0
+      name: Base_128_SW_0
       rect:
         serializedVersion: 2
         x: 3
         y: 33
         width: 56
-        height: 66
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 750db920c06aaf64caba8c03dfc72c9a
-      internalID: -400474154
+      spriteID: 38952e0d92fbfe94882b8a773adf5e31
+      internalID: -1048010875
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tower_Base_128_NE_new_1
+      name: Base_128_SW_1
       rect:
         serializedVersion: 2
         x: 70
         y: 33
         width: 56
-        height: 66
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,20 +145,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8f274414a8b80f949ab3e1536102cfe9
-      internalID: 1825586929
+      spriteID: d0976d16d4cee5540a75e5e4f9fd3511
+      internalID: -109426245
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tower_Base_128_NE_new_2
+      name: Base_128_SW_2
       rect:
         serializedVersion: 2
         x: 138
         y: 33
         width: 56
-        height: 66
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,8 +166,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f75578b36ef407343929388a3a854985
-      internalID: 1864530873
+      spriteID: 4b520ae0b84bfb04bb8c59977ff19b0b
+      internalID: 1383336463
       vertices: []
       indices: 
       edges: []
@@ -183,9 +183,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Tower_Base_128_NE_new_0: -400474154
-      Tower_Base_128_NE_new_1: 1825586929
-      Tower_Base_128_NE_new_2: 1864530873
+      Base_128_SW_0: -1048010875
+      Base_128_SW_1: -109426245
+      Base_128_SW_2: 1383336463
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

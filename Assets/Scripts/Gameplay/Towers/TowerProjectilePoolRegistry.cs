@@ -7,6 +7,7 @@ public class TowerProjectilePoolRegistry : MonoBehaviour
     [SerializeField] private ArrowPool firePool;
     [SerializeField] private ArrowPool frostPool;
     [SerializeField] private ArrowPool ironPool;
+    [SerializeField] private ArrowPool archerPool;
 
     private static TowerProjectilePoolRegistry instance;
     private static bool missingInstanceLogged;
@@ -63,6 +64,9 @@ public class TowerProjectilePoolRegistry : MonoBehaviour
                 break;
             case TowerProjectilePoolKey.Iron:
                 pool = ironPool != null ? ironPool : basePool;
+                break;
+            case TowerProjectilePoolKey.Archer:
+                pool = archerPool != null ? archerPool : basePool;
                 break;
             default:
                 pool = basePool;

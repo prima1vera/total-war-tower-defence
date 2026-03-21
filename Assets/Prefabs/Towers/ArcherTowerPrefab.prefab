@@ -477,52 +477,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &7100055555555555555
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7000055555555555555}
-  - component: {fileID: 7300055555555555555}
-  m_Layer: 0
-  m_Name: ArcherProjectilePool
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7000055555555555555
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7100055555555555555}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6996953560135015657}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7300055555555555555
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7100055555555555555}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00ce804b9ec95e04b90b6844a2186480, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  arrowPrefab: {fileID: 1292995990306549658, guid: c8483f5d30664a5a9da9b4f2ff05f33e, type: 3}
-  prewarmCount: 18
 --- !u!1 &7273526380018602409
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,7 +515,6 @@ Transform:
   - {fileID: 7000033333333333333}
   - {fileID: 7000044444444444444}
   - {fileID: 3764449349216301304}
-  - {fileID: 7000055555555555555}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7448672877216967071
@@ -675,7 +628,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   range: 8
   targetRefreshInterval: 0.15
-  shotsPerSecond: 2
+  shotsPerSecond: 1
   autoShoot: 0
   shotOrigin: {fileID: 7000022222222222222}
   visualLevel: 1
@@ -693,7 +646,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   archerTower: {fileID: 9012200566944679112}
-  arrowPool: {fileID: 7300055555555555555}
+  projectilePoolKey: 4
   firePoints:
   - {fileID: 7000011111111111111}
   - {fileID: 7000022222222222222}

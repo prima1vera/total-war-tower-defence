@@ -16,8 +16,8 @@ MonoBehaviour:
   projectilePoolKey: 0
   arrowPrefab: {fileID: 341183810093573692, guid: a6f41efdc35e0d047ba906f26e94f6c3, type: 3}
   towerSprite: {fileID: 1319556631, guid: f72eaa13bcfbfc743a4f7f58dc35949c, type: 3}
-  towerSpriteNorthEast: {fileID: -400474154, guid: 3725c61aa6156eb4299d5ac5787feb21, type: 3}
+  towerSpriteNorthEast: {fileID: 1974395493, guid: 427fcb0e00483094a978e0f6c70b00f0, type: 3}
   animatorController: {fileID: 9100000, guid: 6c09811e26f8e03469ca3b6ceff04e44, type: 2}
   animatorControllerNorthEast: {fileID: 22100000, guid: 46f7ac1cc1654609a5c2ba62b85ad1a1, type: 2}
-  animatorControllerNorthWest: {fileID: 0}
-  animatorControllerSouthWest: {fileID: 0}
+  animatorControllerNorthWest: {fileID: 22100000, guid: e3af7752f99c4fc48dd299f8c9236edc, type: 2}
+  animatorControllerSouthWest: {fileID: 22100000, guid: 085121f6607f4914806440d09213215e, type: 2}
