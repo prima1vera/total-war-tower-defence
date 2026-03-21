@@ -675,7 +675,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   range: 8
   targetRefreshInterval: 0.15
-  shotsPerSecond: 1.15
+  shotsPerSecond: 2
   autoShoot: 0
   shotOrigin: {fileID: 7000022222222222222}
   visualLevel: 1

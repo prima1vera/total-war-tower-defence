@@ -10,6 +10,7 @@ public class TowerProjectilePoolRegistry : MonoBehaviour
 
     private static TowerProjectilePoolRegistry instance;
     private static bool missingInstanceLogged;
+    public static bool HasInstance => instance != null;
 
     private void Awake()
     {

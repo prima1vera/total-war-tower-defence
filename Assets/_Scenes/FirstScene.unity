@@ -3221,6 +3221,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 616228513}
     m_Modifications:
+    - target: {fileID: 1552684744727991414, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 1319556631, guid: f72eaa13bcfbfc743a4f7f58dc35949c, type: 3}
     - target: {fileID: 2102647808292042453, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
       propertyPath: m_Name
       value: TowerBase (7)
