@@ -319,7 +319,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
                     ApplyBloodDecalVariant(deathBloodObject.transform, bloodRenderer, null);
 
                     float targetScale = ResolveBloodDecalScale();
-                    float startScale = ResolveDeathBloodStartScale(targetScale);
+                    float startScale = 0.01f; // Effect of flowing blood growing from a point, visually more impactful than scaling up from a small random value.
                     InitializeBloodPoolVisualState(deathBloodObject.transform, bloodRenderer, startPosition, startScale);
 
                     StartCoroutine(AnimateBloodPool(deathBloodObject.transform, bloodRenderer, startScale, targetScale, settlePosition));
@@ -500,13 +500,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
             settlePosition.x + flowDistance * horizontalDirection,
             settlePosition.y + yJitter,
             0f);
-    }
-
-    private float ResolveDeathBloodStartScale(float targetScale)
-    {
-        float minScale = Mathf.Min(0.15f, targetScale * 0.35f);
-        float maxScale = Mathf.Min(targetScale, Mathf.Max(minScale, 0.2f));
-        return UnityEngine.Random.Range(minScale, maxScale);
     }
 
     private static void InitializeBloodPoolVisualState(Transform bloodTransform, SpriteRenderer bloodRenderer, Vector3 startPosition, float startScale)
@@ -841,7 +834,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
         float duration = Mathf.Lerp(0.25f, 0.95f, Mathf.InverseLerp(0.35f, 1.05f, targetScale));
         duration *= ResolveRangeValue(deathBloodFlowDurationMultiplierRange, 0.1f);
 
-        float startAlpha = 0f;
+        float startAlpha = 0.7f;
         float endAlpha = Mathf.Clamp01(ResolveRangeValue(deathBloodFlowEndAlphaRange, 0f));
 
         if (spriteRenderer != null)

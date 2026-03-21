@@ -8,7 +8,12 @@ public class Tower : MonoBehaviour
     public float fireRate = 1f;
     public Transform firePoint;
 
+    [Header("Targeting")]
     [SerializeField] private float targetRefreshInterval = 0.15f;
+    [SerializeField, Min(0f), Tooltip("Minimum time to keep current valid target before switching to another one.")]
+    private float minTargetHoldSeconds = 0.18f;
+    [SerializeField, Min(0f), Tooltip("New target must be closer by at least this distance to force target switch after hold window.")]
+    private float targetSwitchDistanceBias = 0.25f;
     [SerializeField] private SpriteRenderer towerSpriteRenderer;
 
     [Header("Directional Visual")]
@@ -34,6 +39,16 @@ public class Tower : MonoBehaviour
     private RuntimeAnimatorController southWestAnimatorController;
     [SerializeField, Range(0f, 1f), Tooltip("Normalized Y threshold with hysteresis for up/down facing split.")]
     private float directionalAnimatorVerticalThreshold = 0.12f;
+    [SerializeField, Range(0f, 1f), Tooltip("Normalized X threshold with hysteresis for left/right facing split.")]
+    private float directionalAnimatorHorizontalThreshold = 0.08f;
+
+    [Header("Direction Stability")]
+    [SerializeField, Tooltip("Lock direction for a short time right after Shoot trigger to avoid rapid jittering turns.")]
+    private bool lockDirectionDuringShot = true;
+    [SerializeField, Min(0f), Tooltip("Explicit lock duration after shot trigger. If 0, lock uses Fire clip length * Shot Lock Clip Fraction.")]
+    private float shotDirectionLockSeconds = 0f;
+    [SerializeField, Range(0f, 1.5f), Tooltip("Auto lock fraction of current Fire clip length when explicit lock duration is 0.")]
+    private float shotDirectionLockClipFraction = 0.9f;
 
     [Header("Ground Visual")]
     [SerializeField] private SpriteRenderer towerGroundRenderer;
@@ -67,6 +82,8 @@ public class Tower : MonoBehaviour
     private bool isFacingLeft;
     private bool hasDirectionalState;
     private RuntimeAnimatorController activeDirectionalController;
+    private float targetHoldTimer;
+    private float directionLockTimer;
 
     public int Damage => Mathf.Max(1, damage);
     public float Range => Mathf.Max(0.1f, range);
@@ -97,15 +114,22 @@ public class Tower : MonoBehaviour
 
     private void Update()
     {
+        float dt = Time.deltaTime;
+
+        targetHoldTimer -= dt;
+        directionLockTimer -= dt;
+
         fireCountdown -= Time.deltaTime;
         targetRefreshTimer -= Time.deltaTime;
 
+        bool currentTargetValid = IsCurrentTargetValid();
         bool registryChanged = lastKnownEnemyRegistryVersion != EnemyRegistry.Version;
-        bool needsRetarget = targetRefreshTimer <= 0f || registryChanged || !IsCurrentTargetValid();
+        bool needsRetarget = targetRefreshTimer <= 0f || registryChanged || !currentTargetValid;
+        bool canRetarget = !IsDirectionLockActive() || !currentTargetValid;
 
-        if (needsRetarget)
+        if (needsRetarget && canRetarget)
         {
-            RefreshTarget();
+            RefreshTarget(currentTargetValid);
             targetRefreshTimer = targetRefreshInterval;
             lastKnownEnemyRegistryVersion = EnemyRegistry.Version;
         }
@@ -113,10 +137,14 @@ public class Tower : MonoBehaviour
         if (currentTarget == null)
             return;
 
-        if (enableDirectionalAnimator)
-            UpdateDirectionalAnimatorFromTarget();
-        else
-            UpdateDirectionalVisualFromTarget();
+        if (!IsDirectionLockActive())
+        {
+            if (enableDirectionalAnimator)
+                UpdateDirectionalAnimatorFromTarget();
+            else
+                UpdateDirectionalVisualFromTarget();
+        }
+
         SyncAnimationSpeedToFireRate();
 
         if (fireCountdown <= 0f)
@@ -124,6 +152,7 @@ public class Tower : MonoBehaviour
             if (animator != null)
                 animator.SetTrigger("Shoot");
 
+            StartDirectionLockAfterShot();
             fireCountdown = 1f / FireRate;
         }
     }
@@ -226,9 +255,50 @@ public class Tower : MonoBehaviour
         return distSqr <= rangeSqr;
     }
 
-    private void RefreshTarget()
+    private void RefreshTarget(bool currentTargetWasValid)
     {
-        EnemyRegistry.TryGetNearestEnemy(transform.position, Range, out currentTarget);
+        UnitHealth previousTarget = currentTarget;
+
+        if (!EnemyRegistry.TryGetNearestEnemy(transform.position, Range, out UnitHealth nearestTarget) || nearestTarget == null)
+        {
+            if (!currentTargetWasValid)
+                currentTarget = null;
+
+            return;
+        }
+
+        if (!currentTargetWasValid || previousTarget == null || previousTarget.IsDead)
+        {
+            currentTarget = nearestTarget;
+            targetHoldTimer = Mathf.Max(minTargetHoldSeconds, 0f);
+            return;
+        }
+
+        if (nearestTarget == previousTarget)
+        {
+            currentTarget = previousTarget;
+            targetHoldTimer = Mathf.Max(targetHoldTimer, minTargetHoldSeconds * 0.5f);
+            return;
+        }
+
+        if (targetHoldTimer > 0f)
+        {
+            currentTarget = previousTarget;
+            return;
+        }
+
+        float previousDistance = Vector2.Distance(previousTarget.transform.position, transform.position);
+        float nearestDistance = Vector2.Distance(nearestTarget.transform.position, transform.position);
+        float requiredBias = Mathf.Max(0f, targetSwitchDistanceBias);
+
+        if (nearestDistance + requiredBias < previousDistance)
+        {
+            currentTarget = nearestTarget;
+            targetHoldTimer = Mathf.Max(minTargetHoldSeconds, 0f);
+            return;
+        }
+
+        currentTarget = previousTarget;
     }
 
     private void EnsureAnimator()
@@ -436,6 +506,26 @@ public class Tower : MonoBehaviour
         arrow.Launch(targetPoint);
     }
 
+    private void StartDirectionLockAfterShot()
+    {
+        if (!lockDirectionDuringShot)
+            return;
+
+        float lockDuration = shotDirectionLockSeconds > 0f
+            ? shotDirectionLockSeconds
+            : fireClipLengthSeconds * Mathf.Max(0f, shotDirectionLockClipFraction);
+
+        if (lockDuration <= 0f)
+            return;
+
+        directionLockTimer = Mathf.Max(directionLockTimer, lockDuration);
+    }
+
+    private bool IsDirectionLockActive()
+    {
+        return lockDirectionDuringShot && directionLockTimer > 0f;
+    }
+
     private ArrowPool GetValidArrowPool()
     {
         if (runtimeArrowPool == null)
@@ -480,8 +570,9 @@ public class Tower : MonoBehaviour
             return;
 
         Vector2 aimNormalized = aim.normalized;
+        bool isFirstDirectionalSample = !hasDirectionalState;
 
-        if (!hasDirectionalState)
+        if (isFirstDirectionalSample)
         {
             isFacingUp = aimNormalized.y >= 0f;
             hasDirectionalState = true;
@@ -495,7 +586,9 @@ public class Tower : MonoBehaviour
                 isFacingUp = false;
         }
 
-        isFacingLeft = aimNormalized.x < 0f;
+        isFacingLeft = isFirstDirectionalSample
+            ? aimNormalized.x < 0f
+            : ResolveFacingLeft(aimNormalized.x, isFacingLeft, directionalAnimatorHorizontalThreshold);
         ApplyDirectionalVisual(force: false);
     }
 
@@ -533,8 +626,9 @@ public class Tower : MonoBehaviour
             return;
 
         Vector2 normalized = aim.normalized;
+        bool isFirstDirectionalSample = !hasDirectionalState;
 
-        if (!hasDirectionalState)
+        if (isFirstDirectionalSample)
         {
             isFacingUp = normalized.y >= 0f;
             hasDirectionalState = true;
@@ -548,10 +642,25 @@ public class Tower : MonoBehaviour
                 isFacingUp = false;
         }
 
-        isFacingLeft = normalized.x < 0f;
+        isFacingLeft = isFirstDirectionalSample
+            ? normalized.x < 0f
+            : ResolveFacingLeft(normalized.x, isFacingLeft, directionalAnimatorHorizontalThreshold);
 
         RuntimeAnimatorController desired = ResolveDirectionalAnimatorController(isFacingUp, isFacingLeft);
         ApplyDirectionalAnimatorController(desired, force: false);
+    }
+
+    private static bool ResolveFacingLeft(float normalizedX, bool currentFacingLeft, float hysteresisThreshold)
+    {
+        float threshold = Mathf.Clamp01(hysteresisThreshold);
+
+        if (normalizedX <= -threshold)
+            return true;
+
+        if (normalizedX >= threshold)
+            return false;
+
+        return currentFacingLeft;
     }
 
     private RuntimeAnimatorController ResolveDirectionalAnimatorController(bool facingUp, bool facingLeft)

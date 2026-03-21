@@ -153,6 +153,8 @@ MonoBehaviour:
   fireRate: 5
   firePoint: {fileID: 6024781246242465548}
   targetRefreshInterval: 0.2
+  minTargetHoldSeconds: 0.24
+  targetSwitchDistanceBias: 0.35
   towerSpriteRenderer: {fileID: 1552684744727991414}
   enableDirectionalVisual: 1
   towerSpriteSouthEast: {fileID: 1319556631, guid: f72eaa13bcfbfc743a4f7f58dc35949c, type: 3}
@@ -164,6 +166,10 @@ MonoBehaviour:
   northWestAnimatorController: {fileID: 22100000, guid: e3af7752f99c4fc48dd299f8c9236edc, type: 2}
   southWestAnimatorController: {fileID: 22100000, guid: 085121f6607f4914806440d09213215e, type: 2}
   directionalAnimatorVerticalThreshold: 0.12
+  directionalAnimatorHorizontalThreshold: 0.08
+  lockDirectionDuringShot: 1
+  shotDirectionLockSeconds: 0
+  shotDirectionLockClipFraction: 1.01
   towerGroundRenderer: {fileID: 4579000000000000003}
   baseGroundSprite: {fileID: -673470162, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   fireGroundSprite: {fileID: 1316506609, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
