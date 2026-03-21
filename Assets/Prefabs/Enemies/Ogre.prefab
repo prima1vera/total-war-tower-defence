@@ -9807,8 +9807,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.012928804, y: -0.049208116}
-  m_Size: {x: 0.25314826, y: 0.30802992}
+  m_Offset: {x: -0.02049641, y: -0.055934828}
+  m_Size: {x: 0.23801303, y: 0.38538766}
   m_Direction: 0
 --- !u!114 &5190869859010253226
 MonoBehaviour:
@@ -9842,7 +9842,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a166122f46c6d4290d6556a85e25a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitHealth
-  maxHealth: 80
+  maxHealth: 20
   bloodPoolPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
   bloodSplashPrefab: {fileID: 6567675628769267437, guid: 626575ed6b0b8764db5d804dbe61ff9c, type: 3}
   despawnToPoolDelay: 2

@@ -22,7 +22,7 @@ MonoBehaviour:
       FireRate: 1
     SellValue: 10
     DisplayNameOverride: Tower
-    EvolutionProfile: {fileID: 0}
+    EvolutionProfile: {fileID: 11400000, guid: 08ccd083657d7a04690ce2d6842c2ec7, type: 2}
     UpgradeA:
       Label: Fire Tower
       Cost: 30

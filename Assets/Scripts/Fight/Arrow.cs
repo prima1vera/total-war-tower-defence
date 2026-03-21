@@ -64,6 +64,18 @@ public class Arrow : MonoBehaviour
     [Tooltip("Sprite forward angle correction in degrees. Use if arrow art is authored with different forward axis.")]
     private float modelForwardAngleOffset = 0f;
 
+    [Header("Rendering")]
+    [Tooltip("If enabled, arrow can switch to Units_Alive near low arc phase. Disable for strict Projectiles-through-flight behavior.")]
+    [SerializeField] private bool useAdaptiveFlightSorting = false;
+    [Tooltip("Normalized arc height threshold to move arrow to Projectiles layer while it is high in the air.")]
+    [SerializeField, Range(0f, 1f)] private float highArcProjectilesThreshold = 0.42f;
+    [Tooltip("Sorting order offset used while arrow is in flight.")]
+    [SerializeField] private int flightSortingOrderOffset = 2;
+    [Tooltip("Sorting order offset for embedded arrows attached to a living target.")]
+    [SerializeField] private int embeddedOnTargetSortingOrderOffset = 1;
+    [Tooltip("Sorting order offset for embedded arrows stuck on ground.")]
+    [SerializeField] private int embeddedGroundSortingOrderOffset = 0;
+
     [Header("VFX (Impact)")]
     [Tooltip("Small dust / hit spark prefab spawned at impact point (via VfxPool).")]
     public GameObject dustPrefab;
@@ -128,6 +140,11 @@ public class Arrow : MonoBehaviour
     private const float ArcPower = 1.35f;
     private const float TravelPower = 0.75f;
     private const float LookAhead = 0.015f;
+    private const float SortingOrderYMultiplier = 100f;
+
+    private const string SortingLayerUnitsAlive = "Units_Alive";
+    private const string SortingLayerProjectiles = "Projectiles";
+    private const string SortingLayerUnitsDead = "Units_Dead";
 
 
     private Vector2 startPos;
@@ -141,6 +158,8 @@ public class Arrow : MonoBehaviour
     private ArrowPool ownerPool;
     private Collider2D[] hitBuffer;
     private Transform cachedTransform;
+    private SpriteRenderer cachedSpriteRenderer;
+    private TrailRenderer cachedTrailRenderer;
     private Vector3 cachedBaseScale;
 
     private float shotScaleMultiplier = 1f;
@@ -161,6 +180,8 @@ public class Arrow : MonoBehaviour
     private void Awake()
     {
         cachedTransform = transform;
+        cachedSpriteRenderer = GetComponent<SpriteRenderer>();
+        cachedTrailRenderer = GetComponent<TrailRenderer>();
         cachedBaseScale = cachedTransform.localScale;
         scaledImpactRadius = impactRadius;
 
@@ -213,6 +234,8 @@ public class Arrow : MonoBehaviour
         float time01 = Mathf.Pow(dist01, TravelPower);
         cachedTravelTime = Mathf.Lerp(minTravelTime, maxTravelTime, time01);
         cachedTravelTime = Mathf.Max(0.01f, cachedTravelTime);
+
+        ApplyFlightSorting(0f);
     }
 
     private void Update()
@@ -231,6 +254,7 @@ public class Arrow : MonoBehaviour
 
         Vector2 currentPos = EvaluatePosition(t);
         cachedTransform.position = currentPos;
+        ApplyFlightSorting(t);
 
         UpdateRotation(t, currentPos);
         CheckUnits();
@@ -511,11 +535,14 @@ public class Arrow : MonoBehaviour
             return;
 
         DisableTimedAutoReturn(embedded);
+        EnableFollowTarget(embedded);
+
+        UnitHealth embedTarget = hitTarget;
 
         bool attachedToTarget = false;
-        if (embedIntoTargetOnDirectHit && hitTarget != null)
+        if (embedIntoTargetOnDirectHit && embedTarget != null)
         {
-            attachedToTarget = TryAttachEmbeddedArrowToTarget(embedded, hitTarget, spawnPosition);
+            attachedToTarget = TryAttachEmbeddedArrowToTarget(embedded, embedTarget, spawnPosition);
             if (!attachedToTarget)
             {
                 ReleaseEmbeddedArrowInstance(embedded);
@@ -523,6 +550,7 @@ public class Arrow : MonoBehaviour
             }
         }
 
+        ConfigureEmbeddedArrowRendering(embedded, embedTarget, spawnPosition, attachedToTarget);
         RegisterEmbeddedArrowOnScene(embedded, Mathf.Max(1, maxEmbeddedArrowsOnScene));
     }
 
@@ -534,7 +562,13 @@ public class Arrow : MonoBehaviour
         if (!TryReserveEmbeddedOffset(target, impactPosition, out Vector3 worldOffset))
             return false;
 
-        if (!AttachInstanceToTarget(embedded, target, worldOffset, 0f))
+        if (!AttachInstanceToTarget(
+                embedded,
+                target,
+                worldOffset,
+                0f,
+                releaseOnTargetLost: true,
+                useFollowerAuthoringDefaults: true))
             return false;
 
         int targetId = target.GetInstanceID();
@@ -572,15 +606,16 @@ public class Arrow : MonoBehaviour
         }
 
         Vector3 targetPosition = target.transform.position;
+        float maxAttachDistance = ResolveTargetAttachMaxDistance(target);
         Vector3 baseOffset = impactPosition - targetPosition;
         baseOffset.z = 0f;
-        baseOffset = ClampEmbedOffset(baseOffset);
+        baseOffset = ClampEmbedOffset(baseOffset, maxAttachDistance);
 
-        reservedWorldOffset = FindAvailableEmbeddedOffset(state, baseOffset);
+        reservedWorldOffset = FindAvailableEmbeddedOffset(state, baseOffset, maxAttachDistance);
         return true;
     }
 
-    private Vector3 FindAvailableEmbeddedOffset(EmbeddedTargetState state, Vector3 baseOffset)
+    private Vector3 FindAvailableEmbeddedOffset(EmbeddedTargetState state, Vector3 baseOffset, float maxAttachDistance)
     {
         float spread = Mathf.Max(0f, embeddedArrowSpreadRadius);
         int attempts = Mathf.Max(1, embeddedArrowPlacementAttempts);
@@ -595,7 +630,7 @@ public class Arrow : MonoBehaviour
                 candidate.y += jitter.y;
             }
 
-            candidate = ClampEmbedOffset(candidate);
+            candidate = ClampEmbedOffset(candidate, maxAttachDistance);
             if (IsOffsetAvailable(state, candidate))
                 return candidate;
         }
@@ -605,7 +640,7 @@ public class Arrow : MonoBehaviour
             float angle = (state.Records.Count * 53f + i * 37f) * Mathf.Deg2Rad;
             float radius = spread * Mathf.Lerp(0.35f, 1f, (i + 1f) / attempts);
             Vector3 candidate = baseOffset + new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0f);
-            candidate = ClampEmbedOffset(candidate);
+            candidate = ClampEmbedOffset(candidate, maxAttachDistance);
 
             if (IsOffsetAvailable(state, candidate))
                 return candidate;
@@ -635,9 +670,9 @@ public class Arrow : MonoBehaviour
         return true;
     }
 
-    private Vector3 ClampEmbedOffset(Vector3 offset)
+    private Vector3 ClampEmbedOffset(Vector3 offset, float maxDistance)
     {
-        float maxDistance = Mathf.Max(0.05f, embeddedArrowMaxTargetOffset);
+        maxDistance = Mathf.Max(0.05f, maxDistance);
         Vector2 offset2D = new Vector2(offset.x, offset.y);
         float distanceSq = offset2D.sqrMagnitude;
         if (distanceSq <= maxDistance * maxDistance)
@@ -645,6 +680,21 @@ public class Arrow : MonoBehaviour
 
         Vector2 clamped = offset2D.normalized * maxDistance;
         return new Vector3(clamped.x, clamped.y, 0f);
+    }
+
+    private float ResolveTargetAttachMaxDistance(UnitHealth target)
+    {
+        float authoringMax = Mathf.Max(0.05f, embeddedArrowMaxTargetOffset);
+        if (target == null)
+            return authoringMax;
+
+        Collider2D targetCollider = target.CachedCollider;
+        if (targetCollider == null)
+            return authoringMax;
+
+        Bounds bounds = targetCollider.bounds;
+        float colliderRadius = Mathf.Max(0.05f, Mathf.Min(bounds.extents.x, bounds.extents.y) * 0.95f);
+        return Mathf.Min(authoringMax, colliderRadius);
     }
 
     private static EmbeddedTargetState GetOrCreateEmbeddedState(int targetId)
@@ -721,10 +771,6 @@ public class Arrow : MonoBehaviour
         if (instance == null || !instance.activeInHierarchy)
             return;
 
-        PooledFollowTarget follower = instance.GetComponent<PooledFollowTarget>();
-        if (follower != null)
-            follower.enabled = false;
-
         if (VfxPool.TryGetInstance(out VfxPool vfxPool))
             vfxPool.Release(instance);
         else
@@ -740,7 +786,27 @@ public class Arrow : MonoBehaviour
         if (timedAutoReturn != null)
             timedAutoReturn.enabled = false;
     }
-    private bool AttachInstanceToTarget(GameObject instance, UnitHealth target, Vector3 worldOffset, float followDuration)
+
+    private static void EnableFollowTarget(GameObject instance)
+    {
+        if (instance == null)
+            return;
+
+        PooledFollowTarget follower = instance.GetComponent<PooledFollowTarget>();
+        if (follower != null && !follower.enabled)
+            follower.enabled = true;
+    }
+
+    private bool AttachInstanceToTarget(
+        GameObject instance,
+        UnitHealth target,
+        Vector3 worldOffset,
+        float followDuration,
+        bool releaseOnTargetLost = true,
+        bool releaseOnUnitDeath = true,
+        bool syncSortingWithTarget = false,
+        int sortOrderOffset = 0,
+        bool useFollowerAuthoringDefaults = false)
     {
         if (instance == null || target == null)
             return false;
@@ -756,7 +822,28 @@ public class Arrow : MonoBehaviour
             return false;
         }
 
-        follower.Attach(targetTransform, worldOffset, Mathf.Max(0f, followDuration), true, false);
+        if (useFollowerAuthoringDefaults)
+        {
+            follower.Attach(
+                targetTransform,
+                worldOffset,
+                Mathf.Max(0f, followDuration),
+                releaseOnTargetLost: releaseOnTargetLost,
+                useLocalSpaceOffset: false);
+        }
+        else
+        {
+            follower.AttachWithOptions(
+                targetTransform,
+                worldOffset,
+                Mathf.Max(0f, followDuration),
+                releaseOnTargetLost: releaseOnTargetLost,
+                useLocalSpaceOffset: false,
+                releaseOnUnitDeath: releaseOnUnitDeath,
+                syncSorting: syncSortingWithTarget,
+                sortOffset: sortOrderOffset);
+        }
+
         return true;
     }
 
@@ -775,6 +862,73 @@ public class Arrow : MonoBehaviour
             ParticleSystem.MainModule main = ps.main;
             main.simulationSpace = simulationSpace;
         }
+    }
+
+    private void ApplyFlightSorting(float t)
+    {
+        string sortingLayer = ResolveFlightSortingLayerName(t);
+        int sortingOrder = ResolveSortingOrder(cachedTransform.position.y, flightSortingOrderOffset);
+
+        ApplyRendererSorting(cachedSpriteRenderer, sortingLayer, sortingOrder);
+        ApplyRendererSorting(cachedTrailRenderer, sortingLayer, sortingOrder);
+    }
+
+    private string ResolveFlightSortingLayerName(float t)
+    {
+        if (!useAdaptiveFlightSorting)
+            return SortingLayerProjectiles;
+
+        if (cachedArcHeight <= 0.0001f)
+            return SortingLayerProjectiles;
+
+        float normalizedHeight = Mathf.Sin(Mathf.Clamp01(t) * Mathf.PI);
+        return normalizedHeight >= highArcProjectilesThreshold
+            ? SortingLayerProjectiles
+            : SortingLayerUnitsAlive;
+    }
+
+    private void ConfigureEmbeddedArrowRendering(GameObject embedded, UnitHealth hitTarget, Vector3 impactPosition, bool attachedToTarget)
+    {
+        if (embedded == null)
+            return;
+
+        SpriteRenderer embeddedRenderer = embedded.GetComponent<SpriteRenderer>();
+        if (embeddedRenderer == null)
+            return;
+
+        if (attachedToTarget && hitTarget != null && !hitTarget.IsDead)
+        {
+            SpriteRenderer targetRenderer = hitTarget.GetComponent<SpriteRenderer>();
+            if (targetRenderer != null)
+            {
+                embeddedRenderer.sortingLayerID = targetRenderer.sortingLayerID;
+                embeddedRenderer.sortingOrder = targetRenderer.sortingOrder + embeddedOnTargetSortingOrderOffset;
+            }
+            else
+            {
+                embeddedRenderer.sortingLayerName = SortingLayerUnitsAlive;
+                embeddedRenderer.sortingOrder = ResolveSortingOrder(hitTarget.transform.position.y, embeddedOnTargetSortingOrderOffset);
+            }
+
+            return;
+        }
+
+        embeddedRenderer.sortingLayerName = SortingLayerUnitsDead;
+        embeddedRenderer.sortingOrder = ResolveSortingOrder(impactPosition.y, embeddedGroundSortingOrderOffset);
+    }
+
+    private static void ApplyRendererSorting(Renderer renderer, string sortingLayerName, int sortingOrder)
+    {
+        if (renderer == null)
+            return;
+
+        renderer.sortingLayerName = sortingLayerName;
+        renderer.sortingOrder = sortingOrder;
+    }
+
+    private static int ResolveSortingOrder(float worldY, int offset)
+    {
+        return Mathf.RoundToInt(-worldY * SortingOrderYMultiplier) + offset;
     }
 
     private float GetImpactVfxScaleMultiplier()
@@ -800,6 +954,12 @@ public class Arrow : MonoBehaviour
         }
     }
 }
+
+
+
+
+
+
 
 
 

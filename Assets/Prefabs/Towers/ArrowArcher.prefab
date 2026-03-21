@@ -164,11 +164,16 @@ MonoBehaviour:
   directHitProbeRadius: 0.11
   directHitProbeForwardOffset: 0.08
   modelForwardAngleOffset: 0
-  dustPrefab: {fileID: 2408689374836223538, guid: b92c8a1c6a875fd409b91b1ef31a322b, type: 3}
+  useAdaptiveFlightSorting: 1
+  highArcProjectilesThreshold: 0.42
+  flightSortingOrderOffset: 1
+  embeddedOnTargetSortingOrderOffset: 1
+  embeddedGroundSortingOrderOffset: 0
+  dustPrefab: {fileID: 0}
   impactWavePrefab: {fileID: 0}
   impactDecalPrefab: {fileID: 0}
   spawnBloodOnDirectHit: 1
-  directHitBloodFollowDuration: 1.1
+  directHitBloodFollowDuration: 0.5
   directHitBloodUseLocalSimulation: 1
   spawnGroundBloodOnDirectHit: 1
   directHitGroundBloodPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
@@ -182,8 +187,8 @@ MonoBehaviour:
   embedIntoTargetOnDirectHit: 1
   embeddedArrowPrefab: {fileID: 5000011111111111111, guid: 45e6ecf5e8794bb9afe0f33630e385f1, type: 3}
   embeddedArrowLocalOffset: {x: 0.02, y: -0.01, z: 0}
-  maxEmbeddedArrowsPerTarget: 7
-  maxEmbeddedArrowsOnScene: 120
+  maxEmbeddedArrowsPerTarget: 10
+  maxEmbeddedArrowsOnScene: 500
   recycleOldestEmbeddedArrow: 1
   embeddedArrowSpreadRadius: 0.12
   embeddedArrowMinSpacing: 0.07
@@ -303,5 +308,3 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
-
-

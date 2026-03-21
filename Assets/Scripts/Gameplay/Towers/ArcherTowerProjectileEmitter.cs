@@ -5,8 +5,8 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
     [Header("Scene Wiring")]
     [Tooltip("Owning ArcherTower component (targeting/cadence source).")]
     [SerializeField] private ArcherTower archerTower;
-    [Tooltip("Arrow pool used to spawn archer projectiles (scene-wired, no Instantiate fallback).")]
-    [SerializeField] private ArrowPool arrowPool;
+    [Tooltip("Projectile pool key resolved through TowerProjectilePoolRegistry (unified pool pipeline).")]
+    [SerializeField] private TowerProjectilePoolKey projectilePoolKey = TowerProjectilePoolKey.Archer;
     [Tooltip("Volley fire points (usually one per visible archer slot).")]
     [SerializeField] private Transform[] firePoints;
 
@@ -51,6 +51,8 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
     private int currentVisualLevel = 1;
     private bool isAuthoringValid;
     private float[] fireCooldowns;
+    private ArrowPool runtimeArrowPool;
+    private bool loggedPoolResolveError;
 
     private void Awake()
     {
@@ -63,6 +65,9 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
     {
         if (!isAuthoringValid)
             return;
+
+        runtimeArrowPool = null;
+        loggedPoolResolveError = false;
 
         archerTower.VisualLevelChanged += HandleVisualLevelChanged;
         currentVisualLevel = archerTower.VisualLevel;
@@ -101,12 +106,6 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
         if (archerTower == null)
         {
             Debug.LogError($"{name}: ArcherTowerProjectileEmitter requires ArcherTower reference.", this);
-            valid = false;
-        }
-
-        if (arrowPool == null)
-        {
-            Debug.LogError($"{name}: ArcherTowerProjectileEmitter requires ArrowPool reference.", this);
             valid = false;
         }
 
@@ -153,7 +152,14 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
         Vector2 baseAimPoint = target.transform.position;
         Vector2 targetPoint = ResolveTargetPoint(baseAimPoint, firePoint.position);
 
-        Arrow arrow = arrowPool.Spawn(firePoint.position, Quaternion.identity);
+        ArrowPool pool = GetValidArrowPool();
+        if (pool == null)
+        {
+            fireCooldowns[firePointIndex] = 0.15f;
+            return;
+        }
+
+        Arrow arrow = pool.Spawn(firePoint.position, Quaternion.identity);
         if (arrow == null)
         {
             fireCooldowns[firePointIndex] = 0.1f;
@@ -256,6 +262,40 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
             return baseInterval;
 
         return baseInterval * Random.Range(1f - jitter, 1f + jitter);
+    }
+
+    private ArrowPool GetValidArrowPool()
+    {
+        if (runtimeArrowPool == null)
+        {
+            if (!TowerProjectilePoolRegistry.TryGetPool(projectilePoolKey, out ArrowPool resolvedPool) || resolvedPool == null)
+            {
+                if (!loggedPoolResolveError)
+                {
+                    Debug.LogError($"{name}: Projectile pool for key {projectilePoolKey} is not resolved. Add/wire it in TowerProjectilePoolRegistry.", this);
+                    loggedPoolResolveError = true;
+                }
+
+                return null;
+            }
+
+            runtimeArrowPool = resolvedPool;
+        }
+
+        if (runtimeArrowPool.gameObject.scene.IsValid())
+        {
+            loggedPoolResolveError = false;
+            return runtimeArrowPool;
+        }
+
+        if (!loggedPoolResolveError)
+        {
+            Debug.LogError($"{name}: Resolved ArrowPool for key {projectilePoolKey} points to prefab asset. Assign scene instance in TowerProjectilePoolRegistry.", this);
+            loggedPoolResolveError = true;
+        }
+
+        runtimeArrowPool = null;
+        return null;
     }
 }
 

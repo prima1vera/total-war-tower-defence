@@ -147,10 +147,10 @@ MonoBehaviour:
   damage: 1
   damageType: 1
   knockbackForce: 0
-  maxPierce: 5
+  maxPierce: 3
   impactRadius: 0.5
-  impactRadiusScaleWeight: 1
-  impactVfxScaleWeight: 1
+  impactRadiusScaleWeight: 0.3
+  impactVfxScaleWeight: 0.3
   unitLayer:
     serializedVersion: 2
     m_Bits: 2097152
@@ -164,6 +164,11 @@ MonoBehaviour:
   directHitProbeRadius: 0.11
   directHitProbeForwardOffset: 0.08
   modelForwardAngleOffset: 0
+  useAdaptiveFlightSorting: 0
+  highArcProjectilesThreshold: 0.42
+  flightSortingOrderOffset: 2
+  embeddedOnTargetSortingOrderOffset: 1
+  embeddedGroundSortingOrderOffset: 0
   dustPrefab: {fileID: 3219098132114001834, guid: 290ec3fd510c06e449a8ffd91b5b6829, type: 3}
   impactWavePrefab: {fileID: 6863645735893471128, guid: 58ee468152474d04984ad6892510c0b6, type: 3}
   impactDecalPrefab: {fileID: 6863645735893471128, guid: bbdf46ce298112247a6cedc4db5cc15b, type: 3}
@@ -303,5 +308,4 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
-
 

@@ -8,8 +8,47 @@ public class Tower : MonoBehaviour
     public float fireRate = 1f;
     public Transform firePoint;
 
+    [Header("Targeting")]
     [SerializeField] private float targetRefreshInterval = 0.15f;
+    [SerializeField, Min(0f), Tooltip("Minimum time to keep current valid target before switching to another one.")]
+    private float minTargetHoldSeconds = 0.18f;
+    [SerializeField, Min(0f), Tooltip("New target must be closer by at least this distance to force target switch after hold window.")]
+    private float targetSwitchDistanceBias = 0.25f;
     [SerializeField] private SpriteRenderer towerSpriteRenderer;
+
+    [Header("Directional Visual")]
+    [SerializeField, Tooltip("Enable directional sprite switching based on target aim.")]
+    private bool enableDirectionalVisual = false;
+    [SerializeField, Tooltip("Right-facing / down-right base sprite.")]
+    private Sprite towerSpriteSouthEast;
+    [SerializeField, Tooltip("Right-facing / up-right sprite used when aiming upward.")]
+    private Sprite towerSpriteNorthEast;
+    [SerializeField, Range(0f, 1f), Tooltip("Y threshold separating up/down visual bands.")]
+    private float verticalAimThreshold = 0.2f;
+
+    [Header("Directional Animator")]
+    [SerializeField, Tooltip("Enable directional animator controller switching (SE/NE/NW/SW).")]
+    private bool enableDirectionalAnimator = true;
+    [SerializeField, Tooltip("SE-facing animator controller (fallback/base).")]
+    private RuntimeAnimatorController southEastAnimatorController;
+    [SerializeField, Tooltip("NE-facing animator controller.")]
+    private RuntimeAnimatorController northEastAnimatorController;
+    [SerializeField, Tooltip("NW-facing animator controller.")]
+    private RuntimeAnimatorController northWestAnimatorController;
+    [SerializeField, Tooltip("SW-facing animator controller.")]
+    private RuntimeAnimatorController southWestAnimatorController;
+    [SerializeField, Range(0f, 1f), Tooltip("Normalized Y threshold with hysteresis for up/down facing split.")]
+    private float directionalAnimatorVerticalThreshold = 0.12f;
+    [SerializeField, Range(0f, 1f), Tooltip("Normalized X threshold with hysteresis for left/right facing split.")]
+    private float directionalAnimatorHorizontalThreshold = 0.08f;
+
+    [Header("Direction Stability")]
+    [SerializeField, Tooltip("Lock direction for a short time right after Shoot trigger to avoid rapid jittering turns.")]
+    private bool lockDirectionDuringShot = true;
+    [SerializeField, Min(0f), Tooltip("Explicit lock duration after shot trigger. If 0, lock uses Fire clip length * Shot Lock Clip Fraction.")]
+    private float shotDirectionLockSeconds = 0f;
+    [SerializeField, Range(0f, 1.5f), Tooltip("Auto lock fraction of current Fire clip length when explicit lock duration is 0.")]
+    private float shotDirectionLockClipFraction = 0.9f;
 
     [Header("Ground Visual")]
     [SerializeField] private SpriteRenderer towerGroundRenderer;
@@ -39,6 +78,12 @@ public class Tower : MonoBehaviour
     private TowerProjectilePoolKey currentProjectilePoolKey = TowerProjectilePoolKey.Base;
     private ArrowPool runtimeArrowPool;
     private bool isAuthoringValid;
+    private bool isFacingUp;
+    private bool isFacingLeft;
+    private bool hasDirectionalState;
+    private RuntimeAnimatorController activeDirectionalController;
+    private float targetHoldTimer;
+    private float directionLockTimer;
 
     public int Damage => Mathf.Max(1, damage);
     public float Range => Mathf.Max(0.1f, range);
@@ -62,26 +107,43 @@ public class Tower : MonoBehaviour
         ApplyLevelScale(currentVisualLevel);
         ApplyGroundScale();
         ApplyGroundSprite(currentProjectilePoolKey);
+        InitializeDirectionalVisual();
+        InitializeDirectionalAnimator();
         CacheFireClipLength();
     }
 
     private void Update()
     {
+        float dt = Time.deltaTime;
+
+        targetHoldTimer -= dt;
+        directionLockTimer -= dt;
+
         fireCountdown -= Time.deltaTime;
         targetRefreshTimer -= Time.deltaTime;
 
+        bool currentTargetValid = IsCurrentTargetValid();
         bool registryChanged = lastKnownEnemyRegistryVersion != EnemyRegistry.Version;
-        bool needsRetarget = targetRefreshTimer <= 0f || registryChanged || !IsCurrentTargetValid();
+        bool needsRetarget = targetRefreshTimer <= 0f || registryChanged || !currentTargetValid;
+        bool canRetarget = !IsDirectionLockActive() || !currentTargetValid;
 
-        if (needsRetarget)
+        if (needsRetarget && canRetarget)
         {
-            RefreshTarget();
+            RefreshTarget(currentTargetValid);
             targetRefreshTimer = targetRefreshInterval;
             lastKnownEnemyRegistryVersion = EnemyRegistry.Version;
         }
 
         if (currentTarget == null)
             return;
+
+        if (!IsDirectionLockActive())
+        {
+            if (enableDirectionalAnimator)
+                UpdateDirectionalAnimatorFromTarget();
+            else
+                UpdateDirectionalVisualFromTarget();
+        }
 
         SyncAnimationSpeedToFireRate();
 
@@ -90,6 +152,7 @@ public class Tower : MonoBehaviour
             if (animator != null)
                 animator.SetTrigger("Shoot");
 
+            StartDirectionLockAfterShot();
             fireCountdown = 1f / FireRate;
         }
     }
@@ -122,7 +185,10 @@ public class Tower : MonoBehaviour
         currentProjectilePoolKey = profile.ProjectilePoolKey;
         runtimeArrowPool = null;
 
-        if (TowerProjectilePoolRegistry.TryGetPool(currentProjectilePoolKey, out ArrowPool resolvedPool) && resolvedPool != null)
+        // Do not hard-fail in early Awake order: registry may initialize after towers.
+        if (TowerProjectilePoolRegistry.HasInstance &&
+            TowerProjectilePoolRegistry.TryGetPool(currentProjectilePoolKey, out ArrowPool resolvedPool) &&
+            resolvedPool != null)
             runtimeArrowPool = resolvedPool;
 
         ApplyGroundSprite(currentProjectilePoolKey);
@@ -130,12 +196,34 @@ public class Tower : MonoBehaviour
 
         if (profile.TowerSprite != null)
         {
-            if (towerSpriteRenderer != null)
-                towerSpriteRenderer.sprite = profile.TowerSprite;
+            towerSpriteSouthEast = profile.TowerSprite;
+            towerSpriteNorthEast = profile.TowerSpriteNorthEast != null
+                ? profile.TowerSpriteNorthEast
+                : towerSpriteSouthEast;
+
+            hasDirectionalState = false;
+            ApplyDirectionalVisual(force: true);
+        }
+        else if (profile.TowerSpriteNorthEast != null)
+        {
+            towerSpriteNorthEast = profile.TowerSpriteNorthEast;
+            hasDirectionalState = false;
+            ApplyDirectionalVisual(force: true);
         }
 
         if (profile.AnimatorController != null)
         {
+            southEastAnimatorController = profile.AnimatorController;
+            northEastAnimatorController = profile.AnimatorControllerNorthEast != null
+                ? profile.AnimatorControllerNorthEast
+                : southEastAnimatorController;
+            northWestAnimatorController = profile.AnimatorControllerNorthWest != null
+                ? profile.AnimatorControllerNorthWest
+                : northEastAnimatorController;
+            southWestAnimatorController = profile.AnimatorControllerSouthWest != null
+                ? profile.AnimatorControllerSouthWest
+                : southEastAnimatorController;
+
             EnsureAnimator();
             if (animator != null && animator.runtimeAnimatorController != profile.AnimatorController)
             {
@@ -144,7 +232,14 @@ public class Tower : MonoBehaviour
                 animator.Update(0f);
                 CacheFireClipLength();
             }
+
+            activeDirectionalController = null;
+            hasDirectionalState = false;
+            InitializeDirectionalAnimator();
         }
+
+        if (towerSpriteRenderer != null)
+            towerSpriteRenderer.flipX = false;
     }
 
     private bool IsCurrentTargetValid()
@@ -160,9 +255,50 @@ public class Tower : MonoBehaviour
         return distSqr <= rangeSqr;
     }
 
-    private void RefreshTarget()
+    private void RefreshTarget(bool currentTargetWasValid)
     {
-        EnemyRegistry.TryGetNearestEnemy(transform.position, Range, out currentTarget);
+        UnitHealth previousTarget = currentTarget;
+
+        if (!EnemyRegistry.TryGetNearestEnemy(transform.position, Range, out UnitHealth nearestTarget) || nearestTarget == null)
+        {
+            if (!currentTargetWasValid)
+                currentTarget = null;
+
+            return;
+        }
+
+        if (!currentTargetWasValid || previousTarget == null || previousTarget.IsDead)
+        {
+            currentTarget = nearestTarget;
+            targetHoldTimer = Mathf.Max(minTargetHoldSeconds, 0f);
+            return;
+        }
+
+        if (nearestTarget == previousTarget)
+        {
+            currentTarget = previousTarget;
+            targetHoldTimer = Mathf.Max(targetHoldTimer, minTargetHoldSeconds * 0.5f);
+            return;
+        }
+
+        if (targetHoldTimer > 0f)
+        {
+            currentTarget = previousTarget;
+            return;
+        }
+
+        float previousDistance = Vector2.Distance(previousTarget.transform.position, transform.position);
+        float nearestDistance = Vector2.Distance(nearestTarget.transform.position, transform.position);
+        float requiredBias = Mathf.Max(0f, targetSwitchDistanceBias);
+
+        if (nearestDistance + requiredBias < previousDistance)
+        {
+            currentTarget = nearestTarget;
+            targetHoldTimer = Mathf.Max(minTargetHoldSeconds, 0f);
+            return;
+        }
+
+        currentTarget = previousTarget;
     }
 
     private void EnsureAnimator()
@@ -171,10 +307,50 @@ public class Tower : MonoBehaviour
             animator = GetComponent<Animator>();
     }
 
+    private void InitializeDirectionalAnimator()
+    {
+        if (!enableDirectionalAnimator)
+            return;
+
+        EnsureAnimator();
+        if (animator == null)
+            return;
+
+        if (southEastAnimatorController == null)
+            southEastAnimatorController = animator.runtimeAnimatorController;
+
+        if (northEastAnimatorController == null)
+            northEastAnimatorController = southEastAnimatorController;
+
+        if (northWestAnimatorController == null)
+            northWestAnimatorController = northEastAnimatorController != null ? northEastAnimatorController : southEastAnimatorController;
+
+        if (southWestAnimatorController == null)
+            southWestAnimatorController = southEastAnimatorController;
+
+        RuntimeAnimatorController initial = ResolveDirectionalAnimatorController(isFacingUp, isFacingLeft);
+        ApplyDirectionalAnimatorController(initial, force: true);
+    }
+
     private void EnsureSpriteRenderer()
     {
         if (towerSpriteRenderer == null)
             towerSpriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    private void InitializeDirectionalVisual()
+    {
+        EnsureSpriteRenderer();
+        if (towerSpriteRenderer == null)
+            return;
+
+        if (towerSpriteSouthEast == null)
+            towerSpriteSouthEast = towerSpriteRenderer.sprite;
+
+        if (towerSpriteNorthEast == null)
+            towerSpriteNorthEast = towerSpriteSouthEast;
+
+        ApplyDirectionalVisual(force: true);
     }
 
     private bool ValidateAuthoring()
@@ -330,6 +506,26 @@ public class Tower : MonoBehaviour
         arrow.Launch(targetPoint);
     }
 
+    private void StartDirectionLockAfterShot()
+    {
+        if (!lockDirectionDuringShot)
+            return;
+
+        float lockDuration = shotDirectionLockSeconds > 0f
+            ? shotDirectionLockSeconds
+            : fireClipLengthSeconds * Mathf.Max(0f, shotDirectionLockClipFraction);
+
+        if (lockDuration <= 0f)
+            return;
+
+        directionLockTimer = Mathf.Max(directionLockTimer, lockDuration);
+    }
+
+    private bool IsDirectionLockActive()
+    {
+        return lockDirectionDuringShot && directionLockTimer > 0f;
+    }
+
     private ArrowPool GetValidArrowPool()
     {
         if (runtimeArrowPool == null)
@@ -362,5 +558,149 @@ public class Tower : MonoBehaviour
 
         runtimeArrowPool = null;
         return null;
+    }
+
+    private void UpdateDirectionalVisualFromTarget()
+    {
+        if (!enableDirectionalVisual || towerSpriteRenderer == null || currentTarget == null)
+            return;
+
+        Vector2 aim = currentTarget.transform.position - transform.position;
+        if (aim.sqrMagnitude <= 0.0001f)
+            return;
+
+        Vector2 aimNormalized = aim.normalized;
+        bool isFirstDirectionalSample = !hasDirectionalState;
+
+        if (isFirstDirectionalSample)
+        {
+            isFacingUp = aimNormalized.y >= 0f;
+            hasDirectionalState = true;
+        }
+        else
+        {
+            float threshold = Mathf.Clamp01(verticalAimThreshold);
+            if (aimNormalized.y >= threshold)
+                isFacingUp = true;
+            else if (aimNormalized.y <= -threshold)
+                isFacingUp = false;
+        }
+
+        isFacingLeft = isFirstDirectionalSample
+            ? aimNormalized.x < 0f
+            : ResolveFacingLeft(aimNormalized.x, isFacingLeft, directionalAnimatorHorizontalThreshold);
+        ApplyDirectionalVisual(force: false);
+    }
+
+    private void ApplyDirectionalVisual(bool force)
+    {
+        if (towerSpriteRenderer == null)
+            return;
+
+        if (!enableDirectionalVisual)
+        {
+            if (towerSpriteSouthEast != null && (force || towerSpriteRenderer.sprite != towerSpriteSouthEast))
+                towerSpriteRenderer.sprite = towerSpriteSouthEast;
+
+            towerSpriteRenderer.flipX = false;
+            return;
+        }
+
+        Sprite southEast = towerSpriteSouthEast != null ? towerSpriteSouthEast : towerSpriteRenderer.sprite;
+        Sprite northEast = towerSpriteNorthEast != null ? towerSpriteNorthEast : southEast;
+        Sprite targetSprite = isFacingUp ? northEast : southEast;
+
+        if (targetSprite != null && (force || towerSpriteRenderer.sprite != targetSprite))
+            towerSpriteRenderer.sprite = targetSprite;
+
+        towerSpriteRenderer.flipX = false;
+    }
+
+    private void UpdateDirectionalAnimatorFromTarget()
+    {
+        if (!enableDirectionalAnimator || animator == null || currentTarget == null)
+            return;
+
+        Vector2 aim = currentTarget.transform.position - transform.position;
+        if (aim.sqrMagnitude <= 0.0001f)
+            return;
+
+        Vector2 normalized = aim.normalized;
+        bool isFirstDirectionalSample = !hasDirectionalState;
+
+        if (isFirstDirectionalSample)
+        {
+            isFacingUp = normalized.y >= 0f;
+            hasDirectionalState = true;
+        }
+        else
+        {
+            float threshold = Mathf.Clamp01(directionalAnimatorVerticalThreshold);
+            if (normalized.y >= threshold)
+                isFacingUp = true;
+            else if (normalized.y <= -threshold)
+                isFacingUp = false;
+        }
+
+        isFacingLeft = isFirstDirectionalSample
+            ? normalized.x < 0f
+            : ResolveFacingLeft(normalized.x, isFacingLeft, directionalAnimatorHorizontalThreshold);
+
+        RuntimeAnimatorController desired = ResolveDirectionalAnimatorController(isFacingUp, isFacingLeft);
+        ApplyDirectionalAnimatorController(desired, force: false);
+    }
+
+    private static bool ResolveFacingLeft(float normalizedX, bool currentFacingLeft, float hysteresisThreshold)
+    {
+        float threshold = Mathf.Clamp01(hysteresisThreshold);
+
+        if (normalizedX <= -threshold)
+            return true;
+
+        if (normalizedX >= threshold)
+            return false;
+
+        return currentFacingLeft;
+    }
+
+    private RuntimeAnimatorController ResolveDirectionalAnimatorController(bool facingUp, bool facingLeft)
+    {
+        RuntimeAnimatorController candidate;
+
+        if (facingUp)
+            candidate = facingLeft ? northWestAnimatorController : northEastAnimatorController;
+        else
+            candidate = facingLeft ? southWestAnimatorController : southEastAnimatorController;
+
+        if (candidate != null)
+            return candidate;
+
+        if (southEastAnimatorController != null)
+            return southEastAnimatorController;
+
+        return animator != null ? animator.runtimeAnimatorController : null;
+    }
+
+    private void ApplyDirectionalAnimatorController(RuntimeAnimatorController controller, bool force)
+    {
+        if (animator == null || controller == null)
+            return;
+
+        if (!force && activeDirectionalController == controller)
+            return;
+
+        if (animator.runtimeAnimatorController == controller)
+        {
+            activeDirectionalController = controller;
+            return;
+        }
+
+        animator.runtimeAnimatorController = controller;
+        animator.Rebind();
+        animator.Update(0f);
+        CacheFireClipLength();
+        SyncAnimationSpeedToFireRate();
+
+        activeDirectionalController = controller;
     }
 }
