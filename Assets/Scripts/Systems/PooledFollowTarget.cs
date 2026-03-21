@@ -2,6 +2,14 @@ using UnityEngine;
 
 public class PooledFollowTarget : MonoBehaviour
 {
+    private const string UnitsDeadSortingLayerName = "Units_Dead";
+    private const float SortingOrderYMultiplier = 100f;
+
+    [SerializeField] private bool releaseWhenUnitDies = true;
+    [SerializeField] private bool syncSortingWithTarget = true;
+    [SerializeField] private int sortingOrderOffset = 1;
+    [SerializeField] private bool switchToUnitsDeadOnTargetDeath = true;
+
     private Transform target;
     private UnitHealth targetHealth;
 
@@ -13,11 +21,13 @@ public class PooledFollowTarget : MonoBehaviour
     private float elapsed;
     private bool releaseWhenTargetLost;
 
-    [SerializeField] private bool releaseWhenUnitDies = true;
-    [SerializeField] private bool syncSortingWithTarget = true;
-    [SerializeField] private int sortingOrderOffset = 1;
+    private bool runtimeReleaseWhenUnitDies;
+    private bool runtimeSyncSorting;
+    private int runtimeSortingOrderOffset;
 
+    private bool switchedToDeadLayer;
     private bool isFollowing;
+
     private SpriteRenderer selfSpriteRenderer;
     private SpriteRenderer targetSpriteRenderer;
 
@@ -33,6 +43,27 @@ public class PooledFollowTarget : MonoBehaviour
         bool releaseOnTargetLost,
         bool useLocalSpaceOffset = true)
     {
+        AttachWithOptions(
+            followTarget,
+            offsetInTargetSpace,
+            durationSeconds,
+            releaseOnTargetLost,
+            useLocalSpaceOffset,
+            releaseWhenUnitDies,
+            syncSortingWithTarget,
+            sortingOrderOffset);
+    }
+
+    public void AttachWithOptions(
+        Transform followTarget,
+        Vector3 offsetInTargetSpace,
+        float durationSeconds,
+        bool releaseOnTargetLost,
+        bool useLocalSpaceOffset,
+        bool releaseOnUnitDeath,
+        bool syncSorting,
+        int sortOffset)
+    {
         target = followTarget;
         targetHealth = target != null ? target.GetComponent<UnitHealth>() : null;
         targetSpriteRenderer = target != null ? target.GetComponent<SpriteRenderer>() : null;
@@ -46,13 +77,19 @@ public class PooledFollowTarget : MonoBehaviour
         followDuration = durationSeconds;
         elapsed = 0f;
         releaseWhenTargetLost = releaseOnTargetLost;
+
+        runtimeReleaseWhenUnitDies = releaseOnUnitDeath;
+        runtimeSyncSorting = syncSorting;
+        runtimeSortingOrderOffset = sortOffset;
+
+        switchedToDeadLayer = false;
         isFollowing = target != null;
 
-        if (isFollowing)
-        {
-            transform.position = ResolveTargetPosition();
-            SyncSortingFromTarget();
-        }
+        if (!isFollowing)
+            return;
+
+        transform.position = ResolveTargetPosition();
+        SyncSortingFromTarget();
     }
 
     private void Update()
@@ -61,9 +98,9 @@ public class PooledFollowTarget : MonoBehaviour
             return;
 
         bool lostTarget = target == null || !target.gameObject.activeInHierarchy;
-        bool deadTarget = releaseWhenUnitDies && targetHealth != null && targetHealth.IsDead;
+        bool deadTarget = targetHealth != null && targetHealth.IsDead;
 
-        if (lostTarget || deadTarget)
+        if (lostTarget || (runtimeReleaseWhenUnitDies && deadTarget))
         {
             isFollowing = false;
 
@@ -76,6 +113,14 @@ public class PooledFollowTarget : MonoBehaviour
             }
 
             return;
+        }
+
+        if (!switchedToDeadLayer && deadTarget)
+        {
+            if (switchToUnitsDeadOnTargetDeath)
+                SwitchToUnitsDeadLayer();
+
+            switchedToDeadLayer = true;
         }
 
         if (followDuration > 0f)
@@ -105,11 +150,22 @@ public class PooledFollowTarget : MonoBehaviour
 
     private void SyncSortingFromTarget()
     {
-        if (!syncSortingWithTarget || selfSpriteRenderer == null || targetSpriteRenderer == null)
+        if (!runtimeSyncSorting || selfSpriteRenderer == null || targetSpriteRenderer == null)
             return;
 
         selfSpriteRenderer.sortingLayerID = targetSpriteRenderer.sortingLayerID;
-        selfSpriteRenderer.sortingOrder = targetSpriteRenderer.sortingOrder + sortingOrderOffset;
+        selfSpriteRenderer.sortingOrder = targetSpriteRenderer.sortingOrder + runtimeSortingOrderOffset;
+    }
+
+    private void SwitchToUnitsDeadLayer()
+    {
+        runtimeSyncSorting = false;
+
+        if (selfSpriteRenderer == null)
+            return;
+
+        selfSpriteRenderer.sortingLayerName = UnitsDeadSortingLayerName;
+        selfSpriteRenderer.sortingOrder = Mathf.RoundToInt(-transform.position.y * SortingOrderYMultiplier);
     }
 
     private void OnDisable()
@@ -118,6 +174,7 @@ public class PooledFollowTarget : MonoBehaviour
         target = null;
         targetHealth = null;
         targetSpriteRenderer = null;
+        runtimeSyncSorting = false;
+        switchedToDeadLayer = false;
     }
 }
-

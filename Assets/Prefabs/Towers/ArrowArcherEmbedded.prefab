@@ -98,5 +98,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   releaseWhenUnitDies: 1
-
-
+  syncSortingWithTarget: 1
+  sortingOrderOffset: 1
+  switchToUnitsDeadOnTargetDeath: 1

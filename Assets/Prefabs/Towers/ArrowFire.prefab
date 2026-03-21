@@ -164,9 +164,9 @@ MonoBehaviour:
   directHitProbeRadius: 0.11
   directHitProbeForwardOffset: 0.08
   modelForwardAngleOffset: 0
-  useAdaptiveFlightSorting: 1
+  useAdaptiveFlightSorting: 0
   highArcProjectilesThreshold: 0.42
-  flightSortingOrderOffset: 1
+  flightSortingOrderOffset: 2
   embeddedOnTargetSortingOrderOffset: 1
   embeddedGroundSortingOrderOffset: 0
   dustPrefab: {fileID: 3219098132114001834, guid: 290ec3fd510c06e449a8ffd91b5b6829, type: 3}
@@ -308,3 +308,4 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+
