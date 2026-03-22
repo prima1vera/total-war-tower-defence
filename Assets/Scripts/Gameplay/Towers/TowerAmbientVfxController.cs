@@ -32,18 +32,8 @@ public sealed class TowerAmbientVfxController : MonoBehaviour
     private ParticleSystem orbitParticles;
     [SerializeField, Tooltip("Soft aura around tower.")]
     private ParticleSystem auraParticles;
-    [SerializeField, Tooltip("Optional shared material for ambient particles (assign URP/Particles material to avoid magenta).")]
-    private Material ambientParticleMaterial;
     [SerializeField, Tooltip("Optional additive sprite glow (can stay null).")]
     private SpriteRenderer glowSprite;
-
-    [Header("Sorting")]
-    [SerializeField, Tooltip("Orbit particles sorting offset relative to tower top sprite.")]
-    private int orbitSortingOffset = 1;
-    [SerializeField, Tooltip("Aura particles sorting offset relative to tower top sprite.")]
-    private int auraSortingOffset = 0;
-    [SerializeField, Tooltip("Glow sprite sorting offset relative to tower top sprite.")]
-    private int glowSortingOffset = 0;
 
     [Header("Level Scaling")]
     [SerializeField, Min(0f), Tooltip("Added emission per tower level.")]
@@ -106,6 +96,10 @@ public sealed class TowerAmbientVfxController : MonoBehaviour
     private TowerProjectilePoolKey cachedKey;
     private int cachedLevel;
     private bool hasCachedState;
+
+    private const int OrbitSortingOffset = 1;
+    private const int AuraSortingOffset = 0;
+    private const int GlowSortingOffset = 0;
 
     private void Reset()
     {
@@ -248,77 +242,19 @@ public sealed class TowerAmbientVfxController : MonoBehaviour
         if (orbitRenderer != null)
         {
             orbitRenderer.sortingLayerID = sortingLayerId;
-            orbitRenderer.sortingOrder = baseOrder + orbitSortingOffset;
+            orbitRenderer.sortingOrder = baseOrder + OrbitSortingOffset;
         }
 
         if (auraRenderer != null)
         {
             auraRenderer.sortingLayerID = sortingLayerId;
-            auraRenderer.sortingOrder = baseOrder + auraSortingOffset;
+            auraRenderer.sortingOrder = baseOrder + AuraSortingOffset;
         }
 
         if (glowSprite != null)
         {
             glowSprite.sortingLayerID = sortingLayerId;
-            glowSprite.sortingOrder = baseOrder + glowSortingOffset;
+            glowSprite.sortingOrder = baseOrder + GlowSortingOffset;
         }
-    }
-
-    [ContextMenu("Authoring/Auto Create Test Ambient VFX")]
-    private void AutoCreateTestAmbientVfx()
-    {
-        if (tower == null)
-            tower = GetComponent<Tower>();
-
-        if (orbitParticles == null)
-            orbitParticles = CreateParticleChild("AmbientOrbitParticles", new Vector3(0f, 0.42f, 0f), 0.28f, 0.9f, 1.8f);
-
-        if (auraParticles == null)
-            auraParticles = CreateParticleChild("AmbientAuraParticles", new Vector3(0f, 0.28f, 0f), 0.42f, 1.1f, 2.4f);
-
-        CacheRenderers();
-        RefreshStyle(force: true);
-    }
-
-    private ParticleSystem CreateParticleChild(string childName, Vector3 localPosition, float radius, float minLifetime, float maxLifetime)
-    {
-        Transform child = transform.Find(childName);
-        GameObject childObject = child != null ? child.gameObject : new GameObject(childName);
-        childObject.transform.SetParent(transform, false);
-        childObject.transform.localPosition = localPosition;
-
-        ParticleSystem particleSystem = childObject.GetComponent<ParticleSystem>();
-        if (particleSystem == null)
-            particleSystem = childObject.AddComponent<ParticleSystem>();
-
-        ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
-        if (renderer != null && ambientParticleMaterial != null)
-            renderer.sharedMaterial = ambientParticleMaterial;
-
-        ParticleSystem.MainModule main = particleSystem.main;
-        main.loop = true;
-        main.playOnAwake = true;
-        main.simulationSpace = ParticleSystemSimulationSpace.Local;
-        main.startLifetime = new ParticleSystem.MinMaxCurve(minLifetime, maxLifetime);
-        main.startSpeed = 0.08f;
-        main.startSize = new ParticleSystem.MinMaxCurve(0.025f, 0.055f);
-        main.maxParticles = 80;
-        main.gravityModifier = 0f;
-
-        ParticleSystem.EmissionModule emission = particleSystem.emission;
-        emission.enabled = true;
-        emission.rateOverTime = 8f;
-
-        ParticleSystem.ShapeModule shape = particleSystem.shape;
-        shape.enabled = true;
-        shape.shapeType = ParticleSystemShapeType.Circle;
-        shape.radius = radius;
-
-        ParticleSystem.VelocityOverLifetimeModule velocityOverLifetime = particleSystem.velocityOverLifetime;
-        velocityOverLifetime.enabled = false;
-
-        particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        particleSystem.Play(true);
-        return particleSystem;
     }
 }

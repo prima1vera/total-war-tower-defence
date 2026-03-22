@@ -62,22 +62,6 @@ public class Tower : MonoBehaviour
     [Header("Tower Scale")]
     [SerializeField, Min(0f)] private float levelScaleStep = 0.2f;
 
-    [Header("Render Sorting")]
-    [SerializeField, Tooltip("Enable Y-based sorting so overlapped towers render consistently regardless of upgrade timing.")]
-    private bool enableTopDownSorting = true;
-    [SerializeField, Tooltip("Optional collider used as sorting pivot (bounds.min.y). If null, transform position is used.")]
-    private Collider2D sortingPivotCollider;
-    [SerializeField, Tooltip("Additional Y offset applied to sorting pivot.")]
-    private float sortingPivotYOffset = 0f;
-    [SerializeField, Tooltip("Use initial authored sorting orders as offsets from Y-based base order.")]
-    private bool useAuthoredSortingOffsets = true;
-    [SerializeField, Min(10f), Tooltip("Higher value reduces sorting ties for towers close on Y axis.")]
-    private float sortingOrderPrecision = 1000f;
-    [SerializeField, Tooltip("Top sprite sorting offset when authored offsets are disabled.")]
-    private int topSpriteSortingOffset = 1;
-    [SerializeField, Tooltip("Ground sprite sorting offset when authored offsets are disabled.")]
-    private int groundSpriteSortingOffset = 0;
-
     [Header("Animation Sync")]
     [SerializeField] private float minAnimationCycleSeconds = 0.08f;
 
@@ -104,6 +88,10 @@ public class Tower : MonoBehaviour
     private bool sortingOffsetsCached;
     private int cachedTopSortingOffset = 1;
     private int cachedGroundSortingOffset = 0;
+
+    private const float TopDownSortingPrecision = 1000f;
+    private const int DefaultTopSortingOffset = 1;
+    private const int DefaultGroundSortingOffset = 0;
 
     public event Action VisualStateChanged;
 
@@ -497,22 +485,22 @@ public class Tower : MonoBehaviour
 
     private void UpdateRenderSorting()
     {
-        if (!enableTopDownSorting)
-            return;
-
         if (towerSpriteRenderer == null && towerGroundRenderer == null)
             return;
 
         CacheSortingOffsets();
 
-        float pivotY = sortingPivotCollider != null
-            ? sortingPivotCollider.bounds.min.y + sortingPivotYOffset
-            : transform.position.y + sortingPivotYOffset;
+        float pivotY;
+        if (towerGroundRenderer != null)
+            pivotY = towerGroundRenderer.bounds.min.y;
+        else if (towerSpriteRenderer != null)
+            pivotY = towerSpriteRenderer.bounds.min.y;
+        else
+            pivotY = transform.position.y;
 
-        float precision = Mathf.Max(10f, sortingOrderPrecision);
-        int baseOrder = Mathf.RoundToInt(-pivotY * precision);
-        int topOffset = useAuthoredSortingOffsets ? cachedTopSortingOffset : topSpriteSortingOffset;
-        int groundOffset = useAuthoredSortingOffsets ? cachedGroundSortingOffset : groundSpriteSortingOffset;
+        int baseOrder = Mathf.RoundToInt(-pivotY * TopDownSortingPrecision);
+        int topOffset = sortingOffsetsCached ? cachedTopSortingOffset : DefaultTopSortingOffset;
+        int groundOffset = sortingOffsetsCached ? cachedGroundSortingOffset : DefaultGroundSortingOffset;
 
         if (topOffset <= groundOffset)
             topOffset = groundOffset + 1;
