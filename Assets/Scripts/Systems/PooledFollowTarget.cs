@@ -30,6 +30,8 @@ public class PooledFollowTarget : MonoBehaviour
 
     private SpriteRenderer selfSpriteRenderer;
     private SpriteRenderer targetSpriteRenderer;
+    private int lastSyncedSortingLayerId = int.MinValue;
+    private int lastSyncedSortingOrder = int.MinValue;
 
     private void Awake()
     {
@@ -84,6 +86,8 @@ public class PooledFollowTarget : MonoBehaviour
 
         switchedToDeadLayer = false;
         isFollowing = target != null;
+        lastSyncedSortingLayerId = int.MinValue;
+        lastSyncedSortingOrder = int.MinValue;
 
         if (!isFollowing)
             return;
@@ -153,8 +157,16 @@ public class PooledFollowTarget : MonoBehaviour
         if (!runtimeSyncSorting || selfSpriteRenderer == null || targetSpriteRenderer == null)
             return;
 
-        selfSpriteRenderer.sortingLayerID = targetSpriteRenderer.sortingLayerID;
-        selfSpriteRenderer.sortingOrder = targetSpriteRenderer.sortingOrder + runtimeSortingOrderOffset;
+        int targetLayerId = targetSpriteRenderer.sortingLayerID;
+        int targetOrder = targetSpriteRenderer.sortingOrder + runtimeSortingOrderOffset;
+
+        if (lastSyncedSortingLayerId == targetLayerId && lastSyncedSortingOrder == targetOrder)
+            return;
+
+        selfSpriteRenderer.sortingLayerID = targetLayerId;
+        selfSpriteRenderer.sortingOrder = targetOrder;
+        lastSyncedSortingLayerId = targetLayerId;
+        lastSyncedSortingOrder = targetOrder;
     }
 
     private void SwitchToUnitsDeadLayer()
@@ -176,5 +188,7 @@ public class PooledFollowTarget : MonoBehaviour
         targetSpriteRenderer = null;
         runtimeSyncSorting = false;
         switchedToDeadLayer = false;
+        lastSyncedSortingLayerId = int.MinValue;
+        lastSyncedSortingOrder = int.MinValue;
     }
 }

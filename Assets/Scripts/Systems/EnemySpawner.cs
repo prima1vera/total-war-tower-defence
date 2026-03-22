@@ -22,6 +22,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField, Min(0f)] private float waveSpawnWeight = 1f;
 
     private float spawnTimer;
+    private bool loggedMissingPool;
 
     public float WaveSpawnWeight => Mathf.Max(0f, waveSpawnWeight);
     public bool IsOgreSpawner => ResolveEnemyFamily() == EnemyFamily.Ogre;
@@ -54,13 +55,19 @@ public class EnemySpawner : MonoBehaviour
         if (spawnPoint == null)
             return null;
 
-        if (enemyPool != null)
-            return enemyPool.Spawn(spawnPoint.position, spawnPoint.rotation);
+        if (enemyPool == null)
+        {
+            if (!loggedMissingPool)
+            {
+                Debug.LogError($"{name}: EnemyPool is not assigned. Scene-wired pool is required (runtime Instantiate fallback removed).", this);
+                loggedMissingPool = true;
+            }
 
-        if (enemyPrefab == null)
             return null;
+        }
 
-        return Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+        loggedMissingPool = false;
+        return enemyPool.Spawn(spawnPoint.position, spawnPoint.rotation);
     }
 
     private EnemyFamily ResolveEnemyFamily()

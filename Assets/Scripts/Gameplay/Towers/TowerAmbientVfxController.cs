@@ -132,7 +132,6 @@ public sealed class TowerAmbientVfxController : MonoBehaviour
     private void LateUpdate()
     {
         UpdateGlowPulse();
-        SyncSorting();
     }
 
     private void HandleVisualStateChanged()

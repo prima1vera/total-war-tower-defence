@@ -40,6 +40,22 @@ public class WaveManager : MonoBehaviour
     public bool IsCompleted { get; private set; }
 
     private Coroutine waveRoutine;
+    private EnemySpawner[] validSpawners = Array.Empty<EnemySpawner>();
+    private EnemySpawner[] weightedAllSpawners = Array.Empty<EnemySpawner>();
+    private float[] weightedAllCumulative = Array.Empty<float>();
+    private EnemySpawner[] weightedOgreSpawners = Array.Empty<EnemySpawner>();
+    private float[] weightedOgreCumulative = Array.Empty<float>();
+    private EnemySpawner[] weightedSmallSpawners = Array.Empty<EnemySpawner>();
+    private float[] weightedSmallCumulative = Array.Empty<float>();
+
+    private int validSpawnerCount;
+    private int weightedAllCount;
+    private int weightedOgreCount;
+    private int weightedSmallCount;
+
+    private float totalWeightAll;
+    private float totalWeightOgre;
+    private float totalWeightSmall;
 
     private void Start()
     {
@@ -53,6 +69,7 @@ public class WaveManager : MonoBehaviour
                 spawner.SetAutoSpawn(false);
         }
 
+        RebuildSpawnerCache();
         waveRoutine = StartCoroutine(RunWaves());
     }
 
@@ -60,15 +77,19 @@ public class WaveManager : MonoBehaviour
     {
         for (int waveIndex = 0; waveIndex < waves.Length; waveIndex++)
         {
+            RebuildSpawnerCache();
+
             CurrentWaveIndex = waveIndex;
             WaveChanged?.Invoke(CurrentWaveIndex + 1, waves.Length);
 
             WaveDefinition wave = waves[waveIndex];
+            WaitForSeconds startDelayWait = wave.startDelay > 0f ? new WaitForSeconds(wave.startDelay) : null;
             if (wave.startDelay > 0f)
-                yield return new WaitForSeconds(wave.startDelay);
+                yield return startDelayWait;
 
             int spawnCount = Mathf.Max(1, wave.enemyCount);
             float spawnInterval = Mathf.Max(0.05f, wave.spawnInterval);
+            WaitForSeconds spawnIntervalWait = new WaitForSeconds(spawnInterval);
 
             for (int i = 0; i < spawnCount; i++)
             {
@@ -77,7 +98,7 @@ public class WaveManager : MonoBehaviour
                     spawner.SpawnEnemy();
 
                 if (i < spawnCount - 1)
-                    yield return new WaitForSeconds(spawnInterval);
+                    yield return spawnIntervalWait;
             }
 
             while (EnemyRegistry.Enemies.Count > 0)
@@ -90,55 +111,27 @@ public class WaveManager : MonoBehaviour
 
     private EnemySpawner ResolveSpawnerForIndex(int index)
     {
-        if (controlledSpawners == null || controlledSpawners.Length == 0)
+        if (validSpawnerCount == 0)
             return null;
-
-        int validCount = 0;
-        float totalWeight = 0f;
-        float totalOgreWeight = 0f;
-        float totalSmallWeight = 0f;
-
-        for (int i = 0; i < controlledSpawners.Length; i++)
+        if (useWeightedEnemyComposition && totalWeightAll > 0f)
         {
-            EnemySpawner candidate = controlledSpawners[i];
-            if (candidate == null)
-                continue;
-
-            validCount++;
-
-            float weight = GetEffectiveSpawnWeight(candidate);
-            if (weight <= 0f)
-                continue;
-
-            totalWeight += weight;
-            if (candidate.IsOgreSpawner)
-                totalOgreWeight += weight;
-            else
-                totalSmallWeight += weight;
-        }
-
-        if (validCount == 0)
-            return null;
-
-        if (useWeightedEnemyComposition && totalWeight > 0f)
-        {
-            bool hasBothFamilies = totalOgreWeight > 0f && totalSmallWeight > 0f;
+            bool hasBothFamilies = totalWeightOgre > 0f && totalWeightSmall > 0f;
             if (hasBothFamilies)
             {
                 bool spawnOgre = Random.value < Mathf.Clamp01(ogreSpawnShare);
-                float familyWeight = spawnOgre ? totalOgreWeight : totalSmallWeight;
-
-                EnemySpawner familyPick = PickWeightedSpawner(familyWeight, spawnOgreOnly: spawnOgre, filterByFamily: true);
+                EnemySpawner familyPick = spawnOgre
+                    ? PickWeightedSpawner(weightedOgreSpawners, weightedOgreCumulative, weightedOgreCount, totalWeightOgre)
+                    : PickWeightedSpawner(weightedSmallSpawners, weightedSmallCumulative, weightedSmallCount, totalWeightSmall);
                 if (familyPick != null)
                     return familyPick;
             }
 
-            EnemySpawner anyPick = PickWeightedSpawner(totalWeight, spawnOgreOnly: false, filterByFamily: false);
+            EnemySpawner anyPick = PickWeightedSpawner(weightedAllSpawners, weightedAllCumulative, weightedAllCount, totalWeightAll);
             if (anyPick != null)
                 return anyPick;
         }
 
-        return ResolveRoundRobinSpawner(index, validCount);
+        return ResolveRoundRobinSpawner(index);
     }
 
     private float GetEffectiveSpawnWeight(EnemySpawner spawner)
@@ -153,13 +146,44 @@ public class WaveManager : MonoBehaviour
         return spawner.WaveSpawnWeight * familyMultiplier;
     }
 
-    private EnemySpawner PickWeightedSpawner(float totalWeight, bool spawnOgreOnly, bool filterByFamily)
+    private EnemySpawner PickWeightedSpawner(EnemySpawner[] spawners, float[] cumulativeWeights, int count, float totalWeight)
     {
-        if (totalWeight <= 0f)
+        if (count <= 0 || totalWeight <= 0f)
             return null;
 
         float pick = Random.value * totalWeight;
-        EnemySpawner lastValid = null;
+        for (int i = 0; i < count; i++)
+        {
+            if (pick <= cumulativeWeights[i])
+                return spawners[i];
+        }
+
+        return spawners[count - 1];
+    }
+
+    private EnemySpawner ResolveRoundRobinSpawner(int index)
+    {
+        if (validSpawnerCount <= 0)
+            return null;
+
+        int target = index % validSpawnerCount;
+        return validSpawners[target];
+    }
+
+    private void RebuildSpawnerCache()
+    {
+        validSpawnerCount = 0;
+        weightedAllCount = 0;
+        weightedOgreCount = 0;
+        weightedSmallCount = 0;
+        totalWeightAll = 0f;
+        totalWeightOgre = 0f;
+        totalWeightSmall = 0f;
+
+        if (controlledSpawners == null || controlledSpawners.Length == 0)
+            return;
+
+        EnsureCacheCapacity(controlledSpawners.Length);
 
         for (int i = 0; i < controlledSpawners.Length; i++)
         {
@@ -167,43 +191,46 @@ public class WaveManager : MonoBehaviour
             if (candidate == null)
                 continue;
 
-            if (filterByFamily && candidate.IsOgreSpawner != spawnOgreOnly)
-                continue;
+            validSpawners[validSpawnerCount++] = candidate;
 
             float weight = GetEffectiveSpawnWeight(candidate);
             if (weight <= 0f)
                 continue;
 
-            lastValid = candidate;
-            pick -= weight;
-            if (pick <= 0f)
-                return candidate;
-        }
+            totalWeightAll += weight;
+            weightedAllSpawners[weightedAllCount] = candidate;
+            weightedAllCumulative[weightedAllCount] = totalWeightAll;
+            weightedAllCount++;
 
-        return lastValid;
+            if (candidate.IsOgreSpawner)
+            {
+                totalWeightOgre += weight;
+                weightedOgreSpawners[weightedOgreCount] = candidate;
+                weightedOgreCumulative[weightedOgreCount] = totalWeightOgre;
+                weightedOgreCount++;
+            }
+            else
+            {
+                totalWeightSmall += weight;
+                weightedSmallSpawners[weightedSmallCount] = candidate;
+                weightedSmallCumulative[weightedSmallCount] = totalWeightSmall;
+                weightedSmallCount++;
+            }
+        }
     }
 
-    private EnemySpawner ResolveRoundRobinSpawner(int index, int validCount)
+    private void EnsureCacheCapacity(int capacity)
     {
-        if (validCount <= 0)
-            return null;
+        if (validSpawners.Length >= capacity)
+            return;
 
-        int target = index % validCount;
-        int current = 0;
-
-        for (int i = 0; i < controlledSpawners.Length; i++)
-        {
-            EnemySpawner candidate = controlledSpawners[i];
-            if (candidate == null)
-                continue;
-
-            if (current == target)
-                return candidate;
-
-            current++;
-        }
-
-        return null;
+        validSpawners = new EnemySpawner[capacity];
+        weightedAllSpawners = new EnemySpawner[capacity];
+        weightedAllCumulative = new float[capacity];
+        weightedOgreSpawners = new EnemySpawner[capacity];
+        weightedOgreCumulative = new float[capacity];
+        weightedSmallSpawners = new EnemySpawner[capacity];
+        weightedSmallCumulative = new float[capacity];
     }
 
     private void OnDisable()

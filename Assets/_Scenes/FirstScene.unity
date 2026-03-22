@@ -14503,6 +14503,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
+      propertyPath: ogreSpawnShare
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
       propertyPath: waves.Array.data[0].enemyCount
       value: 150
       objectReference: {fileID: 0}
@@ -14916,19 +14920,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: maxTrackedDeaths
-      value: 300
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: maxTrackedRemains
-      value: 300
+      value: 140
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: prewarmCorpseCount
-      value: 300
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodPoolPrewarmCount
-      value: 300
+      value: 140
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterBloodScaleRange.x
@@ -14948,7 +14952,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: maxTrackedGroundBloodDecals
-      value: 1000
+      value: 260
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: deathBloodFlowEndAlphaRange.x

@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class UnitMovement : MonoBehaviour
 {
+    private const float SeparationRefreshInterval = 0.06f;
+    private const float SeparationRefreshJitter = 0.015f;
+
     public float speed = 2f;
 
     private int waypointIndex = 0;
@@ -22,6 +25,8 @@ public class UnitMovement : MonoBehaviour
     private Collider2D[] separationBuffer;
     private Transform cachedTransform;
     private EnemyPoolMember enemyPoolMember;
+    private float separationTimer;
+    private Vector2 cachedSeparation;
 
     public void ApplyKnockback(Vector2 direction, float force)
     {
@@ -49,6 +54,8 @@ public class UnitMovement : MonoBehaviour
         knockbackVelocity = Vector2.zero;
         knockbackTimer = 0f;
         speedMultiplier = 1f;
+        cachedSeparation = Vector2.zero;
+        separationTimer = Random.Range(0f, SeparationRefreshInterval);
     }
 
     void Start()
@@ -87,7 +94,15 @@ public class UnitMovement : MonoBehaviour
         Transform target = path[waypointIndex];
         Vector3 dir = target.position - cachedTransform.position;
 
-        Vector2 separation = CalculateSeparation();
+        separationTimer -= Time.deltaTime;
+        if (separationTimer <= 0f)
+        {
+            cachedSeparation = CalculateSeparation();
+            float jitter = Random.Range(-SeparationRefreshJitter, SeparationRefreshJitter);
+            separationTimer = Mathf.Max(0.02f, SeparationRefreshInterval + jitter);
+        }
+
+        Vector2 separation = cachedSeparation;
         Vector3 movement = (dir.normalized + (Vector3)separation) * speed * speedMultiplier * Time.deltaTime;
 
         cachedTransform.Translate(movement, Space.World);

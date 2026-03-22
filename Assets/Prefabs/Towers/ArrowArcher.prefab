@@ -188,7 +188,7 @@ MonoBehaviour:
   embeddedArrowPrefab: {fileID: 5000011111111111111, guid: 45e6ecf5e8794bb9afe0f33630e385f1, type: 3}
   embeddedArrowLocalOffset: {x: 0.02, y: -0.01, z: 0}
   maxEmbeddedArrowsPerTarget: 10
-  maxEmbeddedArrowsOnScene: 500
+  maxEmbeddedArrowsOnScene: 220
   recycleOldestEmbeddedArrow: 1
   embeddedArrowSpreadRadius: 0.12
   embeddedArrowMinSpacing: 0.07

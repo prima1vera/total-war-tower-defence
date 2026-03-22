@@ -129,14 +129,6 @@ public class Tower : MonoBehaviour
         UpdateRenderSorting();
     }
 
-    private void LateUpdate()
-    {
-        if (!isAuthoringValid)
-            return;
-
-        UpdateRenderSorting();
-    }
-
     private void Update()
     {
         float dt = Time.deltaTime;
@@ -202,6 +194,7 @@ public class Tower : MonoBehaviour
         currentVisualLevel = Mathf.Max(1, level);
         ApplyLevelScale(currentVisualLevel);
         ApplyGroundScale();
+        UpdateRenderSorting();
         NotifyVisualStateChanged();
     }
 
