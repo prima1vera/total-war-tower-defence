@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FrostTowerFire
+  m_Name: FrostTowerFire_NW
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,11 +21,11 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -631167444, guid: e4e3f1a8f0a0173448377aefebff73eb, type: 3}
+      value: {fileID: -369128701, guid: f3d2229771c5af2419fd50c5b9e1bcba, type: 3}
     - time: 0.1
-      value: {fileID: 743935087, guid: e4e3f1a8f0a0173448377aefebff73eb, type: 3}
+      value: {fileID: 1055526191, guid: f3d2229771c5af2419fd50c5b9e1bcba, type: 3}
     - time: 0.2
-      value: {fileID: -1513925096, guid: e4e3f1a8f0a0173448377aefebff73eb, type: 3}
+      value: {fileID: 1185652490, guid: f3d2229771c5af2419fd50c5b9e1bcba, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -48,9 +48,9 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -631167444, guid: e4e3f1a8f0a0173448377aefebff73eb, type: 3}
-    - {fileID: 743935087, guid: e4e3f1a8f0a0173448377aefebff73eb, type: 3}
-    - {fileID: -1513925096, guid: e4e3f1a8f0a0173448377aefebff73eb, type: 3}
+    - {fileID: -369128701, guid: f3d2229771c5af2419fd50c5b9e1bcba, type: 3}
+    - {fileID: 1055526191, guid: f3d2229771c5af2419fd50c5b9e1bcba, type: 3}
+    - {fileID: 1185652490, guid: f3d2229771c5af2419fd50c5b9e1bcba, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}

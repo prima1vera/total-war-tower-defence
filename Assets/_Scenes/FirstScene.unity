@@ -3577,6 +3577,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TowerBase (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 4033096107844011754, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 605b73da6d94468b8d6572ef56ec022a, type: 2}
     - target: {fileID: 8990869992959872207, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.82
@@ -12828,7 +12832,7 @@ PrefabInstance:
     - target: {fileID: 4033096107844011754, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 6c09811e26f8e03469ca3b6ceff04e44, type: 2}
+      objectReference: {fileID: 22100000, guid: 703ea713d1f1c384584ee3f398434eba, type: 2}
     - target: {fileID: 8990869992959872207, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.56

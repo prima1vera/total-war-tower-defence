@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5c0f89433b2cbac4c93f5b4b60fff7f3
+guid: 952e60ecac374fb47a093f3addb3b892
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Frost_lvl3_128_0
+      name: Frost_lvl1_128_NE_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 30
-        width: 60
-        height: 73
+        x: 1
+        y: 31
+        width: 55
+        height: 72
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a8e6608dc05b58a49952d0cc02875076
-      internalID: 1761608643
+      spriteID: 2d5a524756b42e8419914c63a04bcb96
+      internalID: -2127876768
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frost_lvl3_128_1
+      name: Frost_lvl1_128_NE_1
       rect:
         serializedVersion: 2
-        x: 69
-        y: 30
-        width: 60
-        height: 73
+        x: 68
+        y: 31
+        width: 55
+        height: 72
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,20 +145,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f576ec6adcb1c9e4292d53af5ff89832
-      internalID: 1379886705
+      spriteID: de716b9b055bcb34dbd68fd4ea3b2206
+      internalID: 974466934
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frost_lvl3_128_2
+      name: Frost_lvl1_128_NE_2
       rect:
         serializedVersion: 2
-        x: 137
-        y: 30
-        width: 60
-        height: 73
+        x: 136
+        y: 31
+        width: 55
+        height: 72
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,8 +166,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0028dea01e176874d93165e360a4017d
-      internalID: -182784074
+      spriteID: 01d2914be98c26741a5da69dcc6a2ecc
+      internalID: 1059837991
       vertices: []
       indices: 
       edges: []
@@ -183,9 +183,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Frost_lvl3_128_0: 1761608643
-      Frost_lvl3_128_1: 1379886705
-      Frost_lvl3_128_2: -182784074
+      Frost_lvl1_128_NE_0: -2127876768
+      Frost_lvl1_128_NE_1: 974466934
+      Frost_lvl1_128_NE_2: 1059837991
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
