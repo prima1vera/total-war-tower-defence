@@ -32,6 +32,8 @@ public sealed class TowerAmbientVfxController : MonoBehaviour
     private ParticleSystem orbitParticles;
     [SerializeField, Tooltip("Soft aura around tower.")]
     private ParticleSystem auraParticles;
+    [SerializeField, Tooltip("Optional shared material for ambient particles (assign URP/Particles material to avoid magenta).")]
+    private Material ambientParticleMaterial;
     [SerializeField, Tooltip("Optional additive sprite glow (can stay null).")]
     private SpriteRenderer glowSprite;
 
@@ -288,6 +290,10 @@ public sealed class TowerAmbientVfxController : MonoBehaviour
         ParticleSystem particleSystem = childObject.GetComponent<ParticleSystem>();
         if (particleSystem == null)
             particleSystem = childObject.AddComponent<ParticleSystem>();
+
+        ParticleSystemRenderer renderer = particleSystem.GetComponent<ParticleSystemRenderer>();
+        if (renderer != null && ambientParticleMaterial != null)
+            renderer.sharedMaterial = ambientParticleMaterial;
 
         ParticleSystem.MainModule main = particleSystem.main;
         main.loop = true;

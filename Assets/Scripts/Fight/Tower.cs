@@ -71,6 +71,8 @@ public class Tower : MonoBehaviour
     private float sortingPivotYOffset = 0f;
     [SerializeField, Tooltip("Use initial authored sorting orders as offsets from Y-based base order.")]
     private bool useAuthoredSortingOffsets = true;
+    [SerializeField, Min(10f), Tooltip("Higher value reduces sorting ties for towers close on Y axis.")]
+    private float sortingOrderPrecision = 1000f;
     [SerializeField, Tooltip("Top sprite sorting offset when authored offsets are disabled.")]
     private int topSpriteSortingOffset = 1;
     [SerializeField, Tooltip("Ground sprite sorting offset when authored offsets are disabled.")]
@@ -507,7 +509,8 @@ public class Tower : MonoBehaviour
             ? sortingPivotCollider.bounds.min.y + sortingPivotYOffset
             : transform.position.y + sortingPivotYOffset;
 
-        int baseOrder = Mathf.RoundToInt(-pivotY * 100f);
+        float precision = Mathf.Max(10f, sortingOrderPrecision);
+        int baseOrder = Mathf.RoundToInt(-pivotY * precision);
         int topOffset = useAuthoredSortingOffsets ? cachedTopSortingOffset : topSpriteSortingOffset;
         int groundOffset = useAuthoredSortingOffsets ? cachedGroundSortingOffset : groundSpriteSortingOffset;
 
