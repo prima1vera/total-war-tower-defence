@@ -15,5 +15,10 @@ MonoBehaviour:
   displayNameOverride: Frost Tower
   projectilePoolKey: 2
   arrowPrefab: {fileID: 341183810093573692, guid: 104585fd8c0e6f34e89c090c966db830, type: 3}
-  towerSprite: {fileID: 1761608643, guid: 5c0f89433b2cbac4c93f5b4b60fff7f3, type: 3}
+  towerSprite: {fileID: 636989884, guid: dcf5e115dc5a13e4e805abcad227f6f4, type: 3}
+  towerSpriteNorthEast: {fileID: 1515613063, guid: 64adc6b566c7d41438d198271fd0aa64, type: 3}
   animatorController: {fileID: 22100000, guid: b562163ec0c44f4da81cf9762319c953, type: 2}
+  animatorControllerNorthEast: {fileID: 22100000, guid: 68622452c40f412392ae2ca1377fa75e, type: 2}
+  animatorControllerNorthWest: {fileID: 22100000, guid: 4a7e926501534bd6ba4db953d03fb63e, type: 2}
+  animatorControllerSouthWest: {fileID: 22100000, guid: b3740743982f44ca85c474beca0feb4d, type: 2}
+
