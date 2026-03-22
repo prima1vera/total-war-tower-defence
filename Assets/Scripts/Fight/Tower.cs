@@ -160,7 +160,12 @@ public class Tower : MonoBehaviour
         }
 
         if (currentTarget == null)
+        {
+            if (!IsDirectionLockActive())
+                ApplyIdleFacingSouthEast();
+
             return;
+        }
 
         if (!IsDirectionLockActive())
         {
@@ -720,6 +725,27 @@ public class Tower : MonoBehaviour
 
         RuntimeAnimatorController desired = ResolveDirectionalAnimatorController(isFacingUp, isFacingLeft);
         ApplyDirectionalAnimatorController(desired, force: false);
+    }
+
+    private void ApplyIdleFacingSouthEast()
+    {
+        bool changed = isFacingUp || isFacingLeft || !hasDirectionalState;
+        if (!changed)
+            return;
+
+        isFacingUp = false;
+        isFacingLeft = false;
+        hasDirectionalState = true;
+
+        if (enableDirectionalAnimator)
+        {
+            RuntimeAnimatorController desired = ResolveDirectionalAnimatorController(facingUp: false, facingLeft: false);
+            ApplyDirectionalAnimatorController(desired, force: false);
+        }
+        else
+        {
+            ApplyDirectionalVisual(force: false);
+        }
     }
 
     private static bool ResolveFacingLeft(float normalizedX, bool currentFacingLeft, float hysteresisThreshold)
