@@ -15,5 +15,9 @@ MonoBehaviour:
   displayNameOverride: Fire Tower
   projectilePoolKey: 1
   arrowPrefab: {fileID: 341183810093573692, guid: 17d2c027a75fc62458beef0b2ddb0fc0, type: 3}
-  towerSprite: {fileID: -188632471, guid: 512c24553afc2d247a039d9ae67f17ab, type: 3}
+  towerSprite: {fileID: -1368584977, guid: 71ec8a84e688c504fbbce065e3aa6caf, type: 3}
+  towerSpriteNorthEast: {fileID: 2139905727, guid: ead2b048b4651da4d8d51256c2bb7b18, type: 3}
   animatorController: {fileID: 22100000, guid: cd36f3d58e7f48cfbf2ed3e20994227b, type: 2}
+  animatorControllerNorthEast: {fileID: 22100000, guid: 6707dfcf95274b09b647190b2e35d141, type: 2}
+  animatorControllerNorthWest: {fileID: 22100000, guid: 9fbb0f13b83c40b796a2fab9a52bb003, type: 2}
+  animatorControllerSouthWest: {fileID: 22100000, guid: c9e5c60e1f2a45d89c0722d1b56099b9, type: 2}
