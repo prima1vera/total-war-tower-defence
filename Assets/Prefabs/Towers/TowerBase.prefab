@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4033096107844011754}
   - component: {fileID: -6770446820894433619}
   - component: {fileID: 9190033743612163543}
+  - component: {fileID: 9174322068612734074}
   m_Layer: 24
   m_Name: TowerBase
   m_TagString: Tower
@@ -272,6 +273,20 @@ MonoBehaviour:
     glowBaseAlpha: 0.16
     glowPulseAmplitude: 0.05
     glowPulseSpeed: 2.2
+--- !u!114 &9174322068612734074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102647808292042453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6f261cb2f2247748ae1c701b91e3167, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  persistentId: abfb1416d7684db8a2062ed9c1632c21
+  tower: {fileID: -6770446820894433619}
 --- !u!1 &3188258520158176754
 GameObject:
   m_ObjectHideFlags: 0
