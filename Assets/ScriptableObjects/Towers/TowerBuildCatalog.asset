@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e22be3b38a640ac9ac80538988fe383, type: 3}
+  m_Name: TowerBuildCatalog
+  m_EditorClassIdentifier: 
+  options:
+  - OptionId: tower_base
+    DisplayName: Tower
+    Cost: 5
+    TowerPrefab: {fileID: -6770446820894433619, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
+    IsEnabled: 1

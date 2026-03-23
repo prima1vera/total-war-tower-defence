@@ -11,6 +11,10 @@ public sealed class MetaProgressSaveService : MonoBehaviour
     private PlayerCurrencyWallet currencyWallet;
     [SerializeField, Tooltip("Scene-wired tower identities to persist (no runtime Find).")]
     private TowerPersistentId[] trackedTowers = Array.Empty<TowerPersistentId>();
+    [SerializeField, Tooltip("Build service used to restore towers on build slots.")]
+    private TowerBuildService towerBuildService;
+    [SerializeField, Tooltip("Build slots to persist (occupied/empty + built tower state).")]
+    private BuildPlace[] trackedBuildPlaces = Array.Empty<BuildPlace>();
 
     [Header("Save Behavior")]
     [SerializeField, Tooltip("Load save data on Start and apply to wallet/towers.")]
@@ -32,7 +36,10 @@ public sealed class MetaProgressSaveService : MonoBehaviour
 
     private ISaveStore<MetaProgressSaveData> saveStore;
     private readonly Dictionary<string, TowerSaveRecord> loadedTowerMap = new Dictionary<string, TowerSaveRecord>(64);
+    private readonly Dictionary<string, BuildPlaceSaveRecord> loadedBuildPlaceMap = new Dictionary<string, BuildPlaceSaveRecord>(64);
+    private readonly Dictionary<string, BuildPlace> buildPlaceById = new Dictionary<string, BuildPlace>(64);
     private readonly HashSet<string> duplicateIdGuard = new HashSet<string>();
+    private readonly HashSet<string> duplicateBuildPlaceIdGuard = new HashSet<string>();
 
     private bool isDirty;
     private bool isRestoring;
@@ -150,6 +157,12 @@ public sealed class MetaProgressSaveService : MonoBehaviour
         trackedTowers = GetComponentsInChildren<TowerPersistentId>(includeInactive: true);
     }
 
+    [ContextMenu("Authoring/Collect Build Places From Children")]
+    private void CollectBuildPlacesFromChildren()
+    {
+        trackedBuildPlaces = GetComponentsInChildren<BuildPlace>(includeInactive: true);
+    }
+
     private void SubscribeRuntimeEvents()
     {
         if (isSubscribed)
@@ -166,6 +179,15 @@ public sealed class MetaProgressSaveService : MonoBehaviour
 
             towerId.Tower.DataChanged += HandleTowerDataChanged;
             towerId.Tower.Sold += HandleTowerSold;
+        }
+
+        for (int i = 0; i < trackedBuildPlaces.Length; i++)
+        {
+            BuildPlace place = trackedBuildPlaces[i];
+            if (place == null)
+                continue;
+
+            place.StateChanged += HandleBuildPlaceStateChanged;
         }
 
         isSubscribed = true;
@@ -189,6 +211,15 @@ public sealed class MetaProgressSaveService : MonoBehaviour
             towerId.Tower.Sold -= HandleTowerSold;
         }
 
+        for (int i = 0; i < trackedBuildPlaces.Length; i++)
+        {
+            BuildPlace place = trackedBuildPlaces[i];
+            if (place == null)
+                continue;
+
+            place.StateChanged -= HandleBuildPlaceStateChanged;
+        }
+
         isSubscribed = false;
     }
 
@@ -203,6 +234,11 @@ public sealed class MetaProgressSaveService : MonoBehaviour
     }
 
     private void HandleTowerSold(TowerUpgradable _)
+    {
+        MarkDirty();
+    }
+
+    private void HandleBuildPlaceStateChanged(BuildPlace _)
     {
         MarkDirty();
     }
@@ -229,45 +265,16 @@ public sealed class MetaProgressSaveService : MonoBehaviour
             Debug.LogWarning($"MetaProgressSaveService: save version {data.Version} differs from expected {SaveFormatVersion}. Attempting compatible load.", this);
 
         isRestoring = true;
-
-        currencyWallet.RestoreBalance(data.CurrencyBalance, notify: true);
-
-        loadedTowerMap.Clear();
-        TowerSaveRecord[] saveRecords = data.Towers ?? Array.Empty<TowerSaveRecord>();
-        for (int i = 0; i < saveRecords.Length; i++)
+        try
         {
-            TowerSaveRecord record = saveRecords[i];
-            if (string.IsNullOrWhiteSpace(record.TowerId))
-                continue;
-
-            if (!loadedTowerMap.ContainsKey(record.TowerId))
-                loadedTowerMap.Add(record.TowerId, record);
+            currencyWallet.RestoreBalance(data.CurrencyBalance, notify: true);
+            RestoreTrackedTowers(data);
+            RestoreBuildPlaces(data);
         }
-
-        duplicateIdGuard.Clear();
-
-        for (int i = 0; i < trackedTowers.Length; i++)
+        finally
         {
-            TowerPersistentId towerId = trackedTowers[i];
-            if (towerId == null || towerId.Tower == null)
-                continue;
-
-            if (!ValidateTowerId(towerId))
-                continue;
-
-            if (!loadedTowerMap.TryGetValue(towerId.PersistentId, out TowerSaveRecord record))
-                continue;
-
-            TowerUpgradePersistentState state = new TowerUpgradePersistentState
-            {
-                LevelIndex = record.LevelIndex,
-                IsSold = record.IsSold
-            };
-
-            towerId.Tower.RestorePersistentState(state);
+            isRestoring = false;
         }
-
-        isRestoring = false;
     }
 
     private bool TryBuildSaveData(out MetaProgressSaveData data)
@@ -304,7 +311,8 @@ public sealed class MetaProgressSaveService : MonoBehaviour
         {
             Version = SaveFormatVersion,
             CurrencyBalance = currencyWallet.Balance,
-            Towers = records.ToArray()
+            Towers = records.ToArray(),
+            BuildPlaces = CaptureBuildPlaceRecords()
         };
 
         return true;
@@ -336,18 +344,183 @@ public sealed class MetaProgressSaveService : MonoBehaviour
         return Path.Combine(Application.persistentDataPath, safeFileName);
     }
 
+    private void RestoreTrackedTowers(MetaProgressSaveData data)
+    {
+        loadedTowerMap.Clear();
+        TowerSaveRecord[] saveRecords = data.Towers ?? Array.Empty<TowerSaveRecord>();
+        for (int i = 0; i < saveRecords.Length; i++)
+        {
+            TowerSaveRecord record = saveRecords[i];
+            if (string.IsNullOrWhiteSpace(record.TowerId))
+                continue;
+
+            if (!loadedTowerMap.ContainsKey(record.TowerId))
+                loadedTowerMap.Add(record.TowerId, record);
+        }
+
+        duplicateIdGuard.Clear();
+
+        for (int i = 0; i < trackedTowers.Length; i++)
+        {
+            TowerPersistentId towerId = trackedTowers[i];
+            if (towerId == null || towerId.Tower == null)
+                continue;
+
+            if (!ValidateTowerId(towerId))
+                continue;
+
+            if (!loadedTowerMap.TryGetValue(towerId.PersistentId, out TowerSaveRecord record))
+                continue;
+
+            TowerUpgradePersistentState state = new TowerUpgradePersistentState
+            {
+                LevelIndex = record.LevelIndex,
+                IsSold = record.IsSold
+            };
+
+            towerId.Tower.RestorePersistentState(state);
+        }
+    }
+
+    private BuildPlaceSaveRecord[] CaptureBuildPlaceRecords()
+    {
+        if (trackedBuildPlaces == null || trackedBuildPlaces.Length == 0)
+            return Array.Empty<BuildPlaceSaveRecord>();
+
+        duplicateBuildPlaceIdGuard.Clear();
+        var records = new List<BuildPlaceSaveRecord>(trackedBuildPlaces.Length);
+
+        for (int i = 0; i < trackedBuildPlaces.Length; i++)
+        {
+            BuildPlace place = trackedBuildPlaces[i];
+            if (!ValidateBuildPlace(place))
+                continue;
+
+            BuildPlaceSaveRecord record = new BuildPlaceSaveRecord
+            {
+                PlaceId = place.PlaceId,
+                HasTower = place.IsOccupied,
+                OptionId = string.Empty,
+                LevelIndex = -1,
+                IsSold = false
+            };
+
+            if (place.IsOccupied && place.OccupiedTower != null && !string.IsNullOrWhiteSpace(place.OccupiedOptionId))
+            {
+                TowerUpgradePersistentState towerState = place.OccupiedTower.CapturePersistentState();
+                record.HasTower = true;
+                record.OptionId = place.OccupiedOptionId;
+                record.LevelIndex = towerState.LevelIndex;
+                record.IsSold = towerState.IsSold;
+            }
+
+            records.Add(record);
+        }
+
+        return records.ToArray();
+    }
+
+    private void RestoreBuildPlaces(MetaProgressSaveData data)
+    {
+        loadedBuildPlaceMap.Clear();
+        buildPlaceById.Clear();
+        duplicateBuildPlaceIdGuard.Clear();
+
+        BuildPlaceSaveRecord[] savedRecords = data.BuildPlaces ?? Array.Empty<BuildPlaceSaveRecord>();
+        for (int i = 0; i < savedRecords.Length; i++)
+        {
+            BuildPlaceSaveRecord record = savedRecords[i];
+            if (string.IsNullOrWhiteSpace(record.PlaceId))
+                continue;
+
+            if (!loadedBuildPlaceMap.ContainsKey(record.PlaceId))
+                loadedBuildPlaceMap.Add(record.PlaceId, record);
+        }
+
+        for (int i = 0; i < trackedBuildPlaces.Length; i++)
+        {
+            BuildPlace place = trackedBuildPlaces[i];
+            if (!ValidateBuildPlace(place))
+                continue;
+
+            buildPlaceById[place.PlaceId] = place;
+            if (place.IsOccupied)
+                place.ClearOccupiedTower(destroyTowerObject: true);
+        }
+
+        if (towerBuildService == null && loadedBuildPlaceMap.Count > 0)
+        {
+            Debug.LogError("MetaProgressSaveService: towerBuildService is not wired, cannot restore build places.", this);
+            return;
+        }
+
+        foreach (var pair in loadedBuildPlaceMap)
+        {
+            BuildPlaceSaveRecord record = pair.Value;
+            if (!record.HasTower)
+                continue;
+
+            if (!buildPlaceById.TryGetValue(record.PlaceId, out BuildPlace place))
+                continue;
+
+            if (string.IsNullOrWhiteSpace(record.OptionId))
+                continue;
+
+            TowerUpgradePersistentState state = new TowerUpgradePersistentState
+            {
+                LevelIndex = record.LevelIndex,
+                IsSold = record.IsSold
+            };
+
+            bool restored = towerBuildService.TryRestorePlaceState(place, record.OptionId, state);
+            if (!restored)
+                Debug.LogWarning($"MetaProgressSaveService: failed to restore build place '{record.PlaceId}' with option '{record.OptionId}'.", this);
+        }
+    }
+
+    private bool ValidateBuildPlace(BuildPlace place)
+    {
+        if (place == null)
+            return false;
+
+        if (!place.HasValidId())
+        {
+            Debug.LogError($"MetaProgressSaveService: BuildPlace on {place.name} has empty PlaceId.", place);
+            return false;
+        }
+
+        if (!duplicateBuildPlaceIdGuard.Add(place.PlaceId))
+        {
+            Debug.LogError($"MetaProgressSaveService: duplicate BuildPlace id '{place.PlaceId}'.", place);
+            return false;
+        }
+
+        return true;
+    }
+
     [Serializable]
     private sealed class MetaProgressSaveData
     {
         public int Version = SaveFormatVersion;
         public int CurrencyBalance;
         public TowerSaveRecord[] Towers = Array.Empty<TowerSaveRecord>();
+        public BuildPlaceSaveRecord[] BuildPlaces = Array.Empty<BuildPlaceSaveRecord>();
     }
 
     [Serializable]
     private struct TowerSaveRecord
     {
         public string TowerId;
+        public int LevelIndex;
+        public bool IsSold;
+    }
+
+    [Serializable]
+    private struct BuildPlaceSaveRecord
+    {
+        public string PlaceId;
+        public bool HasTower;
+        public string OptionId;
         public int LevelIndex;
         public bool IsSold;
     }
