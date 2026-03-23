@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Tower : MonoBehaviour
@@ -84,15 +85,30 @@ public class Tower : MonoBehaviour
     private RuntimeAnimatorController activeDirectionalController;
     private float targetHoldTimer;
     private float directionLockTimer;
+    private bool sortingOffsetsCached;
+    private int cachedTopSortingOffset = 1;
+    private int cachedGroundSortingOffset = 0;
+
+    private const float TopDownSortingPrecision = 1000f;
+    private const int DefaultTopSortingOffset = 1;
+    private const int DefaultGroundSortingOffset = 0;
+
+    public event Action VisualStateChanged;
 
     public int Damage => Mathf.Max(1, damage);
     public float Range => Mathf.Max(0.1f, range);
     public float FireRate => Mathf.Max(0.05f, fireRate);
+    public int CurrentVisualLevel => currentVisualLevel;
+    public TowerProjectilePoolKey CurrentProjectilePoolKey => currentProjectilePoolKey;
+    public SpriteRenderer TowerSpriteRenderer => towerSpriteRenderer;
+    public SpriteRenderer TowerGroundRenderer => towerGroundRenderer;
 
     private void Awake()
     {
         EnsureAnimator();
+        EnsureSpriteRenderer();
         CacheBaseScale();
+        CacheSortingOffsets();
 
         isAuthoringValid = ValidateAuthoring();
         if (!isAuthoringValid)
@@ -110,6 +126,7 @@ public class Tower : MonoBehaviour
         InitializeDirectionalVisual();
         InitializeDirectionalAnimator();
         CacheFireClipLength();
+        UpdateRenderSorting();
     }
 
     private void Update()
@@ -135,7 +152,12 @@ public class Tower : MonoBehaviour
         }
 
         if (currentTarget == null)
+        {
+            if (!IsDirectionLockActive())
+                ApplyIdleFacingSouthEast();
+
             return;
+        }
 
         if (!IsDirectionLockActive())
         {
@@ -172,6 +194,8 @@ public class Tower : MonoBehaviour
         currentVisualLevel = Mathf.Max(1, level);
         ApplyLevelScale(currentVisualLevel);
         ApplyGroundScale();
+        UpdateRenderSorting();
+        NotifyVisualStateChanged();
     }
 
     public void ApplyEvolutionProfile(TowerEvolutionProfile profile)
@@ -240,6 +264,9 @@ public class Tower : MonoBehaviour
 
         if (towerSpriteRenderer != null)
             towerSpriteRenderer.flipX = false;
+
+        UpdateRenderSorting();
+        NotifyVisualStateChanged();
     }
 
     private bool IsCurrentTargetValid()
@@ -438,6 +465,49 @@ public class Tower : MonoBehaviour
         float multiplier = 1f + Mathf.Max(0f, levelScaleStep) * Mathf.Max(0, level - 1);
         currentLevelScaleMultiplier = multiplier;
         transform.localScale = cachedBaseScale * multiplier;
+    }
+
+    private void CacheSortingOffsets()
+    {
+        if (sortingOffsetsCached)
+            return;
+
+        if (towerSpriteRenderer != null)
+            cachedTopSortingOffset = towerSpriteRenderer.sortingOrder;
+
+        if (towerGroundRenderer != null)
+            cachedGroundSortingOffset = towerGroundRenderer.sortingOrder;
+
+        sortingOffsetsCached = true;
+    }
+
+    private void UpdateRenderSorting()
+    {
+        if (towerSpriteRenderer == null && towerGroundRenderer == null)
+            return;
+
+        CacheSortingOffsets();
+
+        float pivotY;
+        if (towerGroundRenderer != null)
+            pivotY = towerGroundRenderer.bounds.min.y;
+        else if (towerSpriteRenderer != null)
+            pivotY = towerSpriteRenderer.bounds.min.y;
+        else
+            pivotY = transform.position.y;
+
+        int baseOrder = Mathf.RoundToInt(-pivotY * TopDownSortingPrecision);
+        int topOffset = sortingOffsetsCached ? cachedTopSortingOffset : DefaultTopSortingOffset;
+        int groundOffset = sortingOffsetsCached ? cachedGroundSortingOffset : DefaultGroundSortingOffset;
+
+        if (topOffset <= groundOffset)
+            topOffset = groundOffset + 1;
+
+        if (towerGroundRenderer != null)
+            towerGroundRenderer.sortingOrder = baseOrder + groundOffset;
+
+        if (towerSpriteRenderer != null)
+            towerSpriteRenderer.sortingOrder = baseOrder + topOffset;
     }
 
     private void CacheFireClipLength()
@@ -650,6 +720,27 @@ public class Tower : MonoBehaviour
         ApplyDirectionalAnimatorController(desired, force: false);
     }
 
+    private void ApplyIdleFacingSouthEast()
+    {
+        bool changed = isFacingUp || isFacingLeft || !hasDirectionalState;
+        if (!changed)
+            return;
+
+        isFacingUp = false;
+        isFacingLeft = false;
+        hasDirectionalState = true;
+
+        if (enableDirectionalAnimator)
+        {
+            RuntimeAnimatorController desired = ResolveDirectionalAnimatorController(facingUp: false, facingLeft: false);
+            ApplyDirectionalAnimatorController(desired, force: false);
+        }
+        else
+        {
+            ApplyDirectionalVisual(force: false);
+        }
+    }
+
     private static bool ResolveFacingLeft(float normalizedX, bool currentFacingLeft, float hysteresisThreshold)
     {
         float threshold = Mathf.Clamp01(hysteresisThreshold);
@@ -702,5 +793,10 @@ public class Tower : MonoBehaviour
         SyncAnimationSpeedToFireRate();
 
         activeDirectionalController = controller;
+    }
+
+    private void NotifyVisualStateChanged()
+    {
+        VisualStateChanged?.Invoke();
     }
 }

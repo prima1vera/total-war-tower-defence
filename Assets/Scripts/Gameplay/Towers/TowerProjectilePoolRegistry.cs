@@ -57,16 +57,16 @@ public class TowerProjectilePoolRegistry : MonoBehaviour
         switch (key)
         {
             case TowerProjectilePoolKey.Fire:
-                pool = firePool != null ? firePool : basePool;
+                pool = firePool;
                 break;
             case TowerProjectilePoolKey.Frost:
-                pool = frostPool != null ? frostPool : basePool;
+                pool = frostPool;
                 break;
             case TowerProjectilePoolKey.Iron:
-                pool = ironPool != null ? ironPool : basePool;
+                pool = ironPool;
                 break;
             case TowerProjectilePoolKey.Archer:
-                pool = archerPool != null ? archerPool : basePool;
+                pool = archerPool;
                 break;
             default:
                 pool = basePool;

@@ -17,7 +17,9 @@ public class PooledParticleAutoReturn : MonoBehaviour
 
     private void OnEnable()
     {
-        CacheParticleSystems();
+        if (particleSystems == null || particleSystems.Length == 0)
+            CacheParticleSystems();
+
         RestartParticles();
         CalculateLifetime();
 

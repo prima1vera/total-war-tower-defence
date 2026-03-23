@@ -171,6 +171,9 @@ public class Arrow : MonoBehaviour
     private Vector2 lastVelocityDirection = Vector2.right;
     private UnitHealth lastDirectHitTarget;
     private Vector3 lastDirectHitPoint;
+    private bool hasAppliedFlightSorting;
+    private int lastFlightSortingLayerId;
+    private int lastFlightSortingOrder;
 
     private static int directHitGroundBloodCounter;
     private static int nextDirectHitGroundBloodThreshold = -1;
@@ -213,6 +216,7 @@ public class Arrow : MonoBehaviour
         hitUnits.Clear();
         lastDirectHitTarget = null;
         lastDirectHitPoint = cachedTransform.position;
+        hasAppliedFlightSorting = false;
 
         Vector2 dir = targetPos - startPos;
         if (dir.sqrMagnitude <= 0.0001f)
@@ -868,6 +872,16 @@ public class Arrow : MonoBehaviour
     {
         string sortingLayer = ResolveFlightSortingLayerName(t);
         int sortingOrder = ResolveSortingOrder(cachedTransform.position.y, flightSortingOrderOffset);
+
+        int sortingLayerId = SortingLayer.NameToID(sortingLayer);
+        if (hasAppliedFlightSorting
+            && lastFlightSortingLayerId == sortingLayerId
+            && lastFlightSortingOrder == sortingOrder)
+            return;
+
+        hasAppliedFlightSorting = true;
+        lastFlightSortingLayerId = sortingLayerId;
+        lastFlightSortingOrder = sortingOrder;
 
         ApplyRendererSorting(cachedSpriteRenderer, sortingLayer, sortingOrder);
         ApplyRendererSorting(cachedTrailRenderer, sortingLayer, sortingOrder);

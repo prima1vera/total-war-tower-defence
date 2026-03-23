@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class EnemyHealthBarSystem : MonoBehaviour
 {
+    private const float PositionRefreshInterval = 1f / 30f;
+
     private static EnemyHealthBarSystem instance;
     private static bool missingInstanceLogged;
 
@@ -27,6 +29,7 @@ public class EnemyHealthBarSystem : MonoBehaviour
     private Camera uiProjectionCamera;
     private bool isWired;
     private bool loggedMissingWorldCamera;
+    private float positionRefreshTimer;
 
     public static EnemyHealthBarSystem Instance
     {
@@ -81,6 +84,7 @@ public class EnemyHealthBarSystem : MonoBehaviour
         if (!isWired)
             return;
 
+        positionRefreshTimer = 0f;
         UnitHealth.GlobalDamageTaken += HandleGlobalDamageTaken;
         UnitHealth.GlobalUnitDied += HandleGlobalUnitDied;
     }
@@ -98,6 +102,12 @@ public class EnemyHealthBarSystem : MonoBehaviour
     {
         if (!isWired || activeBars.Count == 0)
             return;
+
+        positionRefreshTimer -= Time.deltaTime;
+        if (positionRefreshTimer > 0f)
+            return;
+
+        positionRefreshTimer = PositionRefreshInterval;
 
         if (!EnsureWorldCamera())
             return;
