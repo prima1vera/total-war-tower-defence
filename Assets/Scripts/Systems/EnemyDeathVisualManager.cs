@@ -150,6 +150,21 @@ public class EnemyDeathVisualManager : MonoBehaviour
         ApplyPreset(VisualTuningPreset.Gore);
     }
 
+    public void ApplyLightPreset()
+    {
+        ApplyPreset(VisualTuningPreset.Light);
+    }
+
+    public void ApplyCinematicPreset()
+    {
+        ApplyPreset(VisualTuningPreset.Cinematic);
+    }
+
+    public void ApplyGorePreset()
+    {
+        ApplyPreset(VisualTuningPreset.Gore);
+    }
+
     private void ApplyPreset(VisualTuningPreset preset)
     {
         if (preset == VisualTuningPreset.Custom)
@@ -192,35 +207,35 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 clusterBloodChance = 0.6f;
                 clusterWindowSeconds = 1.8f;
                 clusterScanRadius = 1.3f;
-                clusterThreshold = 5;
+                clusterThreshold = 6;
                 bloodDecalScaleRange = new Vector2(0.2f, 0.32f);
-                clusterBloodScaleRange = new Vector2(0.25f, 0.45f);
+                clusterBloodScaleRange = new Vector2(0.2f, 0.3f);
                 deathBloodFlowDistanceRange = new Vector2(0.08f, 0.18f);
                 deathBloodFlowVerticalJitterRange = new Vector2(-0.02f, 0.03f);
                 deathBloodSettleHorizontalOffsetRange = new Vector2(-0.06f, 0.02f);
-                deathBloodFlowDurationMultiplierRange = new Vector2(2.2f, 3.8f);
+                deathBloodFlowDurationMultiplierRange = new Vector2(25.8f, 35.2f);
                 deathBloodFlowStartDelayRange = new Vector2(0f, 0.12f);
-                deathBloodFlowEndAlphaRange = new Vector2(0.72f, 0.9f);
+                deathBloodFlowEndAlphaRange = new Vector2(0.79f, 0.9f);
                 deathBloodFlowRightToLeft = true;
                 break;
 
             case VisualTuningPreset.Gore:
                 maxTrackedDeaths = 130;
                 maxTrackedRemains = 260;
-                maxTrackedGroundBloodDecals = 380;
+                maxTrackedGroundBloodDecals = 330;
                 overflowToRemainsTransitionDuration = 1.15f;
                 overflowBloodFadeDuration = 1.8f;
                 deathBloodSpawnChance = 1f;
                 clusterBloodChance = 1f;
-                clusterWindowSeconds = 2.8f;
-                clusterScanRadius = 1.75f;
-                clusterThreshold = 3;
-                bloodDecalScaleRange = new Vector2(0.24f, 0.38f);
-                clusterBloodScaleRange = new Vector2(0.32f, 0.6f);
+                clusterWindowSeconds = 2f;
+                clusterScanRadius = 1.5f;
+                clusterThreshold = 5;
+                bloodDecalScaleRange = new Vector2(0.22f, 0.33f);
+                clusterBloodScaleRange = new Vector2(0.22f, 0.33f);
                 deathBloodFlowDistanceRange = new Vector2(0.12f, 0.26f);
                 deathBloodFlowVerticalJitterRange = new Vector2(-0.03f, 0.05f);
                 deathBloodSettleHorizontalOffsetRange = new Vector2(-0.1f, 0.02f);
-                deathBloodFlowDurationMultiplierRange = new Vector2(2.8f, 5.2f);
+                deathBloodFlowDurationMultiplierRange = new Vector2(25.8f, 35.2f);
                 deathBloodFlowStartDelayRange = new Vector2(0f, 0.16f);
                 deathBloodFlowEndAlphaRange = new Vector2(0.85f, 1f);
                 deathBloodFlowRightToLeft = true;

@@ -241,4 +241,13 @@ public class WaveManager : MonoBehaviour
             waveRoutine = null;
         }
     }
+
+    public void ApplySpawnCompositionTuning(bool weightedComposition, float ogreShareValue, float ogreWeightValue, float smallWeightValue)
+    {
+        useWeightedEnemyComposition = weightedComposition;
+        ogreSpawnShare = Mathf.Clamp01(ogreShareValue);
+        ogreWeightMultiplier = Mathf.Max(0f, ogreWeightValue);
+        smallWeightMultiplier = Mathf.Max(0f, smallWeightValue);
+        RebuildSpawnerCache();
+    }
 }

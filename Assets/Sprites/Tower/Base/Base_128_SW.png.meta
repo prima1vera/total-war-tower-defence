@@ -113,12 +113,12 @@ TextureImporter:
       name: Base_128_SW_0
       rect:
         serializedVersion: 2
-        x: 3
+        x: 2
         y: 33
-        width: 56
-        height: 68
+        width: 58
+        height: 95
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -134,12 +134,12 @@ TextureImporter:
       name: Base_128_SW_1
       rect:
         serializedVersion: 2
-        x: 70
+        x: 69
         y: 33
-        width: 56
-        height: 68
+        width: 58
+        height: 95
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -155,12 +155,12 @@ TextureImporter:
       name: Base_128_SW_2
       rect:
         serializedVersion: 2
-        x: 138
+        x: 137
         y: 33
-        width: 56
-        height: 68
+        width: 58
+        height: 95
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

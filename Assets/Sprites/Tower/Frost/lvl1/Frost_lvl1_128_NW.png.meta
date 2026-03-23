@@ -113,12 +113,12 @@ TextureImporter:
       name: Frost_lvl1_128_NW_0
       rect:
         serializedVersion: 2
-        x: 1
+        x: 0
         y: 31
-        width: 55
-        height: 72
+        width: 57
+        height: 97
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -134,12 +134,12 @@ TextureImporter:
       name: Frost_lvl1_128_NW_1
       rect:
         serializedVersion: 2
-        x: 68
+        x: 67
         y: 31
-        width: 55
-        height: 72
+        width: 57
+        height: 97
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -155,12 +155,12 @@ TextureImporter:
       name: Frost_lvl1_128_NW_2
       rect:
         serializedVersion: 2
-        x: 136
+        x: 135
         y: 31
-        width: 55
-        height: 72
+        width: 57
+        height: 97
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
