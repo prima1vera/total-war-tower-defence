@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    public GameObject arrowPrefab;
     public int damage = 1;
     public float range = 5f;
     public float fireRate = 1f;
@@ -202,9 +201,6 @@ public class Tower : MonoBehaviour
     {
         if (profile == null)
             return;
-
-        if (profile.ArrowPrefab != null)
-            arrowPrefab = profile.ArrowPrefab;
 
         currentProjectilePoolKey = profile.ProjectilePoolKey;
         runtimeArrowPool = null;

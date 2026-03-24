@@ -9,9 +9,6 @@ public sealed class TowerEvolutionProfile : ScriptableObject
     [SerializeField, Tooltip("Which scene projectile pool family should this tower use after evolution.")]
     private TowerProjectilePoolKey projectilePoolKey = TowerProjectilePoolKey.Base;
 
-    [SerializeField, Tooltip("Projectile prefab fallback when pool is missing.")]
-    private GameObject arrowPrefab;
-
     [SerializeField, Tooltip("Optional sprite override for evolved tower visuals.")]
     private Sprite towerSprite;
 
@@ -29,7 +26,6 @@ public sealed class TowerEvolutionProfile : ScriptableObject
 
     public string DisplayNameOverride => displayNameOverride;
     public TowerProjectilePoolKey ProjectilePoolKey => projectilePoolKey;
-    public GameObject ArrowPrefab => arrowPrefab;
     public Sprite TowerSprite => towerSprite;
     public Sprite TowerSpriteNorthEast => towerSpriteNorthEast;
     public RuntimeAnimatorController AnimatorController => animatorController;

@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &953423983419427579
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2723260621065936302}
+  - component: {fileID: 7633134392594158301}
+  m_Layer: 0
+  m_Name: DamageNumberSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2723260621065936302
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 953423983419427579}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.511142, y: -2.4810302, z: 0.56150305}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7633134392594158301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 953423983419427579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e7504fff8243498a7ccef948fb0754, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldCamera: {fileID: 0}
+  numbersRoot: {fileID: 0}
+  numberViewPrefab: {fileID: 3829122594723119654, guid: fd062a94f6f3f2c4b8db7b6cd46a7bd9, type: 3}
+  prewarmCount: 48
+  maxActiveNumbers: 180
+  snapToWholePixels: 1
+  positionSnapStep: 1
+  worldVerticalOffset: 0.33
+  worldHorizontalJitterRange: {x: -0.1, y: 0.1}
+  worldVerticalJitterRange: {x: 0, y: 0.05}
+  travelDurationRange: {x: 0.42, y: 0.62}
+  riseDistanceRange: {x: 0.38, y: 0.62}
+  driftXRange: {x: -0.06, y: 0.06}
+  fadeStartsAt: 0.8
+  popScaleMultiplier: 0.08
+  baseScaleRange: {x: 1.06, y: 1.68}
+  randomScaleJitter: 0.04
+  dotScaleMultiplier: 0.74
+  fatalScaleMultiplier: 1.28
+  mediumDamageRatio: 0.22
+  heavyDamageRatio: 0.52
+  mediumDamageScaleBonus: 0.1
+  heavyDamageScaleBonus: 0.18
+  normalDirectColor: {r: 1, g: 1, b: 1, a: 1}
+  fireDirectColor: {r: 1, g: 0.42, b: 0.1, a: 1}
+  iceDirectColor: {r: 0.22, g: 0.9, b: 1, a: 1}
+  dotTickColor: {r: 1, g: 0.88, b: 0.16, a: 1}
+  burnTickColor: {r: 1, g: 0.62, b: 0.12, a: 1}
+  fatalColor: {r: 1, g: 0.12, b: 0.12, a: 1}
