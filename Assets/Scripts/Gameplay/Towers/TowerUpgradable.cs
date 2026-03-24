@@ -1,6 +1,13 @@
 using System;
 using UnityEngine;
 
+[Serializable]
+public struct TowerUpgradePersistentState
+{
+    public int LevelIndex;
+    public bool IsSold;
+}
+
 [RequireComponent(typeof(Tower))]
 public class TowerUpgradable : MonoBehaviour
 {
@@ -136,6 +143,49 @@ public class TowerUpgradable : MonoBehaviour
             gameObject.SetActive(false);
 
         return true;
+    }
+
+    public TowerUpgradePersistentState CapturePersistentState()
+    {
+        if (!initialized)
+            Initialize();
+
+        return new TowerUpgradePersistentState
+        {
+            LevelIndex = currentLevelIndex,
+            IsSold = sold
+        };
+    }
+
+    public void RestorePersistentState(TowerUpgradePersistentState state)
+    {
+        if (!initialized)
+            Initialize();
+
+        if (state.IsSold)
+        {
+            sold = true;
+            if (gameObject.activeSelf)
+                gameObject.SetActive(false);
+            return;
+        }
+
+        sold = false;
+
+        if (upgradeTree == null)
+            return;
+
+        int restoredLevelIndex = state.LevelIndex;
+        if (!upgradeTree.TryGetLevel(restoredLevelIndex, out TowerUpgradeLevelDefinition _))
+            restoredLevelIndex = upgradeTree.StartLevelIndex;
+
+        currentLevelIndex = restoredLevelIndex;
+
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
+
+        ApplyCurrentLevelToTower();
+        DataChanged?.Invoke(this);
     }
 
     private void ApplyCurrentLevelToTower()

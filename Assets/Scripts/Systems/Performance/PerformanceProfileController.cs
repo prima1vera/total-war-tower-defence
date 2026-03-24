@@ -13,6 +13,10 @@ public sealed class PerformanceProfileController : MonoBehaviour
     [Header("Profile")]
     [SerializeField] private PerformanceProfile startupProfile = PerformanceProfile.MobileMid;
     [SerializeField] private bool applyOnAwake = true;
+    [SerializeField, Tooltip("If enabled, mobile profiles may raise FPS cap to match high-refresh displays (90/120).")]
+    private bool preferHighRefreshOnMobile = false;
+    [SerializeField, Tooltip("Max FPS cap for mobile when high-refresh mode is enabled.")]
+    private int mobileHighRefreshCap = 120;
 
     [Header("Scene Wiring")]
     [SerializeField] private WaveManager waveManager;
@@ -80,6 +84,9 @@ public sealed class PerformanceProfileController : MonoBehaviour
                 break;
         }
 
+        if (preferHighRefreshOnMobile && Application.isMobilePlatform)
+            targetFrameRate = ResolveMobileFrameRate(targetFrameRate, mobileHighRefreshCap);
+
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = targetFrameRate;
 
@@ -104,6 +111,33 @@ public sealed class PerformanceProfileController : MonoBehaviour
                 manager.ApplyGorePreset();
                 break;
         }
+    }
+
+    private static int ResolveMobileFrameRate(int defaultFrameRate, int highRefreshCap)
+    {
+        int refreshRate = GetCurrentDisplayRefreshRate();
+        if (refreshRate <= defaultFrameRate)
+            return defaultFrameRate;
+
+        int clampedCap = Mathf.Max(defaultFrameRate, highRefreshCap);
+
+        // Keep requested cap stable on common mobile refresh tiers.
+        if (refreshRate >= 120)
+            return Mathf.Min(120, clampedCap);
+
+        if (refreshRate >= 90)
+            return Mathf.Min(90, clampedCap);
+
+        return Mathf.Min(refreshRate, clampedCap);
+    }
+
+    private static int GetCurrentDisplayRefreshRate()
+    {
+#if UNITY_2022_2_OR_NEWER
+        return Mathf.RoundToInt((float)Screen.currentResolution.refreshRateRatio.value);
+#else
+        return Screen.currentResolution.refreshRate;
+#endif
     }
 
     private enum ProfileBloodPreset

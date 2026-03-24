@@ -48,4 +48,16 @@ public class PlayerCurrencyWallet : MonoBehaviour, ICurrencyWallet
         Balance += delta;
         BalanceChanged?.Invoke(Balance);
     }
+
+    /// <summary>
+    /// Restores balance from persistent save data.
+    /// </summary>
+    public void RestoreBalance(int amount, bool notify = true)
+    {
+        Balance = Mathf.Max(0, amount);
+        initialized = true;
+
+        if (notify)
+            BalanceChanged?.Invoke(Balance);
+    }
 }
