@@ -37,7 +37,7 @@ MonoBehaviour:
       NextLevelIndex: -1
   - Level: 2
     Stats:
-      Damage: 1
+      Damage: 2
       Range: 11
       FireRate: 1.1
     SellValue: 20
@@ -57,7 +57,7 @@ MonoBehaviour:
       NextLevelIndex: -1
   - Level: 3
     Stats:
-      Damage: 1
+      Damage: 3
       Range: 13
       FireRate: 1.2
     SellValue: 50

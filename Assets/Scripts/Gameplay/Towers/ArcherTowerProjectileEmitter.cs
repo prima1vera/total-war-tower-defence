@@ -53,6 +53,7 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
     private float[] fireCooldowns;
     private ArrowPool runtimeArrowPool;
     private bool loggedPoolResolveError;
+    private int activeFirePointLimit = -1;
 
     private void Awake()
     {
@@ -88,8 +89,9 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
             return;
 
         EnsureCooldownBuffer();
+        int activePoints = ResolveActiveFirePointCount();
 
-        for (int i = 0; i < firePoints.Length; i++)
+        for (int i = 0; i < activePoints; i++)
         {
             fireCooldowns[i] -= Time.deltaTime;
             if (fireCooldowns[i] > 0f)
@@ -144,6 +146,11 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
         loggedPoolResolveError = false;
     }
 
+    public void SetActiveFirePointLimit(int count)
+    {
+        activeFirePointLimit = count <= 0 ? -1 : count;
+    }
+
     private void HandleVisualLevelChanged(int level)
     {
         currentVisualLevel = Mathf.Max(1, level);
@@ -152,7 +159,7 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
     private void TryFireFromPoint(int firePointIndex)
     {
         Transform firePoint = firePoints[firePointIndex];
-        if (firePoint == null)
+        if (firePoint == null || !firePoint.gameObject.activeInHierarchy)
         {
             fireCooldowns[firePointIndex] = 0.25f;
             return;
@@ -277,6 +284,18 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
             return baseInterval;
 
         return baseInterval * Random.Range(1f - jitter, 1f + jitter);
+    }
+
+    private int ResolveActiveFirePointCount()
+    {
+        int total = firePoints == null ? 0 : firePoints.Length;
+        if (total <= 0)
+            return 0;
+
+        if (activeFirePointLimit <= 0)
+            return total;
+
+        return Mathf.Clamp(activeFirePointLimit, 1, total);
     }
 
     private ArrowPool GetValidArrowPool()
