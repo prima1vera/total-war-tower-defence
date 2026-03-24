@@ -155,6 +155,7 @@ public class Tower : MonoBehaviour
             if (!IsDirectionLockActive())
                 ApplyIdleFacingSouthEast();
 
+            ResetAnimatorSpeedToDefault();
             return;
         }
 
@@ -164,9 +165,14 @@ public class Tower : MonoBehaviour
                 UpdateDirectionalAnimatorFromTarget();
             else
                 UpdateDirectionalVisualFromTarget();
-        }
 
-        SyncAnimationSpeedToFireRate();
+            ResetAnimatorSpeedToDefault();
+        }
+        else
+        {
+            // Keep fire-rate-driven speed only while the shot lock window is active.
+            SyncAnimationSpeedToFireRate();
+        }
 
         if (fireCountdown <= 0f)
         {
@@ -174,6 +180,7 @@ public class Tower : MonoBehaviour
                 animator.SetTrigger("Shoot");
 
             StartDirectionLockAfterShot();
+            SyncAnimationSpeedToFireRate();
             fireCountdown = 1f / FireRate;
         }
     }
@@ -539,6 +546,15 @@ public class Tower : MonoBehaviour
         float cooldownSeconds = Mathf.Max(0.01f, 1f / FireRate);
         float targetAnimationTime = Mathf.Max(minAnimationCycleSeconds, cooldownSeconds);
         animator.speed = fireClipLengthSeconds / targetAnimationTime;
+    }
+
+    private void ResetAnimatorSpeedToDefault()
+    {
+        if (animator == null)
+            return;
+
+        if (!Mathf.Approximately(animator.speed, 1f))
+            animator.speed = 1f;
     }
 
     public void ShootArrow()
