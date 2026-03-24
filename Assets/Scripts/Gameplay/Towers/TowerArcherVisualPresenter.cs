@@ -295,7 +295,9 @@ public class TowerArcherVisualPresenter : MonoBehaviour
         if (band != TowerArcherAimBand.Side)
             return false;
 
-        return direction.x < 0f;
+        // Source sprites are authored as "aiming to the left" by default.
+        // For side band we mirror when target is on the right.
+        return direction.x > 0f;
     }
 }
 

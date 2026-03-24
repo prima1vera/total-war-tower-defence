@@ -114,6 +114,12 @@ public class ArcherTower : MonoBehaviour
         return true;
     }
 
+    public void SetCombatStats(float newRange, float newShotsPerSecond)
+    {
+        range = Mathf.Max(0.1f, newRange);
+        shotsPerSecond = Mathf.Max(0.05f, newShotsPerSecond);
+    }
+
     public bool TryGetAimPoint(out Vector2 aimPoint)
     {
         if (currentTarget == null || currentTarget.IsDead)

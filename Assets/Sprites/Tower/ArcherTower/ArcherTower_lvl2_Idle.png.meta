@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d51c471d73dbca54eaf83e3048238f9f
+guid: c231a9fd33d21244f9d655f0181ca825
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -108,7 +108,70 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: ArcherTower_lvl2_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 16
+        width: 52
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3db974d64d5706f438643200fb7fd782
+      internalID: 369237515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ArcherTower_lvl2_1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 16
+        width: 52
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06009cb3acd3fc6498e89203b03f01db
+      internalID: -591531484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ArcherTower_lvl2_2
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 16
+        width: 52
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63df15a0e7b13944ea0398872c9a2d93
+      internalID: 1706374996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -119,7 +182,10 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ArcherTower_lvl2_0: 369237515
+      ArcherTower_lvl2_1: -591531484
+      ArcherTower_lvl2_2: 1706374996
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

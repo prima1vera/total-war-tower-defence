@@ -216,6 +216,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tower: {fileID: 3362007874931385704}
+  archerTower: {fileID: 0}
+  archerEmitter: {fileID: 0}
   upgradeTree: {fileID: 11400000, guid: 3a07bd733b0f01b4ba98ced77253bd71, type: 2}
   startLevelOverride: 0
   initializeOnAwake: 1

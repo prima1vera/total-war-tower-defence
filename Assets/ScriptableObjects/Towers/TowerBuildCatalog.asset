@@ -18,3 +18,8 @@ MonoBehaviour:
     Cost: 5
     TowerPrefab: {fileID: -6770446820894433619, guid: 6b031613b2966194ebc55d69032c50df, type: 3}
     IsEnabled: 1
+  - OptionId: tower_archer
+    DisplayName: 'Archer Tower '
+    Cost: 10
+    TowerPrefab: {fileID: -996197128515256663, guid: 35730657c26958840b842ba380d2c200, type: 3}
+    IsEnabled: 1

@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0b37c408f9e4e54a11933c56cff7dcd, type: 3}
+  m_Name: ArcherTowerUpgradeTree
+  m_EditorClassIdentifier: 
+  towerDisplayName: Archer Tower
+  startLevelIndex: 0
+  levels:
+  - Level: 1
+    Stats:
+      Damage: 1
+      Range: 9
+      FireRate: 1
+    SellValue: 5
+    DisplayNameOverride: Archer Tower
+    EvolutionProfile: {fileID: 0}
+    UpgradeA:
+      Label: Mid Archer Tower
+      Cost: 35
+      NextLevelIndex: 1
+    UpgradeB:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
+    UpgradeC:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
+  - Level: 2
+    Stats:
+      Damage: 2
+      Range: 11
+      FireRate: 1.1
+    SellValue: 20
+    DisplayNameOverride: Mid Archer Tower
+    EvolutionProfile: {fileID: 0}
+    UpgradeA:
+      Label: Super Archer Tower
+      Cost: 100
+      NextLevelIndex: 2
+    UpgradeB:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
+    UpgradeC:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
+  - Level: 3
+    Stats:
+      Damage: 3
+      Range: 13
+      FireRate: 1.2
+    SellValue: 50
+    DisplayNameOverride: Super Archer Tower
+    EvolutionProfile: {fileID: 0}
+    UpgradeA:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
+    UpgradeB:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
+    UpgradeC:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
