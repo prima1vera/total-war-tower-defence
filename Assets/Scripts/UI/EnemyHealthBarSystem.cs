@@ -150,7 +150,6 @@ public class EnemyHealthBarSystem : MonoBehaviour
         {
             TrackedBar tracked = activeBars[existingIndex];
             tracked.HideAtTime = Time.time + visibleDuration;
-            tracked.NormalizedHealth = normalizedHealth;
 
             SetFill(tracked.View, normalizedHealth);
             activeBars[existingIndex] = tracked;
@@ -169,8 +168,7 @@ public class EnemyHealthBarSystem : MonoBehaviour
             UnitTransform = unit.transform,
             Collider = unit.CachedCollider,
             View = view,
-            HideAtTime = Time.time + visibleDuration,
-            NormalizedHealth = normalizedHealth
+            HideAtTime = Time.time + visibleDuration
         };
 
         int index = activeBars.Count;
@@ -460,6 +458,5 @@ public class EnemyHealthBarSystem : MonoBehaviour
         public Collider2D Collider;
         public HealthBarView View;
         public float HideAtTime;
-        public float NormalizedHealth;
     }
 }
