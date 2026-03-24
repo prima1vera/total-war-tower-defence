@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 34f976a409ceddf4289e8a5bf488adeb
+guid: 0e3610788499c4d43a2fa8d4e9f95507
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,127 +110,127 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Frost_lvl2_128_SE_Idle_0
+      name: Frost_lvl1_128_SE_Idle_0
       rect:
         serializedVersion: 2
-        x: 1
+        x: 0
         y: 31
-        width: 58
-        height: 83
+        width: 57
+        height: 97
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: efe53a5492bcacf4ca668e535f19cd5f
-      internalID: 822777750
+      spriteID: 729a062fe2a2ec449b7121fe14406fec
+      internalID: -635210231
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frost_lvl2_128_SE_Idle_1
+      name: Frost_lvl1_128_SE_Idle_1
       rect:
         serializedVersion: 2
-        x: 62
+        x: 65
         y: 31
-        width: 58
-        height: 83
+        width: 57
+        height: 97
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cf71845f4edf5ab4cbfb27b7d96b6f07
-      internalID: -280047943
+      spriteID: 23bb323490feaae4095602d0b903264b
+      internalID: 1083577936
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frost_lvl2_128_SE_Idle_2
+      name: Frost_lvl1_128_SE_Idle_2
       rect:
         serializedVersion: 2
-        x: 123
+        x: 130
         y: 31
-        width: 58
-        height: 83
+        width: 57
+        height: 97
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 040cccb521018c94aa802010955fe4db
-      internalID: -1017234983
+      spriteID: 2bf338f2189dee245b6db5dd70c92d3a
+      internalID: 42366197
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frost_lvl2_128_SE_Idle_3
+      name: Frost_lvl1_128_SE_Idle_3
       rect:
         serializedVersion: 2
-        x: 184
+        x: 195
         y: 31
-        width: 58
-        height: 83
+        width: 57
+        height: 97
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa478935bcbda0949abb1e35c6862085
-      internalID: 1228248641
+      spriteID: 9aeb50e8a4942b5408e7331e5b55c5c3
+      internalID: -367731582
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frost_lvl2_128_SE_Idle_4
+      name: Frost_lvl1_128_SE_Idle_4
       rect:
         serializedVersion: 2
-        x: 245
+        x: 260
         y: 31
-        width: 58
-        height: 83
+        width: 57
+        height: 97
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b1c72f65a7e743f469078840de8f0f25
-      internalID: -331028890
+      spriteID: 5b7d0919f7bd7dc41aaff709975c7adf
+      internalID: 744649490
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frost_lvl2_128_SE_Idle_5
+      name: Frost_lvl1_128_SE_Idle_5
       rect:
         serializedVersion: 2
-        x: 306
+        x: 325
         y: 31
-        width: 58
-        height: 83
+        width: 57
+        height: 97
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5c054d5f26966b843a85fc7ed2115b9e
-      internalID: 1295613817
+      spriteID: b466e99d655d1bb4d91b7fdcfa8f6cfc
+      internalID: -1839173417
       vertices: []
       indices: 
       edges: []
@@ -246,12 +246,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Frost_lvl2_128_SE_Idle_0: 822777750
-      Frost_lvl2_128_SE_Idle_1: -280047943
-      Frost_lvl2_128_SE_Idle_2: -1017234983
-      Frost_lvl2_128_SE_Idle_3: 1228248641
-      Frost_lvl2_128_SE_Idle_4: -331028890
-      Frost_lvl2_128_SE_Idle_5: 1295613817
+      Frost_lvl1_128_SE_Idle_0: -635210231
+      Frost_lvl1_128_SE_Idle_1: 1083577936
+      Frost_lvl1_128_SE_Idle_2: 42366197
+      Frost_lvl1_128_SE_Idle_3: -367731582
+      Frost_lvl1_128_SE_Idle_4: 744649490
+      Frost_lvl1_128_SE_Idle_5: -1839173417
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
