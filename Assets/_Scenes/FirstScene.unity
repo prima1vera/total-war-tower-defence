@@ -655,63 +655,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1766396411}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &148253357
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 616228513}
-    m_Modifications:
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.29
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.6633004
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7273526380018602409, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_Name
-      value: ArcherTowerPrefab
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 35730657c26958840b842ba380d2c200, type: 3}
 --- !u!1001 &157566313
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1616,63 +1559,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1718818626}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &192227028
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 616228513}
-    m_Modifications:
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -4.43361
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.6633004
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7273526380018602409, guid: 35730657c26958840b842ba380d2c200, type: 3}
-      propertyPath: m_Name
-      value: ArcherTowerPrefab (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 35730657c26958840b842ba380d2c200, type: 3}
 --- !u!1 &195822946
 GameObject:
   m_ObjectHideFlags: 0
@@ -2276,11 +2162,6 @@ Transform:
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6868958710751573116, guid: c5bdca1933fde624698bb8c6d6daa44b, type: 3}
   m_PrefabInstance: {fileID: 1524255078}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &381556936 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-  m_PrefabInstance: {fileID: 192227028}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &404631021
 GameObject:
@@ -3222,9 +3103,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1112705660}
   - {fileID: 686117595}
-  - {fileID: 381556936}
   m_Father: {fileID: 784707230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &619394800
@@ -4409,11 +4288,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a0f92cafc14f91b2803b8167f135f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &1112705660 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6996953560135015657, guid: 35730657c26958840b842ba380d2c200, type: 3}
-  m_PrefabInstance: {fileID: 148253357}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1125329761
 GameObject:
   m_ObjectHideFlags: 0
@@ -5075,30 +4949,32 @@ MonoBehaviour:
   worldCamera: {fileID: 519420031}
   numbersRoot: {fileID: 7710455733235501822}
   numberViewPrefab: {fileID: 3829122594723119654, guid: fd062a94f6f3f2c4b8db7b6cd46a7bd9, type: 3}
-  prewarmCount: 32
-  maxActiveNumbers: 160
-  worldVerticalOffset: 0.25
-  worldHorizontalJitterRange: {x: -0.12, y: 0.12}
-  worldVerticalJitterRange: {x: 0, y: 0.08}
-  travelDurationRange: {x: 0.45, y: 0.78}
-  riseDistanceRange: {x: 0.42, y: 0.86}
-  driftXRange: {x: -0.08, y: 0.08}
-  fadeStartsAt: 0.56
-  popScaleMultiplier: 0.24
-  baseScaleRange: {x: 0.85, y: 1.35}
-  randomScaleJitter: 0.08
-  dotScaleMultiplier: 0.85
-  fatalScaleMultiplier: 1.2
-  mediumDamageRatio: 0.35
-  heavyDamageRatio: 0.7
-  mediumDamageScaleBonus: 0.08
-  heavyDamageScaleBonus: 0.14
-  normalDirectColor: {r: 1, g: 1, b: 1, a: 1}
-  fireDirectColor: {r: 1, g: 0.56, b: 0.2, a: 1}
-  iceDirectColor: {r: 0.38, g: 0.82, b: 1, a: 1}
-  dotTickColor: {r: 1, g: 0.9, b: 0.34, a: 1}
-  burnTickColor: {r: 1, g: 0.68, b: 0.2, a: 1}
-  fatalColor: {r: 1, g: 0.26, b: 0.26, a: 1}
+  prewarmCount: 48
+  maxActiveNumbers: 180
+  snapToWholePixels: 1
+  positionSnapStep: 1
+  worldVerticalOffset: 0.33
+  worldHorizontalJitterRange: {x: -0.1, y: 0.1}
+  worldVerticalJitterRange: {x: 0, y: 0.05}
+  travelDurationRange: {x: 0.42, y: 0.62}
+  riseDistanceRange: {x: 0.38, y: 0.62}
+  driftXRange: {x: -0.06, y: 0.06}
+  fadeStartsAt: 0.46
+  popScaleMultiplier: 0.08
+  baseScaleRange: {x: 1.06, y: 1.68}
+  randomScaleJitter: 0.04
+  dotScaleMultiplier: 0.74
+  fatalScaleMultiplier: 1.28
+  mediumDamageRatio: 0.22
+  heavyDamageRatio: 0.52
+  mediumDamageScaleBonus: 0.1
+  heavyDamageScaleBonus: 0.18
+  normalDirectColor: {r: 1, g: 0.97, b: 0.85, a: 1}
+  fireDirectColor: {r: 1, g: 0.58, b: 0.18, a: 1}
+  iceDirectColor: {r: 0.43, g: 0.88, b: 1, a: 1}
+  dotTickColor: {r: 1, g: 0.9, b: 0.38, a: 1}
+  burnTickColor: {r: 1, g: 0.72, b: 0.25, a: 1}
+  fatalColor: {r: 1, g: 0.25, b: 0.2, a: 1}
 --- !u!4 &1335606587
 Transform:
   m_ObjectHideFlags: 0

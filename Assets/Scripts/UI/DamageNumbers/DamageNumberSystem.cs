@@ -16,6 +16,12 @@ public class DamageNumberSystem : MonoBehaviour
     [SerializeField, Min(1)] private int prewarmCount = 32;
     [SerializeField, Min(1)] private int maxActiveNumbers = 160;
 
+    [Header("Pixel Crispness")]
+    [SerializeField, Tooltip("Snap anchored position to whole pixels to avoid sub-pixel blur.")]
+    private bool snapToWholePixels = true;
+    [SerializeField, Min(1f), Tooltip("Pixel snap step in UI units (usually 1).")]
+    private float positionSnapStep = 1f;
+
     [Header("World Placement")]
     [SerializeField] private float worldVerticalOffset = 0.25f;
     [SerializeField] private Vector2 worldHorizontalJitterRange = new Vector2(-0.12f, 0.12f);
@@ -45,6 +51,42 @@ public class DamageNumberSystem : MonoBehaviour
     [SerializeField] private Color dotTickColor = new Color(1f, 0.9f, 0.34f, 1f);
     [SerializeField] private Color burnTickColor = new Color(1f, 0.68f, 0.2f, 1f);
     [SerializeField] private Color fatalColor = new Color(1f, 0.26f, 0.26f, 1f);
+
+    [ContextMenu("Apply Pixel Combat Preset")]
+    private void ApplyPixelCombatPreset()
+    {
+        prewarmCount = 48;
+        maxActiveNumbers = 180;
+
+        snapToWholePixels = true;
+        positionSnapStep = 1f;
+
+        worldVerticalOffset = 0.33f;
+        worldHorizontalJitterRange = new Vector2(-0.1f, 0.1f);
+        worldVerticalJitterRange = new Vector2(0f, 0.05f);
+
+        travelDurationRange = new Vector2(0.42f, 0.62f);
+        riseDistanceRange = new Vector2(0.38f, 0.62f);
+        driftXRange = new Vector2(-0.06f, 0.06f);
+        fadeStartsAt = 0.46f;
+        popScaleMultiplier = 0.08f;
+
+        baseScaleRange = new Vector2(1.06f, 1.68f);
+        randomScaleJitter = 0.04f;
+        dotScaleMultiplier = 0.74f;
+        fatalScaleMultiplier = 1.28f;
+        mediumDamageRatio = 0.22f;
+        heavyDamageRatio = 0.52f;
+        mediumDamageScaleBonus = 0.1f;
+        heavyDamageScaleBonus = 0.18f;
+
+        normalDirectColor = new Color(1f, 1f, 1f, 1f);
+        fireDirectColor = new Color(1f, 0.42f, 0.1f, 1f);
+        iceDirectColor = new Color(0.22f, 0.9f, 1f, 1f);
+        dotTickColor = new Color(1f, 0.88f, 0.16f, 1f);
+        burnTickColor = new Color(1f, 0.62f, 0.12f, 1f);
+        fatalColor = new Color(1f, 0.12f, 0.12f, 1f);
+    }
 
     private readonly Stack<NumberView> pooledViews = new Stack<NumberView>(96);
     private readonly List<ActiveNumber> activeNumbers = new List<ActiveNumber>(192);
@@ -227,6 +269,14 @@ public class DamageNumberSystem : MonoBehaviour
             active.View.Root.gameObject.SetActive(true);
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(numbersRoot, screenPos, uiProjectionCamera, out Vector2 localPos);
+
+        if (snapToWholePixels)
+        {
+            float snap = Mathf.Max(1f, positionSnapStep);
+            localPos.x = Mathf.Round(localPos.x / snap) * snap;
+            localPos.y = Mathf.Round(localPos.y / snap) * snap;
+        }
+
         active.View.Root.anchoredPosition = localPos;
 
         float pop = 1f + popScaleMultiplier * (1f - normalized);
@@ -368,6 +418,9 @@ public class DamageNumberSystem : MonoBehaviour
             Destroy(viewInstance.gameObject);
             return default;
         }
+
+        if (viewInstance.GetComponent<Canvas>() != null)
+            Debug.LogWarning("DamageNumberSystem: DamageNumberView prefab should not have its own Canvas component.", viewInstance);
 
         viewInstance.Root.gameObject.SetActive(false);
 

@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -108,7 +108,133 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Frost_lvl2_128_SE_Idle_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 31
+        width: 58
+        height: 83
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: efe53a5492bcacf4ca668e535f19cd5f
+      internalID: 822777750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frost_lvl2_128_SE_Idle_1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 31
+        width: 58
+        height: 83
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf71845f4edf5ab4cbfb27b7d96b6f07
+      internalID: -280047943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frost_lvl2_128_SE_Idle_2
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 31
+        width: 58
+        height: 83
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 040cccb521018c94aa802010955fe4db
+      internalID: -1017234983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frost_lvl2_128_SE_Idle_3
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 31
+        width: 58
+        height: 83
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa478935bcbda0949abb1e35c6862085
+      internalID: 1228248641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frost_lvl2_128_SE_Idle_4
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 31
+        width: 58
+        height: 83
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1c72f65a7e743f469078840de8f0f25
+      internalID: -331028890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Frost_lvl2_128_SE_Idle_5
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 31
+        width: 58
+        height: 83
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c054d5f26966b843a85fc7ed2115b9e
+      internalID: 1295613817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -119,7 +245,13 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Frost_lvl2_128_SE_Idle_0: 822777750
+      Frost_lvl2_128_SE_Idle_1: -280047943
+      Frost_lvl2_128_SE_Idle_2: -1017234983
+      Frost_lvl2_128_SE_Idle_3: 1228248641
+      Frost_lvl2_128_SE_Idle_4: -331028890
+      Frost_lvl2_128_SE_Idle_5: 1295613817
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
