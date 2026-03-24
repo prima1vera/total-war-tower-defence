@@ -129,6 +129,21 @@ public class ArcherTowerProjectileEmitter : MonoBehaviour
         return valid;
     }
 
+    public void SetProjectileDamage(int newDamage)
+    {
+        damage = Mathf.Max(1, newDamage);
+    }
+
+    public void ApplyEvolutionProfile(TowerEvolutionProfile profile)
+    {
+        if (profile == null)
+            return;
+
+        projectilePoolKey = profile.ProjectilePoolKey;
+        runtimeArrowPool = null;
+        loggedPoolResolveError = false;
+    }
+
     private void HandleVisualLevelChanged(int level)
     {
         currentVisualLevel = Mathf.Max(1, level);

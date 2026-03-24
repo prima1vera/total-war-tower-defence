@@ -8,10 +8,14 @@ public struct TowerUpgradePersistentState
     public bool IsSold;
 }
 
-[RequireComponent(typeof(Tower))]
 public class TowerUpgradable : MonoBehaviour
 {
+    [Header("Targets")]
     [SerializeField] private Tower tower;
+    [SerializeField] private ArcherTower archerTower;
+    [SerializeField] private ArcherTowerProjectileEmitter archerEmitter;
+
+    [Header("Upgrade Data")]
     [SerializeField] private TowerUpgradeTree upgradeTree;
     [SerializeField] private int startLevelOverride = -1;
     [SerializeField] private bool initializeOnAwake = true;
@@ -33,6 +37,12 @@ public class TowerUpgradable : MonoBehaviour
     {
         if (tower == null)
             tower = GetComponent<Tower>();
+
+        if (archerTower == null)
+            archerTower = GetComponent<ArcherTower>();
+
+        if (archerEmitter == null)
+            archerEmitter = GetComponent<ArcherTowerProjectileEmitter>();
 
         if (initializeOnAwake)
             Initialize();
@@ -202,14 +212,43 @@ public class TowerUpgradable : MonoBehaviour
             return;
         }
 
+        bool hasAnyUpgradeTarget = false;
+
         if (tower != null)
         {
+            hasAnyUpgradeTarget = true;
+
             if (level.EvolutionProfile != null)
                 tower.ApplyEvolutionProfile(level.EvolutionProfile);
 
             TowerCombatStats stats = TowerCombatStats.Clamp(level.Stats);
             tower.SetCombatStats(stats.Damage, stats.Range, stats.FireRate);
             tower.SetVisualLevel(level.Level);
+        }
+
+        if (archerTower != null)
+        {
+            hasAnyUpgradeTarget = true;
+
+            TowerCombatStats stats = TowerCombatStats.Clamp(level.Stats);
+            archerTower.SetCombatStats(stats.Range, stats.FireRate);
+            archerTower.SetVisualLevel(level.Level);
+        }
+
+        if (archerEmitter != null)
+        {
+            hasAnyUpgradeTarget = true;
+
+            TowerCombatStats stats = TowerCombatStats.Clamp(level.Stats);
+            archerEmitter.SetProjectileDamage(stats.Damage);
+
+            if (level.EvolutionProfile != null)
+                archerEmitter.ApplyEvolutionProfile(level.EvolutionProfile);
+        }
+
+        if (!hasAnyUpgradeTarget)
+        {
+            Debug.LogWarning($"{name}: TowerUpgradable has no upgrade target (Tower or ArcherTower).", this);
         }
 
         cachedTowerDisplayName = ResolveDisplayName(level);
