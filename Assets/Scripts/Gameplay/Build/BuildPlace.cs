@@ -10,7 +10,7 @@ public sealed class BuildPlace : MonoBehaviour
     [Header("Optional Visual")]
     [SerializeField, Tooltip("Optional marker SpriteRenderer for empty build slot.")]
     private SpriteRenderer placeMarkerRenderer;
-    [SerializeField, Tooltip("If true, marker is hidden while slot is occupied.")]
+    [SerializeField, Tooltip("If true, marker renderer is hidden while slot is occupied.")]
     private bool hideMarkerWhenOccupied = true;
 
     private TowerUpgradable occupiedTower;
@@ -110,8 +110,8 @@ public sealed class BuildPlace : MonoBehaviour
             return;
 
         bool shouldShow = !(hideMarkerWhenOccupied && IsOccupied);
-        if (placeMarkerRenderer.gameObject.activeSelf != shouldShow)
-            placeMarkerRenderer.gameObject.SetActive(shouldShow);
+        if (placeMarkerRenderer.enabled != shouldShow)
+            placeMarkerRenderer.enabled = shouldShow;
     }
 
     private void EnsurePlaceId()
