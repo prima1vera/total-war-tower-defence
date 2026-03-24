@@ -15,6 +15,10 @@ public sealed class MetaProgressSaveService : MonoBehaviour
     private TowerBuildService towerBuildService;
     [SerializeField, Tooltip("Build slots to persist (occupied/empty + built tower state).")]
     private BuildPlace[] trackedBuildPlaces = Array.Empty<BuildPlace>();
+    [SerializeField, Tooltip("Optional root used by Authoring/Collect Tower IDs. If empty, this object is used.")]
+    private Transform trackedTowersCollectRoot;
+    [SerializeField, Tooltip("Optional root used by Authoring/Collect Build Places. If empty, this object is used.")]
+    private Transform trackedBuildPlacesCollectRoot;
 
     [Header("Save Behavior")]
     [SerializeField, Tooltip("Load save data on Start and apply to wallet/towers.")]
@@ -29,6 +33,10 @@ public sealed class MetaProgressSaveService : MonoBehaviour
     private bool saveOnApplicationQuit = true;
     [SerializeField, Tooltip("Save file name in Application.persistentDataPath.")]
     private string saveFileName = "twtd_meta_progress_v1.json";
+    [SerializeField, Tooltip("Persist current run wallet balance in save file. Disable for always-fresh runs from wallet starting gold.")]
+    private bool persistCurrencyBalance = true;
+    [SerializeField, Tooltip("When loading saved balance, clamp it to at least wallet starting balance to avoid deadlock runs at 0 gold.")]
+    private bool clampLoadedCurrencyToWalletStart = true;
     [SerializeField, Tooltip("Optional verbose logs for save operations.")]
     private bool verboseLogging;
 
@@ -48,13 +56,20 @@ public sealed class MetaProgressSaveService : MonoBehaviour
 
     private void Awake()
     {
-        string filePath = BuildSavePath(saveFileName);
-        saveStore = new JsonFileSaveStore<MetaProgressSaveData>(filePath);
+        EnsureSaveStoreReady();
+        NormalizeTrackedArrays();
     }
 
     private void OnEnable()
     {
         SubscribeRuntimeEvents();
+    }
+
+    private void OnValidate()
+    {
+        NormalizeTrackedArrays();
+        trackedTowers = RemoveNulls(trackedTowers);
+        trackedBuildPlaces = RemoveNulls(trackedBuildPlaces);
     }
 
     private void Start()
@@ -105,6 +120,9 @@ public sealed class MetaProgressSaveService : MonoBehaviour
     [ContextMenu("Save/Save Now")]
     public void SaveNow()
     {
+        EnsureSaveStoreReady();
+        NormalizeTrackedArrays();
+
         if (!TryBuildSaveData(out MetaProgressSaveData data))
             return;
 
@@ -121,6 +139,9 @@ public sealed class MetaProgressSaveService : MonoBehaviour
     [ContextMenu("Save/Load And Apply")]
     public void LoadAndApply()
     {
+        EnsureSaveStoreReady();
+        NormalizeTrackedArrays();
+
         if (!saveStore.TryLoad(out MetaProgressSaveData data) || data == null)
         {
             if (verboseLogging)
@@ -141,6 +162,8 @@ public sealed class MetaProgressSaveService : MonoBehaviour
     [ContextMenu("Save/Delete Save File")]
     public void DeleteSaveFile()
     {
+        EnsureSaveStoreReady();
+
         if (!saveStore.Delete())
             return;
 
@@ -154,13 +177,24 @@ public sealed class MetaProgressSaveService : MonoBehaviour
     [ContextMenu("Authoring/Collect Tower IDs From Children")]
     private void CollectTowerIdsFromChildren()
     {
-        trackedTowers = GetComponentsInChildren<TowerPersistentId>(includeInactive: true);
+        Transform root = trackedTowersCollectRoot != null ? trackedTowersCollectRoot : transform;
+        trackedTowers = root.GetComponentsInChildren<TowerPersistentId>(includeInactive: true);
+        PruneMissingReferences();
     }
 
     [ContextMenu("Authoring/Collect Build Places From Children")]
     private void CollectBuildPlacesFromChildren()
     {
-        trackedBuildPlaces = GetComponentsInChildren<BuildPlace>(includeInactive: true);
+        Transform root = trackedBuildPlacesCollectRoot != null ? trackedBuildPlacesCollectRoot : transform;
+        trackedBuildPlaces = root.GetComponentsInChildren<BuildPlace>(includeInactive: true);
+        PruneMissingReferences();
+    }
+
+    [ContextMenu("Authoring/Prune Missing References")]
+    private void PruneMissingReferences()
+    {
+        trackedTowers = RemoveNulls(trackedTowers);
+        trackedBuildPlaces = RemoveNulls(trackedBuildPlaces);
     }
 
     private void SubscribeRuntimeEvents()
@@ -267,7 +301,14 @@ public sealed class MetaProgressSaveService : MonoBehaviour
         isRestoring = true;
         try
         {
-            currencyWallet.RestoreBalance(data.CurrencyBalance, notify: true);
+            int restoredBalance = persistCurrencyBalance
+                ? data.CurrencyBalance
+                : currencyWallet.StartingBalance;
+
+            if (clampLoadedCurrencyToWalletStart)
+                restoredBalance = Mathf.Max(restoredBalance, currencyWallet.StartingBalance);
+
+            currencyWallet.RestoreBalance(restoredBalance, notify: true);
             RestoreTrackedTowers(data);
             RestoreBuildPlaces(data);
         }
@@ -310,7 +351,7 @@ public sealed class MetaProgressSaveService : MonoBehaviour
         data = new MetaProgressSaveData
         {
             Version = SaveFormatVersion,
-            CurrencyBalance = currencyWallet.Balance,
+            CurrencyBalance = persistCurrencyBalance ? currencyWallet.Balance : currencyWallet.StartingBalance,
             Towers = records.ToArray(),
             BuildPlaces = CaptureBuildPlaceRecords()
         };
@@ -342,6 +383,56 @@ public sealed class MetaProgressSaveService : MonoBehaviour
     {
         string safeFileName = string.IsNullOrWhiteSpace(fileName) ? "twtd_meta_progress_v1.json" : fileName.Trim();
         return Path.Combine(Application.persistentDataPath, safeFileName);
+    }
+
+    private void EnsureSaveStoreReady()
+    {
+        if (saveStore != null)
+            return;
+
+        string filePath = BuildSavePath(saveFileName);
+        saveStore = new JsonFileSaveStore<MetaProgressSaveData>(filePath);
+    }
+
+    private void NormalizeTrackedArrays()
+    {
+        if (trackedTowers == null)
+            trackedTowers = Array.Empty<TowerPersistentId>();
+
+        if (trackedBuildPlaces == null)
+            trackedBuildPlaces = Array.Empty<BuildPlace>();
+    }
+
+    private static T[] RemoveNulls<T>(T[] source) where T : UnityEngine.Object
+    {
+        if (source == null || source.Length == 0)
+            return Array.Empty<T>();
+
+        int count = 0;
+        for (int i = 0; i < source.Length; i++)
+        {
+            if (source[i] != null)
+                count++;
+        }
+
+        if (count == source.Length)
+            return source;
+
+        if (count == 0)
+            return Array.Empty<T>();
+
+        T[] result = new T[count];
+        int writeIndex = 0;
+        for (int i = 0; i < source.Length; i++)
+        {
+            T value = source[i];
+            if (value == null)
+                continue;
+
+            result[writeIndex++] = value;
+        }
+
+        return result;
     }
 
     private void RestoreTrackedTowers(MetaProgressSaveData data)

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5127213888948165775
+--- !u!1 &1677897287384655580
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,46 +8,46 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4070662224797279202}
-  - component: {fileID: 1322626780139260352}
+  - component: {fileID: 543743067538611657}
+  - component: {fileID: 4223025502498698072}
   m_Layer: 0
-  m_Name: TowerSelectionInput
+  m_Name: BuildPlaceInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4070662224797279202
+--- !u!4 &543743067538611657
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5127213888948165775}
+  m_GameObject: {fileID: 1677897287384655580}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.30285, y: 0.52454, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1322626780139260352
+--- !u!114 &4223025502498698072
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5127213888948165775}
+  m_GameObject: {fileID: 1677897287384655580}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15b6d76cc7ae67147bc2c702c7b9cec4, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f612769bc8b4244990fc3c55f51ec39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   worldCamera: {fileID: 0}
-  selectionService: {fileID: 0}
-  towerLayerMask:
+  buildService: {fileID: 0}
+  buildPlaceLayerMask:
     serializedVersion: 2
-    m_Bits: 16777216
+    m_Bits: 33554432
   clearSelectionOnMiss: 1
   ignorePointerOverUi: 1
