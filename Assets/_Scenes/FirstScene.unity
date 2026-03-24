@@ -14717,50 +14717,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 616228513}
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[0]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[1]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[2]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[3]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[4]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[5]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[6]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[7]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[8]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[9]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
-      propertyPath: trackedTowers.Array.data[10]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedBuildPlaces.Array.size
       value: 9
       objectReference: {fileID: 0}
