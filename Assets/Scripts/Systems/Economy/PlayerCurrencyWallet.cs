@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerCurrencyWallet : MonoBehaviour, ICurrencyWallet
 {
-    [SerializeField, Min(0)] private int startingBalance = 300;
+    [SerializeField, Min(0)] private int startingBalance = 120;
 
     public int StartingBalance => Mathf.Max(0, startingBalance);
     public int Balance { get; private set; }

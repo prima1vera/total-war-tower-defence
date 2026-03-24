@@ -45,4 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currencyWallet: {fileID: 0}
-  fallbackKillReward: 0
+  smallEnemyKillReward: 2
+  ogreEnemyKillReward: 8
+  fallbackKillReward: 2

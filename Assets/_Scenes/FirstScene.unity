@@ -14211,18 +14211,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
-      propertyPath: ogreSpawnShare
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
-      propertyPath: waves.Array.data[0].enemyCount
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
-      propertyPath: waves.Array.data[1].enemyCount
-      value: 300
-      objectReference: {fileID: 0}
+      - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
+        propertyPath: ogreSpawnShare
+        value: 0.14
+        objectReference: {fileID: 0}
+      - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
+        propertyPath: waves.Array.data[0].enemyCount
+        value: 80
+        objectReference: {fileID: 0}
+      - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
+        propertyPath: waves.Array.data[1].enemyCount
+        value: 160
+        objectReference: {fileID: 0}
     - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
       propertyPath: controlledSpawners.Array.data[0]
       value: 
@@ -14231,10 +14231,10 @@ PrefabInstance:
       propertyPath: controlledSpawners.Array.data[1]
       value: 
       objectReference: {fileID: 1820713046}
-    - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
-      propertyPath: waves.Array.data[1].spawnInterval
-      value: 0.2
-      objectReference: {fileID: 0}
+      - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
+        propertyPath: waves.Array.data[1].spawnInterval
+        value: 0.5
+        objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15100,10 +15100,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerCurrencyWallet
       objectReference: {fileID: 0}
-    - target: {fileID: 669401461558016692, guid: 253c9cbd1918224458529b42228d6752, type: 3}
-      propertyPath: startingBalance
-      value: 300
-      objectReference: {fileID: 0}
+      - target: {fileID: 669401461558016692, guid: 253c9cbd1918224458529b42228d6752, type: 3}
+        propertyPath: startingBalance
+        value: 120
+        objectReference: {fileID: 0}
     - target: {fileID: 2455965776769991292, guid: 253c9cbd1918224458529b42228d6752, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.8944113

@@ -9,11 +9,11 @@ public sealed class EnemyKillRewardService : MonoBehaviour
 
     [Header("Reward Defaults")]
     [SerializeField, Min(0), Tooltip("Kill reward for enemies resolved as Small family.")]
-    private int smallEnemyKillReward = 1;
+    private int smallEnemyKillReward = 2;
     [SerializeField, Min(0), Tooltip("Kill reward for enemies resolved as Ogre family.")]
-    private int ogreEnemyKillReward = 4;
+    private int ogreEnemyKillReward = 8;
     [SerializeField, Min(0), Tooltip("Used only if family cannot be resolved from spawn data.")]
-    private int fallbackKillReward = 1;
+    private int fallbackKillReward = 2;
 
     private readonly Dictionary<UnitHealth, int> killRewardByEnemy = new Dictionary<UnitHealth, int>(256);
 
