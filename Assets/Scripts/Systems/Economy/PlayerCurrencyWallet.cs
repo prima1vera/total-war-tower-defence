@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class PlayerCurrencyWallet : MonoBehaviour, ICurrencyWallet
 {
-    [SerializeField, Min(0)] private int startingBalance = 300;
+    [SerializeField, Min(0)] private int startingBalance = 120;
 
+    public int StartingBalance => Mathf.Max(0, startingBalance);
     public int Balance { get; private set; }
     public event Action<int> BalanceChanged;
 
@@ -15,7 +16,7 @@ public class PlayerCurrencyWallet : MonoBehaviour, ICurrencyWallet
         if (initialized)
             return;
 
-        Balance = Mathf.Max(0, startingBalance);
+        Balance = StartingBalance;
         initialized = true;
         BalanceChanged?.Invoke(Balance);
     }
@@ -60,4 +61,18 @@ public class PlayerCurrencyWallet : MonoBehaviour, ICurrencyWallet
         if (notify)
             BalanceChanged?.Invoke(Balance);
     }
+
+#if UNITY_EDITOR
+    [ContextMenu("Debug/Add 500 Gold")]
+    private void DebugAddGold()
+    {
+        Add(500);
+    }
+
+    [ContextMenu("Debug/Reset Balance To Starting")]
+    private void DebugResetBalance()
+    {
+        RestoreBalance(StartingBalance);
+    }
+#endif
 }

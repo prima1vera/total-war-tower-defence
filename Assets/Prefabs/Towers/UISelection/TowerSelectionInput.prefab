@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4070662224797279202}
-  - component: {fileID: 2222205250638331031}
+  - component: {fileID: 1322626780139260352}
   m_Layer: 0
   m_Name: TowerSelectionInput
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2222205250638331031
+--- !u!114 &1322626780139260352
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   worldCamera: {fileID: 0}
-  selectionService: {fileID: 8498490558444312437, guid: 61ffe296f36041b489653a41f0bc6f94, type: 3}
+  selectionService: {fileID: 0}
   towerLayerMask:
     serializedVersion: 2
     m_Bits: 16777216

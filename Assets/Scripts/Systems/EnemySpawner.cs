@@ -21,6 +21,10 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("Relative spawn weight for this spawner within its family. 2 means this spawner is picked ~2x more often than weight 1.")]
     [SerializeField, Min(0f)] private float waveSpawnWeight = 1f;
 
+    [Header("Economy")]
+    [Tooltip("Optional per-spawner gold override. -1 means use global family rewards from EnemyKillRewardService.")]
+    [SerializeField, Min(-1)] private int killRewardOverride = -1;
+
     private float spawnTimer;
     private bool loggedMissingPool;
 
@@ -67,7 +71,9 @@ public class EnemySpawner : MonoBehaviour
         }
 
         loggedMissingPool = false;
-        return enemyPool.Spawn(spawnPoint.position, spawnPoint.rotation);
+        GameObject spawnedEnemy = enemyPool.Spawn(spawnPoint.position, spawnPoint.rotation);
+        RaiseEnemySpawnedEvent(spawnedEnemy);
+        return spawnedEnemy;
     }
 
     private EnemyFamily ResolveEnemyFamily()
@@ -99,5 +105,13 @@ public class EnemySpawner : MonoBehaviour
 
         int index = Random.Range(0, spawnPoints.Length);
         return spawnPoints[index] != null ? spawnPoints[index] : transform;
+    }
+
+    private void RaiseEnemySpawnedEvent(GameObject enemyObject)
+    {
+        if (enemyObject == null || !enemyObject.TryGetComponent(out UnitHealth unitHealth))
+            return;
+
+        EnemyRuntimeEvents.RaiseEnemySpawned(unitHealth, ResolveEnemyFamily(), killRewardOverride);
     }
 }

@@ -19,11 +19,11 @@ public class WaveManager : MonoBehaviour
     [Tooltip("If enabled, WaveManager chooses spawners by configured enemy family and weights. If disabled, uses simple round-robin.")]
     [SerializeField] private bool useWeightedEnemyComposition = true;
     [Tooltip("Target share of ogre spawns in a wave (0 = no ogres, 1 = only ogres), if both families exist.")]
-    [SerializeField, Range(0f, 1f)] private float ogreSpawnShare = 0.22f;
+    [SerializeField, Range(0f, 1f)] private float ogreSpawnShare = 0.14f;
     [Tooltip("Global multiplier for all Ogre-family spawner weights. Lower this to reduce ogres.")]
-    [SerializeField, Min(0f)] private float ogreWeightMultiplier = 0.45f;
+    [SerializeField, Min(0f)] private float ogreWeightMultiplier = 0.35f;
     [Tooltip("Global multiplier for all Small-family spawner weights. Raise this to get more small enemies.")]
-    [SerializeField, Min(0f)] private float smallWeightMultiplier = 1f;
+    [SerializeField, Min(0f)] private float smallWeightMultiplier = 1.1f;
 
     [SerializeField] private WaveDefinition[] waves =
     {
