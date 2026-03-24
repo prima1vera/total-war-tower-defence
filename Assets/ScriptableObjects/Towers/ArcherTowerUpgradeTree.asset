@@ -50,11 +50,11 @@ MonoBehaviour:
     UpgradeB:
       Label: 
       Cost: 0
-      NextLevelIndex: 0
+      NextLevelIndex: -1
     UpgradeC:
       Label: 
       Cost: 0
-      NextLevelIndex: 0
+      NextLevelIndex: -1
   - Level: 3
     Stats:
       Damage: 1
