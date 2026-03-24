@@ -15,18 +15,38 @@ MonoBehaviour:
   towerDisplayName: Archer Tower
   startLevelIndex: 0
   levels:
-  - Level: 0
+  - Level: 1
     Stats:
       Damage: 1
-      Range: 0.1
-      FireRate: 0.05
-    SellValue: 0
-    DisplayNameOverride: 
+      Range: 9
+      FireRate: 1
+    SellValue: 5
+    DisplayNameOverride: Archer Tower
     EvolutionProfile: {fileID: 0}
     UpgradeA:
+      Label: Mid Archer Tower
+      Cost: 35
+      NextLevelIndex: 1
+    UpgradeB:
       Label: 
       Cost: 0
-      NextLevelIndex: 0
+      NextLevelIndex: -1
+    UpgradeC:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
+  - Level: 2
+    Stats:
+      Damage: 1
+      Range: 11
+      FireRate: 1.1
+    SellValue: 20
+    DisplayNameOverride: Mid Archer Tower
+    EvolutionProfile: {fileID: 0}
+    UpgradeA:
+      Label: Super Archer Tower
+      Cost: 100
+      NextLevelIndex: 2
     UpgradeB:
       Label: 
       Cost: 0
@@ -35,3 +55,23 @@ MonoBehaviour:
       Label: 
       Cost: 0
       NextLevelIndex: 0
+  - Level: 3
+    Stats:
+      Damage: 1
+      Range: 13
+      FireRate: 1.2
+    SellValue: 50
+    DisplayNameOverride: Super Archer Tower
+    EvolutionProfile: {fileID: 0}
+    UpgradeA:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
+    UpgradeB:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
+    UpgradeC:
+      Label: 
+      Cost: 0
+      NextLevelIndex: -1
