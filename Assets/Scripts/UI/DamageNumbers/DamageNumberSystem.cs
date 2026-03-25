@@ -28,29 +28,29 @@ public class DamageNumberSystem : MonoBehaviour
     [SerializeField] private Vector2 worldVerticalJitterRange = new Vector2(0f, 0.08f);
 
     [Header("Motion")]
-    [SerializeField] private Vector2 travelDurationRange = new Vector2(0.45f, 0.78f);
-    [SerializeField] private Vector2 riseDistanceRange = new Vector2(0.42f, 0.86f);
+    [SerializeField] private Vector2 travelDurationRange = new Vector2(0.42f, 0.68f);
+    [SerializeField] private Vector2 riseDistanceRange = new Vector2(0.38f, 0.74f);
     [SerializeField] private Vector2 driftXRange = new Vector2(-0.08f, 0.08f);
-    [SerializeField, Range(0f, 1f)] private float fadeStartsAt = 0.56f;
-    [SerializeField, Min(0f)] private float popScaleMultiplier = 0.24f;
+    [SerializeField, Range(0f, 1f)] private float fadeStartsAt = 0.58f;
+    [SerializeField, Min(0f)] private float popScaleMultiplier = 0.08f;
 
     [Header("Size Rules")]
-    [SerializeField] private Vector2 baseScaleRange = new Vector2(0.85f, 1.35f);
-    [SerializeField, Min(0f)] private float randomScaleJitter = 0.08f;
-    [SerializeField, Min(0f)] private float dotScaleMultiplier = 0.85f;
-    [SerializeField, Min(0f)] private float fatalScaleMultiplier = 1.2f;
+    [SerializeField] private Vector2 baseScaleRange = new Vector2(0.82f, 1.16f);
+    [SerializeField, Min(0f)] private float randomScaleJitter = 0.05f;
+    [SerializeField, Min(0f)] private float dotScaleMultiplier = 0.78f;
+    [SerializeField, Min(0f)] private float fatalScaleMultiplier = 1.08f;
     [SerializeField, Range(0f, 2f)] private float mediumDamageRatio = 0.35f;
     [SerializeField, Range(0f, 2f)] private float heavyDamageRatio = 0.7f;
-    [SerializeField, Min(0f)] private float mediumDamageScaleBonus = 0.08f;
-    [SerializeField, Min(0f)] private float heavyDamageScaleBonus = 0.14f;
+    [SerializeField, Min(0f)] private float mediumDamageScaleBonus = 0.03f;
+    [SerializeField, Min(0f)] private float heavyDamageScaleBonus = 0.07f;
 
     [Header("Color Rules")]
     [SerializeField] private Color normalDirectColor = new Color(1f, 1f, 1f, 1f);
-    [SerializeField] private Color fireDirectColor = new Color(1f, 0.56f, 0.2f, 1f);
-    [SerializeField] private Color iceDirectColor = new Color(0.38f, 0.82f, 1f, 1f);
-    [SerializeField] private Color dotTickColor = new Color(1f, 0.9f, 0.34f, 1f);
-    [SerializeField] private Color burnTickColor = new Color(1f, 0.68f, 0.2f, 1f);
-    [SerializeField] private Color fatalColor = new Color(1f, 0.26f, 0.26f, 1f);
+    [SerializeField] private Color fireDirectColor = new Color(1f, 0.42f, 0.1f, 1f);
+    [SerializeField] private Color iceDirectColor = new Color(0.22f, 0.9f, 1f, 1f);
+    [SerializeField] private Color dotTickColor = new Color(1f, 0.88f, 0.16f, 1f);
+    [SerializeField] private Color burnTickColor = new Color(1f, 0.62f, 0.12f, 1f);
+    [SerializeField] private Color fatalColor = new Color(1f, 0.12f, 0.12f, 1f);
 
     [ContextMenu("Apply Pixel Combat Preset")]
     private void ApplyPixelCombatPreset()
@@ -65,20 +65,20 @@ public class DamageNumberSystem : MonoBehaviour
         worldHorizontalJitterRange = new Vector2(-0.1f, 0.1f);
         worldVerticalJitterRange = new Vector2(0f, 0.05f);
 
-        travelDurationRange = new Vector2(0.42f, 0.62f);
-        riseDistanceRange = new Vector2(0.38f, 0.62f);
+        travelDurationRange = new Vector2(0.42f, 0.68f);
+        riseDistanceRange = new Vector2(0.38f, 0.74f);
         driftXRange = new Vector2(-0.06f, 0.06f);
-        fadeStartsAt = 0.46f;
+        fadeStartsAt = 0.58f;
         popScaleMultiplier = 0.08f;
 
-        baseScaleRange = new Vector2(1.06f, 1.68f);
+        baseScaleRange = new Vector2(0.82f, 1.16f);
         randomScaleJitter = 0.04f;
-        dotScaleMultiplier = 0.74f;
-        fatalScaleMultiplier = 1.28f;
+        dotScaleMultiplier = 0.78f;
+        fatalScaleMultiplier = 1.08f;
         mediumDamageRatio = 0.22f;
         heavyDamageRatio = 0.52f;
-        mediumDamageScaleBonus = 0.1f;
-        heavyDamageScaleBonus = 0.18f;
+        mediumDamageScaleBonus = 0.03f;
+        heavyDamageScaleBonus = 0.07f;
 
         normalDirectColor = new Color(1f, 1f, 1f, 1f);
         fireDirectColor = new Color(1f, 0.42f, 0.1f, 1f);
@@ -201,7 +201,7 @@ public class DamageNumberSystem : MonoBehaviour
         float scale = ResolveScale(damageEvent);
         Vector3 startWorldPos = ResolveWorldSpawnPosition(damageEvent.Target);
 
-        view.Text.color = color;
+        ApplyTextColorStyle(view.Text, color, damageEvent);
         view.Text.SetText("{0}", damageEvent.Amount);
         view.Root.localScale = Vector3.one * scale;
         view.CanvasGroup.alpha = 1f;
@@ -314,6 +314,16 @@ public class DamageNumberSystem : MonoBehaviour
             default:
                 return normalDirectColor;
         }
+    }
+
+    private void ApplyTextColorStyle(TMP_Text text, Color baseColor, DamageFeedbackEvent damageEvent)
+    {
+        if (text == null)
+            return;
+
+        baseColor.a = 1f;
+        text.enableVertexGradient = false;
+        text.color = baseColor;
     }
 
     private float ResolveScale(DamageFeedbackEvent damageEvent)

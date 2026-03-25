@@ -113,7 +113,7 @@ TextureImporter:
       name: Fire_lvl2_128_SE_Idle_0
       rect:
         serializedVersion: 2
-        x: 3
+        x: 2
         y: 32
         width: 55
         height: 96
@@ -134,9 +134,9 @@ TextureImporter:
       name: Fire_lvl2_128_SE_Idle_1
       rect:
         serializedVersion: 2
-        x: 68
+        x: 67
         y: 32
-        width: 58
+        width: 55
         height: 96
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -152,12 +152,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_lvl2_128_SE_Idle_3
+      name: Fire_lvl2_128_SE_Idle_2
       rect:
         serializedVersion: 2
-        x: 133
+        x: 132
         y: 32
-        width: 58
+        width: 55
         height: 96
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -173,12 +173,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_lvl2_128_SE_Idle_4
+      name: Fire_lvl2_128_SE_Idle_3
       rect:
         serializedVersion: 2
-        x: 198
+        x: 197
         y: 32
-        width: 56
+        width: 55
         height: 96
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -194,12 +194,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_lvl2_128_SE_Idle_5
+      name: Fire_lvl2_128_SE_Idle_4
       rect:
         serializedVersion: 2
         x: 262
         y: 32
-        width: 56
+        width: 55
         height: 96
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -210,6 +210,27 @@ TextureImporter:
       bones: []
       spriteID: d26f0f6557668714da07fd8cf51c63ad
       internalID: 1852561010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fire_lvl2_128_SE_Idle_5
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 32
+        width: 55
+        height: 96
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b02de87240b35904181b1e01a2b7a986
+      internalID: 1220202594
       vertices: []
       indices: 
       edges: []
@@ -227,10 +248,10 @@ TextureImporter:
     nameFileIdTable:
       Fire_lvl2_128_SE_Idle_0: -1065761553
       Fire_lvl2_128_SE_Idle_1: 1387872048
-      Fire_lvl2_128_SE_Idle_2: 1220202594
-      Fire_lvl2_128_SE_Idle_3: 2082056132
-      Fire_lvl2_128_SE_Idle_4: 2058937299
-      Fire_lvl2_128_SE_Idle_5: 1852561010
+      Fire_lvl2_128_SE_Idle_2: 2082056132
+      Fire_lvl2_128_SE_Idle_3: 2058937299
+      Fire_lvl2_128_SE_Idle_4: 1852561010
+      Fire_lvl2_128_SE_Idle_5: 1220202594
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

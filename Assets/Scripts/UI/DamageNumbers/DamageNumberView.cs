@@ -37,7 +37,7 @@ public class DamageNumberView : MonoBehaviour
         valueText.raycastTarget = false;
         valueText.text = "88";
         valueText.color = Color.white;
-        valueText.outlineWidth = 0.2f;
+        valueText.outlineWidth = 0.12f;
         valueText.outlineColor = new Color(0f, 0f, 0f, 1f);
 
         if (root != null)
@@ -45,7 +45,7 @@ public class DamageNumberView : MonoBehaviour
             root.anchorMin = new Vector2(0.5f, 0.5f);
             root.anchorMax = new Vector2(0.5f, 0.5f);
             root.pivot = new Vector2(0.5f, 0.5f);
-            root.sizeDelta = new Vector2(64f, 28f);
+            root.sizeDelta = new Vector2(84f, 30f);
             root.localScale = Vector3.one;
         }
 
@@ -58,19 +58,19 @@ public class DamageNumberView : MonoBehaviour
             };
 
             if (instanceMaterial.HasProperty(ShaderUtilities.ID_OutlineWidth))
-                instanceMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.22f);
+                instanceMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.12f);
 
             if (instanceMaterial.HasProperty(ShaderUtilities.ID_OutlineColor))
                 instanceMaterial.SetColor(ShaderUtilities.ID_OutlineColor, new Color(0f, 0f, 0f, 1f));
 
             if (instanceMaterial.HasProperty(ShaderUtilities.ID_UnderlayColor))
-                instanceMaterial.SetColor(ShaderUtilities.ID_UnderlayColor, new Color(0f, 0f, 0f, 0.75f));
+                instanceMaterial.SetColor(ShaderUtilities.ID_UnderlayColor, new Color(0f, 0f, 0f, 0.55f));
 
             if (instanceMaterial.HasProperty(ShaderUtilities.ID_UnderlayOffsetX))
-                instanceMaterial.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 0.35f);
+                instanceMaterial.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 0.25f);
 
             if (instanceMaterial.HasProperty(ShaderUtilities.ID_UnderlayOffsetY))
-                instanceMaterial.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, -0.35f);
+                instanceMaterial.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, -0.25f);
 
             if (instanceMaterial.HasProperty(ShaderUtilities.ID_UnderlaySoftness))
                 instanceMaterial.SetFloat(ShaderUtilities.ID_UnderlaySoftness, 0f);
