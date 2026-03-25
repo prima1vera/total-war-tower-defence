@@ -237,44 +237,44 @@ MonoBehaviour:
   orbitParticles: {fileID: 8847177134319196696}
   auraParticles: {fileID: 8568913701373618097}
   glowSprite: {fileID: 0}
-  emissionPerLevel: 1.2
-  sizePerLevel: 0.008
+  emissionPerLevel: 0.9
+  sizePerLevel: 0.006
   baseStyle:
-    color: {r: 1, g: 0.93, b: 0.75, a: 0.95}
-    emissionRate: 6
-    particleSpeed: 0.08
-    minSize: 0.025
-    maxSize: 0.05
-    glowBaseAlpha: 0.12
-    glowPulseAmplitude: 0.04
-    glowPulseSpeed: 2.1
+    color: {r: 1, g: 0.93, b: 0.75, a: 0.9}
+    emissionRate: 5
+    particleSpeed: 0.07
+    minSize: 0.015
+    maxSize: 0.03
+    glowBaseAlpha: 0.11
+    glowPulseAmplitude: 0.03
+    glowPulseSpeed: 1.9
   fireStyle:
-    color: {r: 1, g: 0.45, b: 0.15, a: 1}
-    emissionRate: 11
-    particleSpeed: 0.14
-    minSize: 0.03
-    maxSize: 0.06
-    glowBaseAlpha: 0.22
-    glowPulseAmplitude: 0.08
-    glowPulseSpeed: 3.2
-  frostStyle:
-    color: {r: 0.45, g: 0.84, b: 1, a: 1}
-    emissionRate: 9
+    color: {r: 1, g: 0.5, b: 0.2, a: 0.95}
+    emissionRate: 8
     particleSpeed: 0.1
-    minSize: 0.028
-    maxSize: 0.055
-    glowBaseAlpha: 0.2
-    glowPulseAmplitude: 0.07
-    glowPulseSpeed: 2.6
-  ironStyle:
-    color: {r: 0.9, g: 0.82, b: 0.72, a: 0.95}
-    emissionRate: 7
-    particleSpeed: 0.09
-    minSize: 0.027
-    maxSize: 0.052
-    glowBaseAlpha: 0.16
+    minSize: 0.016
+    maxSize: 0.032
+    glowBaseAlpha: 0.15
     glowPulseAmplitude: 0.05
-    glowPulseSpeed: 2.2
+    glowPulseSpeed: 2.4
+  frostStyle:
+    color: {r: 0.56, g: 0.9, b: 1, a: 0.95}
+    emissionRate: 7.2
+    particleSpeed: 0.085
+    minSize: 0.015
+    maxSize: 0.03
+    glowBaseAlpha: 0.14
+    glowPulseAmplitude: 0.045
+    glowPulseSpeed: 2.1
+  ironStyle:
+    color: {r: 0.93, g: 0.85, b: 0.74, a: 0.9}
+    emissionRate: 5.8
+    particleSpeed: 0.075
+    minSize: 0.015
+    maxSize: 0.029
+    glowBaseAlpha: 0.12
+    glowPulseAmplitude: 0.03
+    glowPulseSpeed: 1.95
 --- !u!114 &9174322068612734074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -431,7 +431,7 @@ Transform:
   m_GameObject: {fileID: 5462553842399446471}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.42, z: 0}
+  m_LocalPosition: {x: 0, y: 0.34, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5181,7 +5181,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 61b89fe75af132249ba5700ee0334a72, type: 2}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5201,7 +5201,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -9025213
   m_SortingLayer: 5
-  m_SortingOrder: 2
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -10031,7 +10031,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -9025213
   m_SortingLayer: 5
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
