@@ -81,7 +81,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
-  m_SortingLayer: 5
+  m_SortingLayer: 4
   m_SortingOrder: 1
   m_Sprite: {fileID: 1319556631, guid: f72eaa13bcfbfc743a4f7f58dc35949c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -151,7 +151,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00c9b06d6e787134c9b43bc55e4fbe67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower
-  arrowPrefab: {fileID: 341183810093573692, guid: a6f41efdc35e0d047ba906f26e94f6c3, type: 3}
   damage: 1
   range: 10
   fireRate: 5
@@ -180,7 +179,7 @@ MonoBehaviour:
   frostGroundSprite: {fileID: 390634003, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   ironGroundSprite: {fileID: 1410214893, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   groundScaleMultiplier: 1
-  levelScaleStep: 0.5
+  levelScaleStep: 0.22
   minAnimationCycleSeconds: 0.08
 --- !u!95 &4033096107844011754
 Animator:
@@ -390,8 +389,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 500341947
-  m_SortingLayer: 5
+  m_SortingLayerID: -516203043
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: -673470162, guid: f7301ae7ea2412b4caef04b341ac6689, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.9019608}
@@ -5200,7 +5199,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
-  m_SortingLayer: 5
+  m_SortingLayer: 4
   m_SortingOrder: 1
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -10030,7 +10029,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
-  m_SortingLayer: 5
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -10064,4 +10063,3 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
-

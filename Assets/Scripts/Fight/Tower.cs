@@ -90,6 +90,7 @@ public class Tower : MonoBehaviour
 
     private const float TopDownSortingPrecision = 100f;
     private const string SortingLayerUnitsAlive = "Units_Alive";
+    private const string SortingLayerGroundVfx = "GroundVFX";
     private const int DefaultTopSortingOffset = 1;
     private const int DefaultGroundSortingOffset = 0;
 
@@ -509,7 +510,8 @@ public class Tower : MonoBehaviour
 
         if (towerGroundRenderer != null)
         {
-            towerGroundRenderer.sortingLayerName = SortingLayerUnitsAlive;
+            // Ground aura/decal should stay below living units for clean readability near paths.
+            towerGroundRenderer.sortingLayerName = SortingLayerGroundVfx;
             towerGroundRenderer.sortingOrder = baseOrder + groundOffset;
         }
 
