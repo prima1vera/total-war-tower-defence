@@ -88,7 +88,8 @@ public class Tower : MonoBehaviour
     private int cachedTopSortingOffset = 1;
     private int cachedGroundSortingOffset = 0;
 
-    private const float TopDownSortingPrecision = 1000f;
+    private const float TopDownSortingPrecision = 100f;
+    private const string SortingLayerUnitsAlive = "Units_Alive";
     private const int DefaultTopSortingOffset = 1;
     private const int DefaultGroundSortingOffset = 0;
 
@@ -507,10 +508,16 @@ public class Tower : MonoBehaviour
             topOffset = groundOffset + 1;
 
         if (towerGroundRenderer != null)
+        {
+            towerGroundRenderer.sortingLayerName = SortingLayerUnitsAlive;
             towerGroundRenderer.sortingOrder = baseOrder + groundOffset;
+        }
 
         if (towerSpriteRenderer != null)
+        {
+            towerSpriteRenderer.sortingLayerName = SortingLayerUnitsAlive;
             towerSpriteRenderer.sortingOrder = baseOrder + topOffset;
+        }
     }
 
     private void CacheFireClipLength()
