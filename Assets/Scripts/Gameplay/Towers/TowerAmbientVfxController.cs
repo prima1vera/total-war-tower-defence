@@ -37,57 +37,57 @@ public sealed class TowerAmbientVfxController : MonoBehaviour
 
     [Header("Level Scaling")]
     [SerializeField, Min(0f), Tooltip("Added emission per tower level.")]
-    private float emissionPerLevel = 1.2f;
+    private float emissionPerLevel = 0.9f;
     [SerializeField, Min(0f), Tooltip("Added particle size per tower level.")]
-    private float sizePerLevel = 0.008f;
+    private float sizePerLevel = 0.006f;
 
     [Header("Style Presets")]
     [SerializeField] private AmbientStyle baseStyle = new AmbientStyle
     {
-        color = new Color(1f, 0.93f, 0.75f, 0.95f),
-        emissionRate = 6f,
-        particleSpeed = 0.08f,
-        minSize = 0.025f,
-        maxSize = 0.05f,
-        glowBaseAlpha = 0.12f,
-        glowPulseAmplitude = 0.04f,
-        glowPulseSpeed = 2.1f
+        color = new Color(1f, 0.93f, 0.75f, 0.9f),
+        emissionRate = 5f,
+        particleSpeed = 0.07f,
+        minSize = 0.015f,
+        maxSize = 0.03f,
+        glowBaseAlpha = 0.11f,
+        glowPulseAmplitude = 0.03f,
+        glowPulseSpeed = 1.9f
     };
 
     [SerializeField] private AmbientStyle fireStyle = new AmbientStyle
     {
-        color = new Color(1f, 0.45f, 0.15f, 1f),
-        emissionRate = 11f,
-        particleSpeed = 0.14f,
-        minSize = 0.03f,
-        maxSize = 0.06f,
-        glowBaseAlpha = 0.22f,
-        glowPulseAmplitude = 0.08f,
-        glowPulseSpeed = 3.2f
+        color = new Color(1f, 0.5f, 0.2f, 0.95f),
+        emissionRate = 8f,
+        particleSpeed = 0.1f,
+        minSize = 0.016f,
+        maxSize = 0.032f,
+        glowBaseAlpha = 0.15f,
+        glowPulseAmplitude = 0.05f,
+        glowPulseSpeed = 2.4f
     };
 
     [SerializeField] private AmbientStyle frostStyle = new AmbientStyle
     {
-        color = new Color(0.45f, 0.84f, 1f, 1f),
-        emissionRate = 9f,
-        particleSpeed = 0.1f,
-        minSize = 0.028f,
-        maxSize = 0.055f,
-        glowBaseAlpha = 0.2f,
-        glowPulseAmplitude = 0.07f,
-        glowPulseSpeed = 2.6f
+        color = new Color(0.56f, 0.9f, 1f, 0.95f),
+        emissionRate = 7.2f,
+        particleSpeed = 0.085f,
+        minSize = 0.015f,
+        maxSize = 0.03f,
+        glowBaseAlpha = 0.14f,
+        glowPulseAmplitude = 0.045f,
+        glowPulseSpeed = 2.1f
     };
 
     [SerializeField] private AmbientStyle ironStyle = new AmbientStyle
     {
-        color = new Color(0.9f, 0.82f, 0.72f, 0.95f),
-        emissionRate = 7f,
-        particleSpeed = 0.09f,
-        minSize = 0.027f,
-        maxSize = 0.052f,
-        glowBaseAlpha = 0.16f,
-        glowPulseAmplitude = 0.05f,
-        glowPulseSpeed = 2.2f
+        color = new Color(0.93f, 0.85f, 0.74f, 0.9f),
+        emissionRate = 5.8f,
+        particleSpeed = 0.075f,
+        minSize = 0.015f,
+        maxSize = 0.029f,
+        glowBaseAlpha = 0.12f,
+        glowPulseAmplitude = 0.03f,
+        glowPulseSpeed = 1.95f
     };
 
     private ParticleSystemRenderer orbitRenderer;
@@ -97,8 +97,8 @@ public sealed class TowerAmbientVfxController : MonoBehaviour
     private int cachedLevel;
     private bool hasCachedState;
 
-    private const int OrbitSortingOffset = 1;
-    private const int AuraSortingOffset = 0;
+    private const int OrbitSortingOffset = 0;
+    private const int AuraSortingOffset = -1;
     private const int GlowSortingOffset = 0;
 
     private void Reset()
@@ -155,8 +155,8 @@ public sealed class TowerAmbientVfxController : MonoBehaviour
         cachedLevel = level;
         activeStyle = ResolveStyle(key);
 
-        ApplyParticleStyle(orbitParticles, activeStyle, level, 1f);
-        ApplyParticleStyle(auraParticles, activeStyle, level, 1.45f);
+        ApplyParticleStyle(orbitParticles, activeStyle, level, 1.05f);
+        ApplyParticleStyle(auraParticles, activeStyle, level, 1.35f);
         ApplyGlowImmediate();
         SyncSorting();
     }
