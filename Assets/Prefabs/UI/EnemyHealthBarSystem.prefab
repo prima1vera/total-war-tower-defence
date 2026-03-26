@@ -44,10 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8498ae5aa90534444b754b58b4aea8e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldCamera: {fileID: 0}
+  barsRoot: {fileID: 0}
+  barViewPrefab: {fileID: 526004700367021085, guid: 3b9f3d6a403844c4c9a76df42bbf63e6, type: 3}
   prewarmCount: 32
   visibleDuration: 1.15
-  barSize: {x: 52, y: 7}
   worldVerticalOffset: 0.35
-  backgroundColor: {r: 0, g: 0, b: 0, a: 0.55}
   fillColor: {r: 0.22, g: 0.9, b: 0.34, a: 1}
   lowHealthColor: {r: 1, g: 0.28, b: 0.2, a: 1}

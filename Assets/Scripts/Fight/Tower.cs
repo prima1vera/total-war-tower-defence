@@ -52,6 +52,8 @@ public class Tower : MonoBehaviour
 
     [Header("Ground Visual")]
     [SerializeField] private SpriteRenderer towerGroundRenderer;
+    [SerializeField, Tooltip("Optional animator on TowerGround child used for elemental ground loops.")]
+    private Animator towerGroundAnimator;
     [SerializeField] private Sprite baseGroundSprite;
     [SerializeField] private Sprite fireGroundSprite;
     [SerializeField] private Sprite frostGroundSprite;
@@ -108,6 +110,7 @@ public class Tower : MonoBehaviour
     {
         EnsureAnimator();
         EnsureSpriteRenderer();
+        EnsureGroundAnimator();
         CacheBaseScale();
         CacheSortingOffsets();
 
@@ -370,6 +373,14 @@ public class Tower : MonoBehaviour
             towerSpriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    private void EnsureGroundAnimator()
+    {
+        if (towerGroundAnimator != null || towerGroundRenderer == null)
+            return;
+
+        towerGroundAnimator = towerGroundRenderer.GetComponent<Animator>();
+    }
+
     private void InitializeDirectionalVisual()
     {
         EnsureSpriteRenderer();
@@ -428,6 +439,23 @@ public class Tower : MonoBehaviour
 
         if (targetGround != null)
             towerGroundRenderer.sprite = targetGround;
+
+        EnsureGroundAnimator();
+        if (towerGroundAnimator == null)
+            return;
+
+        bool shouldAnimateFireGround = key == TowerProjectilePoolKey.Fire;
+        if (shouldAnimateFireGround)
+        {
+            if (!towerGroundAnimator.enabled)
+                towerGroundAnimator.enabled = true;
+
+            towerGroundAnimator.Play(0, 0, 0f);
+            return;
+        }
+
+        if (towerGroundAnimator.enabled)
+            towerGroundAnimator.enabled = false;
     }
 
     private Sprite ResolveGroundSprite(TowerProjectilePoolKey key)
