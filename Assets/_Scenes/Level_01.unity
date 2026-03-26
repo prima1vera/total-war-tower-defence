@@ -13988,10 +13988,6 @@ PrefabInstance:
       propertyPath: worldCamera
       value: 
       objectReference: {fileID: 519420031}
-    - target: {fileID: 7772645064596684207, guid: c76406c6b23fc764f986b0eb29481d90, type: 3}
-      propertyPath: barViewPrefab
-      value: 
-      objectReference: {fileID: 526004700367021085, guid: 3b9f3d6a403844c4c9a76df42bbf63e6, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14524,14 +14520,6 @@ PrefabInstance:
       propertyPath: worldCamera
       value: 
       objectReference: {fileID: 519420031}
-    - target: {fileID: 7633134392594158301, guid: ab6ebedd5b045264bbfd922236b5473e, type: 3}
-      propertyPath: fadeStartsAt
-      value: 0.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 7633134392594158301, guid: ab6ebedd5b045264bbfd922236b5473e, type: 3}
-      propertyPath: numberViewPrefab
-      value: 
-      objectReference: {fileID: 3829122594723119654, guid: fd062a94f6f3f2c4b8db7b6cd46a7bd9, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14745,6 +14733,10 @@ PrefabInstance:
       propertyPath: towerBuildService
       value: 
       objectReference: {fileID: 8084696636833073137}
+    - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
+      propertyPath: persistCurrencyBalance
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedTowers.Array.size
       value: 0
@@ -15508,8 +15500,8 @@ SceneRoots:
   - {fileID: 2027626525}
   - {fileID: 7015172739317755151}
   - {fileID: 1697065124289000718}
-  - {fileID: 7710455733235501821}
   - {fileID: 1701719204}
   - {fileID: 784707230}
   - {fileID: 516926433}
+  - {fileID: 7710455733235501821}
   - {fileID: 1232880933}
