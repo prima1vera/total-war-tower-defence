@@ -6,10 +6,10 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CatapultSE_Override
+  m_Name: CatapultSE__Override
   m_Controller: {fileID: 9100000, guid: 6c09811e26f8e03469ca3b6ceff04e44, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: 399b32c9e24d463488f4b3ac736672e3, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: e51e6ad4acf64d5999ec705137774045, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 4c4b327916e90a644ba5a4aaaf1d1d6a, type: 2}
   - m_OriginalClip: {fileID: 7400000, guid: 5152102ddc6c18e42a159fc05a0a6449, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 32348a5d79344f22bb69a692cc80acfe, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b4cffd3a5ea852843a102fa0d45ff503, type: 2}
