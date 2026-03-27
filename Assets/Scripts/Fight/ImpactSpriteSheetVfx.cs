@@ -27,6 +27,10 @@ public class ImpactSpriteSheetVfx : MonoBehaviour
     private float spawnScaleMultiplier = 1f;
     private Color initialColor = Color.white;
     private bool hasFrames;
+    private int defaultSortingLayerId;
+    private int defaultSortingOrder;
+    private static int overlapSortingSeed;
+    private const int OverlapSortingVariants = 6;
 
     private void Awake()
     {
@@ -34,7 +38,11 @@ public class ImpactSpriteSheetVfx : MonoBehaviour
             spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (spriteRenderer != null)
+        {
             initialColor = spriteRenderer.color;
+            defaultSortingLayerId = spriteRenderer.sortingLayerID;
+            defaultSortingOrder = spriteRenderer.sortingOrder;
+        }
 
         RecalculateTimings();
     }
@@ -44,6 +52,7 @@ public class ImpactSpriteSheetVfx : MonoBehaviour
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
 
+        ApplyStableOverlapSorting();
         RecalculateTimings();
 
         timer = 0f;
@@ -63,7 +72,11 @@ public class ImpactSpriteSheetVfx : MonoBehaviour
     private void OnDisable()
     {
         if (spriteRenderer != null)
+        {
             spriteRenderer.color = initialColor;
+            spriteRenderer.sortingLayerID = defaultSortingLayerId;
+            spriteRenderer.sortingOrder = defaultSortingOrder;
+        }
     }
 
     private void Update()
@@ -128,5 +141,17 @@ public class ImpactSpriteSheetVfx : MonoBehaviour
             vfxPool.Release(gameObject);
         else
             Destroy(gameObject);
+    }
+
+    private void ApplyStableOverlapSorting()
+    {
+        if (spriteRenderer == null)
+            return;
+
+        int overlapOffset = overlapSortingSeed;
+        overlapSortingSeed = (overlapSortingSeed + 1) % OverlapSortingVariants;
+
+        spriteRenderer.sortingLayerID = defaultSortingLayerId;
+        spriteRenderer.sortingOrder = defaultSortingOrder + overlapOffset;
     }
 }

@@ -21,18 +21,35 @@ public class ImpactDecalVfx : MonoBehaviour
     private SpriteRenderer sr;
     private Color initialColor;
     private float spawnScaleMultiplier = 1f;
+    private int defaultSortingLayerId;
+    private int defaultSortingOrder;
+    private static int overlapSortingSeed;
+    private const int OverlapSortingVariants = 4;
 
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
         initialColor = sr.color;
+        defaultSortingLayerId = sr.sortingLayerID;
+        defaultSortingOrder = sr.sortingOrder;
     }
 
     private void OnEnable()
     {
         timer = 0f;
+        ApplyStableOverlapSorting();
         spawnScaleMultiplier = Mathf.Max(0.01f, transform.localScale.x);
         Apply(0f);
+    }
+
+    private void OnDisable()
+    {
+        if (sr == null)
+            return;
+
+        sr.sortingLayerID = defaultSortingLayerId;
+        sr.sortingOrder = defaultSortingOrder;
+        sr.color = initialColor;
     }
 
     private void Update()
@@ -59,5 +76,17 @@ public class ImpactDecalVfx : MonoBehaviour
         Color c = initialColor;
         c.a *= Mathf.Lerp(startAlpha, endAlpha, t);
         sr.color = c;
+    }
+
+    private void ApplyStableOverlapSorting()
+    {
+        if (sr == null)
+            return;
+
+        int overlapOffset = overlapSortingSeed;
+        overlapSortingSeed = (overlapSortingSeed + 1) % OverlapSortingVariants;
+
+        sr.sortingLayerID = defaultSortingLayerId;
+        sr.sortingOrder = defaultSortingOrder + overlapOffset;
     }
 }
