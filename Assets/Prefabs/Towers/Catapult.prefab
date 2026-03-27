@@ -41,6 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1551700000000000202}
   - component: {fileID: 1551700000000000203}
+  - component: {fileID: 1551700000000000204}
   m_Layer: 24
   m_Name: TowerGround
   m_TagString: Untagged
@@ -104,7 +105,7 @@ SpriteRenderer:
   m_SortingLayerID: -516203043
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 27ef9ad6a16d3cd4089fd483f3d91494, type: 3}
+  m_Sprite: {fileID: -1631914670, guid: 5c9791965e517e548b8e30eec7a2b601, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -115,6 +116,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &1551700000000000204
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551700000000000201}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f4dc1b7112e8476a8f9fc0f4a2e57f96, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7564746921312689987
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,6 +150,7 @@ GameObject:
   - component: {fileID: 1551700000000000001}
   - component: {fileID: 1551700000000000002}
   - component: {fileID: 1551700000000000003}
+  - component: {fileID: 1551700000000000004}
   m_Layer: 24
   m_Name: Catapult
   m_TagString: Tower
@@ -285,11 +308,11 @@ MonoBehaviour:
   shotDirectionLockSeconds: 0
   shotDirectionLockClipFraction: 0.9
   towerGroundRenderer: {fileID: 1551700000000000203}
-  towerGroundAnimator: {fileID: 0}
-  baseGroundSprite: {fileID: 21300000, guid: 27ef9ad6a16d3cd4089fd483f3d91494, type: 3}
-  fireGroundSprite: {fileID: 21300000, guid: 27ef9ad6a16d3cd4089fd483f3d91494, type: 3}
-  frostGroundSprite: {fileID: 21300000, guid: 27ef9ad6a16d3cd4089fd483f3d91494, type: 3}
-  ironGroundSprite: {fileID: 21300000, guid: 27ef9ad6a16d3cd4089fd483f3d91494, type: 3}
+  towerGroundAnimator: {fileID: 1551700000000000204}
+  baseGroundSprite: {fileID: -1631914670, guid: 5c9791965e517e548b8e30eec7a2b601, type: 3}
+  fireGroundSprite: {fileID: -1631914670, guid: 5c9791965e517e548b8e30eec7a2b601, type: 3}
+  frostGroundSprite: {fileID: -1631914670, guid: 5c9791965e517e548b8e30eec7a2b601, type: 3}
+  ironGroundSprite: {fileID: -1631914670, guid: 5c9791965e517e548b8e30eec7a2b601, type: 3}
   groundScaleMultiplier: 1
   levelScaleStep: 0.15
   minAnimationCycleSeconds: 0.08
@@ -314,3 +337,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1551700000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7564746921312689987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d6617ef9ab0deb4fb728a4288ed9f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tower: {fileID: 1551700000000000002}
+  archerTower: {fileID: 0}
+  archerEmitter: {fileID: 0}
+  upgradeTree: {fileID: 11400000, guid: 78e0f560f8604f8dbf62963e3260d5fb, type: 2}
+  startLevelOverride: 0
+  initializeOnAwake: 1

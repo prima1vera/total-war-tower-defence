@@ -448,8 +448,11 @@ public class Tower : MonoBehaviour
         if (towerGroundAnimator == null)
             return;
 
-        bool shouldAnimateFireGround = key == TowerProjectilePoolKey.Fire;
-        if (shouldAnimateFireGround)
+        bool shouldAnimateGround =
+            key == TowerProjectilePoolKey.Fire ||
+            key == TowerProjectilePoolKey.Catapult;
+
+        if (shouldAnimateGround)
         {
             if (!towerGroundAnimator.enabled)
                 towerGroundAnimator.enabled = true;
