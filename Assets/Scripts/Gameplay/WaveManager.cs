@@ -18,10 +18,14 @@ public class WaveManager : MonoBehaviour
     [Header("Wave Composition")]
     [Tooltip("If enabled, WaveManager chooses spawners by configured enemy family and weights. If disabled, uses simple round-robin.")]
     [SerializeField] private bool useWeightedEnemyComposition = true;
-    [Tooltip("Target share of ogre spawns in a wave (0 = no ogres, 1 = only ogres), if both families exist.")]
-    [SerializeField, Range(0f, 1f)] private float ogreSpawnShare = 0.14f;
+    [Tooltip("Target share of Ogre spawns in a wave. The remaining share goes to Small and DeathKnight families.")]
+    [SerializeField, Range(0f, 1f)] private float ogreSpawnShare = 0.12f;
+    [Tooltip("Target share of DeathKnight spawns in a wave. The remaining share goes to Small family.")]
+    [SerializeField, Range(0f, 1f)] private float deathKnightSpawnShare = 0.05f;
     [Tooltip("Global multiplier for all Ogre-family spawner weights. Lower this to reduce ogres.")]
     [SerializeField, Min(0f)] private float ogreWeightMultiplier = 0.35f;
+    [Tooltip("Global multiplier for all DeathKnight-family spawner weights. Lower this to make DK rarer.")]
+    [SerializeField, Min(0f)] private float deathKnightWeightMultiplier = 0.25f;
     [Tooltip("Global multiplier for all Small-family spawner weights. Raise this to get more small enemies.")]
     [SerializeField, Min(0f)] private float smallWeightMultiplier = 1.1f;
 
@@ -45,16 +49,20 @@ public class WaveManager : MonoBehaviour
     private float[] weightedAllCumulative = Array.Empty<float>();
     private EnemySpawner[] weightedOgreSpawners = Array.Empty<EnemySpawner>();
     private float[] weightedOgreCumulative = Array.Empty<float>();
+    private EnemySpawner[] weightedDeathKnightSpawners = Array.Empty<EnemySpawner>();
+    private float[] weightedDeathKnightCumulative = Array.Empty<float>();
     private EnemySpawner[] weightedSmallSpawners = Array.Empty<EnemySpawner>();
     private float[] weightedSmallCumulative = Array.Empty<float>();
 
     private int validSpawnerCount;
     private int weightedAllCount;
     private int weightedOgreCount;
+    private int weightedDeathKnightCount;
     private int weightedSmallCount;
 
     private float totalWeightAll;
     private float totalWeightOgre;
+    private float totalWeightDeathKnight;
     private float totalWeightSmall;
 
     private void Start()
@@ -115,16 +123,9 @@ public class WaveManager : MonoBehaviour
             return null;
         if (useWeightedEnemyComposition && totalWeightAll > 0f)
         {
-            bool hasBothFamilies = totalWeightOgre > 0f && totalWeightSmall > 0f;
-            if (hasBothFamilies)
-            {
-                bool spawnOgre = Random.value < Mathf.Clamp01(ogreSpawnShare);
-                EnemySpawner familyPick = spawnOgre
-                    ? PickWeightedSpawner(weightedOgreSpawners, weightedOgreCumulative, weightedOgreCount, totalWeightOgre)
-                    : PickWeightedSpawner(weightedSmallSpawners, weightedSmallCumulative, weightedSmallCount, totalWeightSmall);
-                if (familyPick != null)
-                    return familyPick;
-            }
+            EnemySpawner familyPick = TryPickFamilySpawnerByShare();
+            if (familyPick != null)
+                return familyPick;
 
             EnemySpawner anyPick = PickWeightedSpawner(weightedAllSpawners, weightedAllCumulative, weightedAllCount, totalWeightAll);
             if (anyPick != null)
@@ -134,14 +135,62 @@ public class WaveManager : MonoBehaviour
         return ResolveRoundRobinSpawner(index);
     }
 
+    private EnemySpawner TryPickFamilySpawnerByShare()
+    {
+        float smallShare = totalWeightSmall > 0f ? GetSmallSpawnShare() : 0f;
+        float ogreShare = totalWeightOgre > 0f ? Mathf.Clamp01(ogreSpawnShare) : 0f;
+        float deathKnightShare = totalWeightDeathKnight > 0f ? Mathf.Clamp01(deathKnightSpawnShare) : 0f;
+
+        float totalShare = smallShare + ogreShare + deathKnightShare;
+        if (totalShare <= 0f)
+        {
+            // If all configured shares are zero, fallback to family weight proportions.
+            smallShare = totalWeightSmall;
+            ogreShare = totalWeightOgre;
+            deathKnightShare = totalWeightDeathKnight;
+            totalShare = smallShare + ogreShare + deathKnightShare;
+            if (totalShare <= 0f)
+                return null;
+        }
+
+        float pick = Random.value * totalShare;
+
+        if (smallShare > 0f)
+        {
+            if (pick <= smallShare)
+                return PickWeightedSpawner(weightedSmallSpawners, weightedSmallCumulative, weightedSmallCount, totalWeightSmall);
+            pick -= smallShare;
+        }
+
+        if (ogreShare > 0f)
+        {
+            if (pick <= ogreShare)
+                return PickWeightedSpawner(weightedOgreSpawners, weightedOgreCumulative, weightedOgreCount, totalWeightOgre);
+            pick -= ogreShare;
+        }
+
+        if (deathKnightShare > 0f)
+            return PickWeightedSpawner(weightedDeathKnightSpawners, weightedDeathKnightCumulative, weightedDeathKnightCount, totalWeightDeathKnight);
+
+        return null;
+    }
+
+    private float GetSmallSpawnShare()
+    {
+        return Mathf.Clamp01(1f - Mathf.Clamp01(ogreSpawnShare) - Mathf.Clamp01(deathKnightSpawnShare));
+    }
+
     private float GetEffectiveSpawnWeight(EnemySpawner spawner)
     {
         if (spawner == null)
             return 0f;
 
-        float familyMultiplier = spawner.IsOgreSpawner
-            ? Mathf.Max(0f, ogreWeightMultiplier)
-            : Mathf.Max(0f, smallWeightMultiplier);
+        float familyMultiplier = spawner.ResolvedEnemyFamily switch
+        {
+            EnemySpawner.EnemyFamily.Ogre => Mathf.Max(0f, ogreWeightMultiplier),
+            EnemySpawner.EnemyFamily.DeathKnight => Mathf.Max(0f, deathKnightWeightMultiplier),
+            _ => Mathf.Max(0f, smallWeightMultiplier)
+        };
 
         return spawner.WaveSpawnWeight * familyMultiplier;
     }
@@ -175,9 +224,11 @@ public class WaveManager : MonoBehaviour
         validSpawnerCount = 0;
         weightedAllCount = 0;
         weightedOgreCount = 0;
+        weightedDeathKnightCount = 0;
         weightedSmallCount = 0;
         totalWeightAll = 0f;
         totalWeightOgre = 0f;
+        totalWeightDeathKnight = 0f;
         totalWeightSmall = 0f;
 
         if (controlledSpawners == null || controlledSpawners.Length == 0)
@@ -202,19 +253,28 @@ public class WaveManager : MonoBehaviour
             weightedAllCumulative[weightedAllCount] = totalWeightAll;
             weightedAllCount++;
 
-            if (candidate.IsOgreSpawner)
+            switch (candidate.ResolvedEnemyFamily)
             {
-                totalWeightOgre += weight;
-                weightedOgreSpawners[weightedOgreCount] = candidate;
-                weightedOgreCumulative[weightedOgreCount] = totalWeightOgre;
-                weightedOgreCount++;
-            }
-            else
-            {
-                totalWeightSmall += weight;
-                weightedSmallSpawners[weightedSmallCount] = candidate;
-                weightedSmallCumulative[weightedSmallCount] = totalWeightSmall;
-                weightedSmallCount++;
+                case EnemySpawner.EnemyFamily.Ogre:
+                    totalWeightOgre += weight;
+                    weightedOgreSpawners[weightedOgreCount] = candidate;
+                    weightedOgreCumulative[weightedOgreCount] = totalWeightOgre;
+                    weightedOgreCount++;
+                    break;
+
+                case EnemySpawner.EnemyFamily.DeathKnight:
+                    totalWeightDeathKnight += weight;
+                    weightedDeathKnightSpawners[weightedDeathKnightCount] = candidate;
+                    weightedDeathKnightCumulative[weightedDeathKnightCount] = totalWeightDeathKnight;
+                    weightedDeathKnightCount++;
+                    break;
+
+                default:
+                    totalWeightSmall += weight;
+                    weightedSmallSpawners[weightedSmallCount] = candidate;
+                    weightedSmallCumulative[weightedSmallCount] = totalWeightSmall;
+                    weightedSmallCount++;
+                    break;
             }
         }
     }
@@ -229,6 +289,8 @@ public class WaveManager : MonoBehaviour
         weightedAllCumulative = new float[capacity];
         weightedOgreSpawners = new EnemySpawner[capacity];
         weightedOgreCumulative = new float[capacity];
+        weightedDeathKnightSpawners = new EnemySpawner[capacity];
+        weightedDeathKnightCumulative = new float[capacity];
         weightedSmallSpawners = new EnemySpawner[capacity];
         weightedSmallCumulative = new float[capacity];
     }
@@ -244,9 +306,28 @@ public class WaveManager : MonoBehaviour
 
     public void ApplySpawnCompositionTuning(bool weightedComposition, float ogreShareValue, float ogreWeightValue, float smallWeightValue)
     {
+        ApplySpawnCompositionTuning(
+            weightedComposition,
+            ogreShareValue,
+            deathKnightSpawnShare,
+            ogreWeightValue,
+            deathKnightWeightMultiplier,
+            smallWeightValue);
+    }
+
+    public void ApplySpawnCompositionTuning(
+        bool weightedComposition,
+        float ogreShareValue,
+        float deathKnightShareValue,
+        float ogreWeightValue,
+        float deathKnightWeightValue,
+        float smallWeightValue)
+    {
         useWeightedEnemyComposition = weightedComposition;
         ogreSpawnShare = Mathf.Clamp01(ogreShareValue);
+        deathKnightSpawnShare = Mathf.Clamp01(deathKnightShareValue);
         ogreWeightMultiplier = Mathf.Max(0f, ogreWeightValue);
+        deathKnightWeightMultiplier = Mathf.Max(0f, deathKnightWeightValue);
         smallWeightMultiplier = Mathf.Max(0f, smallWeightValue);
         RebuildSpawnerCache();
     }

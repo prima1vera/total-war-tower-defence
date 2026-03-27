@@ -52,8 +52,10 @@ public sealed class PerformanceProfileController : MonoBehaviour
 
         int targetFrameRate = 60;
         bool weightedComposition = true;
-        float ogreShare = 0.16f;
+        float ogreShare = 0.14f;
+        float deathKnightShare = 0.05f;
         float ogreWeight = 0.40f;
+        float deathKnightWeight = 0.25f;
         float smallWeight = 1f;
         ProfileBloodPreset bloodPreset = ProfileBloodPreset.Cinematic;
 
@@ -62,23 +64,29 @@ public sealed class PerformanceProfileController : MonoBehaviour
             case PerformanceProfile.MobileLow:
                 targetFrameRate = 45;
                 ogreShare = 0.10f;
+                deathKnightShare = 0.03f;
                 ogreWeight = 0.30f;
+                deathKnightWeight = 0.18f;
                 smallWeight = 1.15f;
                 bloodPreset = ProfileBloodPreset.Light;
                 break;
 
             case PerformanceProfile.MobileMid:
                 targetFrameRate = 60;
-                ogreShare = 0.16f;
+                ogreShare = 0.14f;
+                deathKnightShare = 0.05f;
                 ogreWeight = 0.40f;
+                deathKnightWeight = 0.25f;
                 smallWeight = 1f;
                 bloodPreset = ProfileBloodPreset.Cinematic;
                 break;
 
             case PerformanceProfile.PC:
                 targetFrameRate = 120;
-                ogreShare = 0.22f;
+                ogreShare = 0.20f;
+                deathKnightShare = 0.09f;
                 ogreWeight = 0.55f;
+                deathKnightWeight = 0.38f;
                 smallWeight = 1f;
                 bloodPreset = ProfileBloodPreset.Gore;
                 break;
@@ -91,7 +99,13 @@ public sealed class PerformanceProfileController : MonoBehaviour
         Application.targetFrameRate = targetFrameRate;
 
         if (waveManager != null)
-            waveManager.ApplySpawnCompositionTuning(weightedComposition, ogreShare, ogreWeight, smallWeight);
+            waveManager.ApplySpawnCompositionTuning(
+                weightedComposition,
+                ogreShare,
+                deathKnightShare,
+                ogreWeight,
+                deathKnightWeight,
+                smallWeight);
 
         if (enemyDeathVisualManager != null)
             ApplyBloodPreset(enemyDeathVisualManager, bloodPreset);
