@@ -150,7 +150,7 @@ MonoBehaviour:
   maxPierce: 1
   impactRadius: 0.95
   impactRadiusScaleWeight: 1
-  impactVfxScaleWeight: 1
+  impactVfxScaleWeight: 1.35
   unitLayer:
     serializedVersion: 2
     m_Bits: 2097152
@@ -169,9 +169,9 @@ MonoBehaviour:
   flightSortingOrderOffset: 2
   embeddedOnTargetSortingOrderOffset: 1
   embeddedGroundSortingOrderOffset: 0
-  dustPrefab: {fileID: 2408689374836223538, guid: b92c8a1c6a875fd409b91b1ef31a322b, type: 3}
-  impactWavePrefab: {fileID: 0}
-  impactDecalPrefab: {fileID: 0}
+  dustPrefab: {fileID: 2408689374836223538, guid: a7f71f2fd0a64b8f968e3cd2aa445cea, type: 3}
+  impactWavePrefab: {fileID: 8258618614109444040, guid: a87d5f8172fd4a79acc43b768d1053bf, type: 3}
+  impactDecalPrefab: {fileID: 7112480770416523166, guid: 7a61f8bb1e0b4fd4bb4102033d5beaf7, type: 3}
   spawnBloodOnDirectHit: 0
   directHitBloodFollowDuration: 0.45
   directHitBloodUseLocalSimulation: 1

@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -108,7 +108,28 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: CatapultBombGroundImpact_164_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 74.4
+        height: 53
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46f285990d11c6d42ac711f8e2440c85
+      internalID: 1430429552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -119,7 +140,17 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      CatapultBombGroundImpact_164_0: 251718008
+      CatapultBombGroundImpact_164_1: 1390515233
+      CatapultBombGroundImpact_164_2: -797568226
+      CatapultBombGroundImpact_164_3: 867739276
+      CatapultBombGroundImpact_164_4: 1590482581
+      CatapultBombGroundImpact_164_5: 1430429552
+      CatapultBombGroundImpact_164_6: -715693428
+      CatapultBombGroundImpact_164_7: 501939552
+      CatapultBombGroundImpact_164_8: 276706935
+      CatapultBombGroundImpact_164_9: 1915836125
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

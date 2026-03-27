@@ -1,0 +1,589 @@
+fileFormatVersion: 2
+guid: 80fed3201c52f464ab9cdf2bcd27bc44
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_0
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 204.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc9ca0207b5db3a44aa2eb172bb9bb8f
+      internalID: -24770691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_1
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 204.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05314addcb1bbf44f82c790dc71e2923
+      internalID: 1366645867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_2
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 204.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfceb9498f11ac6479cb6a0d9debda39
+      internalID: 432886853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_3
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 204.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1edbf9e3f0112d45a65f5121d5be482
+      internalID: 1032547861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_4
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 204.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94c13eb5f49bdd94bbd55682b242e436
+      internalID: 834065502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 153.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc0d5ed41fc4e4849be11539843efae9
+      internalID: -504633531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_6
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 153.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d98630ad5e295947a84b63689df91ce
+      internalID: -1841215634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_7
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 153.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15db11960cf1f284a9b0709ef1f9247a
+      internalID: -442946088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_8
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 153.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e57adff73cf9c0c498fa708655a71927
+      internalID: -2064124163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_9
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 153.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65d0620282a71ec408b7c55bc67b6d71
+      internalID: 1615390474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_10
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 153.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0066cd707c83b043b18c8de96bb2d54
+      internalID: 121952855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 102.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e83fa9b576657241859e0a4776b61e3
+      internalID: -189752665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_12
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 102.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f45c39d69477a7648821b6319406ea23
+      internalID: -1187236853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_13
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 102.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 929c66a0c57ee28428fffe75a3e4e228
+      internalID: -767968143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_14
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 102.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0ff638a25e87e54aa89f01c55ac064b
+      internalID: 349242820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_15
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 102.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f360f3619df83d40b87d87c7e842f2d
+      internalID: 666373825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_16
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 102.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a7b8f3fb0b43e64e9ef077b4122e1fc
+      internalID: 1621015490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 51.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da2306a9e04538442957dd345f50f96c
+      internalID: 1913743488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_18
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 51.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e559032a42dfebf47948f094b36b059f
+      internalID: 642848434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_19
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 51.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58364e473569346438b9c0749e67a406
+      internalID: -2064903876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Effect_Catapult_Bomb_Explosion_first_20
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 51.8
+        width: 51.166668
+        height: 51.2
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f61326b55bf442c439834ca95593308f
+      internalID: -1284516996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Effect_Catapult_Bomb_Explosion_first_0: -24770691
+      Effect_Catapult_Bomb_Explosion_first_1: 1366645867
+      Effect_Catapult_Bomb_Explosion_first_10: 121952855
+      Effect_Catapult_Bomb_Explosion_first_11: -189752665
+      Effect_Catapult_Bomb_Explosion_first_12: -1187236853
+      Effect_Catapult_Bomb_Explosion_first_13: -767968143
+      Effect_Catapult_Bomb_Explosion_first_14: 349242820
+      Effect_Catapult_Bomb_Explosion_first_15: 666373825
+      Effect_Catapult_Bomb_Explosion_first_16: 1621015490
+      Effect_Catapult_Bomb_Explosion_first_17: 1913743488
+      Effect_Catapult_Bomb_Explosion_first_18: 642848434
+      Effect_Catapult_Bomb_Explosion_first_19: -2064903876
+      Effect_Catapult_Bomb_Explosion_first_2: 432886853
+      Effect_Catapult_Bomb_Explosion_first_20: -1284516996
+      Effect_Catapult_Bomb_Explosion_first_3: 1032547861
+      Effect_Catapult_Bomb_Explosion_first_4: 834065502
+      Effect_Catapult_Bomb_Explosion_first_5: -504633531
+      Effect_Catapult_Bomb_Explosion_first_6: -1841215634
+      Effect_Catapult_Bomb_Explosion_first_7: -442946088
+      Effect_Catapult_Bomb_Explosion_first_8: -2064124163
+      Effect_Catapult_Bomb_Explosion_first_9: 1615390474
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
