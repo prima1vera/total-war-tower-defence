@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8e13854a27f53244dbb03508ba462837
+guid: 446426e250ccaf64390ea56b47dd37d7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: catapult_throw_spritesheet_128_SE_0
+      name: catapult_open_art_SE_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 142.33333
-        height: 128
+        width: 116
+        height: 195
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 812598e58f932c14b8a5a1c0c3df158a
-      internalID: -1284525965
+      spriteID: b7215f202f8f7ae4d998f4253f4ed55d
+      internalID: 1927926935
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: catapult_throw_spritesheet_128_SE_1
+      name: catapult_open_art_SE_1
       rect:
         serializedVersion: 2
-        x: 142
+        x: 116
         y: 0
-        width: 142.33333
-        height: 128
+        width: 116
+        height: 195
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,20 +145,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ebc751d35f232eb4ab4ade491707c2c5
-      internalID: -445818792
+      spriteID: be6d87508fe8cb544b9f706289f18bbf
+      internalID: -1610650101
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: catapult_throw_spritesheet_128_SE_2
+      name: catapult_open_art_SE_2
       rect:
         serializedVersion: 2
-        x: 284
+        x: 232
         y: 0
-        width: 142.33333
-        height: 128
+        width: 116
+        height: 195
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,8 +166,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c98b22bc433f89d4894ee98ff77acffb
-      internalID: 1196937119
+      spriteID: 8fe19307fa16b7849884d1efd68260ff
+      internalID: 1941867703
       vertices: []
       indices: 
       edges: []
@@ -183,9 +183,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      catapult_throw_spritesheet_128_SE_0: -1284525965
-      catapult_throw_spritesheet_128_SE_1: -445818792
-      catapult_throw_spritesheet_128_SE_2: 1196937119
+      catapult_open_art_SE_0: 1927926935
+      catapult_open_art_SE_1: -1610650101
+      catapult_open_art_SE_2: 1941867703
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

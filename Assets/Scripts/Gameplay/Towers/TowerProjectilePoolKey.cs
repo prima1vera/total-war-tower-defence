@@ -4,5 +4,6 @@ public enum TowerProjectilePoolKey
     Fire = 1,
     Frost = 2,
     Iron = 3,
-    Archer = 4
+    Archer = 4,
+    Catapult = 5
 }

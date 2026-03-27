@@ -15,6 +15,8 @@ public class Tower : MonoBehaviour
     [SerializeField, Min(0f), Tooltip("New target must be closer by at least this distance to force target switch after hold window.")]
     private float targetSwitchDistanceBias = 0.25f;
     [SerializeField] private SpriteRenderer towerSpriteRenderer;
+    [SerializeField, Tooltip("Projectile pool family used before any evolution profile is applied.")]
+    private TowerProjectilePoolKey defaultProjectilePoolKey = TowerProjectilePoolKey.Base;
 
     [Header("Directional Visual")]
     [SerializeField, Tooltip("Enable directional sprite switching based on target aim.")]
@@ -103,6 +105,7 @@ public class Tower : MonoBehaviour
     public float FireRate => Mathf.Max(0.05f, fireRate);
     public int CurrentVisualLevel => currentVisualLevel;
     public TowerProjectilePoolKey CurrentProjectilePoolKey => currentProjectilePoolKey;
+    public TowerProjectilePoolKey DefaultProjectilePoolKey => defaultProjectilePoolKey;
     public SpriteRenderer TowerSpriteRenderer => towerSpriteRenderer;
     public SpriteRenderer TowerGroundRenderer => towerGroundRenderer;
 
@@ -113,6 +116,7 @@ public class Tower : MonoBehaviour
         EnsureGroundAnimator();
         CacheBaseScale();
         CacheSortingOffsets();
+        currentProjectilePoolKey = defaultProjectilePoolKey;
 
         isAuthoringValid = ValidateAuthoring();
         if (!isAuthoringValid)

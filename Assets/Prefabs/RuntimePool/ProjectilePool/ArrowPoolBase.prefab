@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8122513334462301386}
   - component: {fileID: 7358018726447226814}
   m_Layer: 0
-  m_Name: ArrowPoolNormal
+  m_Name: ArrowPoolBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
