@@ -103,6 +103,7 @@ public static class TowerAuthoringValidator
 
         HashSet<TowerProjectilePoolKey> usedPoolKeys = CollectUsedPoolKeys();
         MergeSceneArcherPoolKeys(usedPoolKeys);
+        MergeSceneTowerDefaultPoolKeys(usedPoolKeys);
         ValidateRegistryCoverage(registry, usedPoolKeys, ref errors);
 
         for (int i = 0; i < towers.Length; i++)
@@ -129,6 +130,7 @@ public static class TowerAuthoringValidator
         ArrowPool frostPool = GetPoolProperty(so, "frostPool");
         ArrowPool ironPool = GetPoolProperty(so, "ironPool");
         ArrowPool archerPool = GetPoolProperty(so, "archerPool");
+        ArrowPool catapultPool = GetPoolProperty(so, "catapultPool");
 
         if (basePool == null)
             LogError(registry, ref errors, "TowerProjectilePoolRegistry.basePool is not assigned.");
@@ -138,6 +140,7 @@ public static class TowerAuthoringValidator
         ValidatePoolReference(frostPool, registry, "frostPool", ref errors);
         ValidatePoolReference(ironPool, registry, "ironPool", ref errors);
         ValidatePoolReference(archerPool, registry, "archerPool", ref errors);
+        ValidatePoolReference(catapultPool, registry, "catapultPool", ref errors);
 
         if (firePool == null)
             LogWarning(registry, ref warnings, "firePool is empty, Fire towers will fallback to basePool.");
@@ -150,6 +153,9 @@ public static class TowerAuthoringValidator
 
         if (archerPool == null)
             LogWarning(registry, ref warnings, "archerPool is empty, Archer towers will fallback to basePool.");
+
+        if (catapultPool == null)
+            LogWarning(registry, ref warnings, "catapultPool is empty, Catapult towers will fallback to basePool.");
     }
 
     private static void ValidateRegistryCoverage(TowerProjectilePoolRegistry registry, HashSet<TowerProjectilePoolKey> usedPoolKeys, ref int errors)
@@ -163,10 +169,11 @@ public static class TowerAuthoringValidator
         ArrowPool frostPool = GetPoolProperty(so, "frostPool");
         ArrowPool ironPool = GetPoolProperty(so, "ironPool");
         ArrowPool archerPool = GetPoolProperty(so, "archerPool");
+        ArrowPool catapultPool = GetPoolProperty(so, "catapultPool");
 
         foreach (TowerProjectilePoolKey key in usedPoolKeys)
         {
-            bool hasCoverage = HasEffectivePoolCoverage(key, basePool, firePool, frostPool, ironPool, archerPool);
+            bool hasCoverage = HasEffectivePoolCoverage(key, basePool, firePool, frostPool, ironPool, archerPool, catapultPool);
             if (!hasCoverage)
                 LogError(registry, ref errors, $"No effective scene pool coverage for key '{key}'. Assign specific pool or basePool.");
         }
@@ -203,7 +210,8 @@ public static class TowerAuthoringValidator
         ArrowPool firePool,
         ArrowPool frostPool,
         ArrowPool ironPool,
-        ArrowPool archerPool)
+        ArrowPool archerPool,
+        ArrowPool catapultPool)
     {
         switch (key)
         {
@@ -215,6 +223,8 @@ public static class TowerAuthoringValidator
                 return ironPool != null || basePool != null;
             case TowerProjectilePoolKey.Archer:
                 return archerPool != null || basePool != null;
+            case TowerProjectilePoolKey.Catapult:
+                return catapultPool != null || basePool != null;
             default:
                 return basePool != null;
         }
@@ -231,6 +241,28 @@ public static class TowerAuthoringValidator
 
             SerializedObject serializedEmitter = new SerializedObject(emitter);
             SerializedProperty keyProperty = serializedEmitter.FindProperty("projectilePoolKey");
+            if (keyProperty == null)
+                continue;
+
+            int enumValue = keyProperty.enumValueIndex;
+            if (enumValue < 0 || enumValue >= Enum.GetValues(typeof(TowerProjectilePoolKey)).Length)
+                continue;
+
+            used.Add((TowerProjectilePoolKey)enumValue);
+        }
+    }
+
+    private static void MergeSceneTowerDefaultPoolKeys(HashSet<TowerProjectilePoolKey> used)
+    {
+        Tower[] towers = UnityEngine.Object.FindObjectsByType<Tower>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < towers.Length; i++)
+        {
+            Tower tower = towers[i];
+            if (tower == null)
+                continue;
+
+            SerializedObject serializedTower = new SerializedObject(tower);
+            SerializedProperty keyProperty = serializedTower.FindProperty("defaultProjectilePoolKey");
             if (keyProperty == null)
                 continue;
 

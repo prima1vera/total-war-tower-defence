@@ -174,6 +174,7 @@ public class Arrow : MonoBehaviour
     private bool hasAppliedFlightSorting;
     private int lastFlightSortingLayerId;
     private int lastFlightSortingOrder;
+    private bool pendingTrailEmission;
 
     private static int directHitGroundBloodCounter;
     private static int nextDirectHitGroundBloodThreshold = -1;
@@ -190,6 +191,16 @@ public class Arrow : MonoBehaviour
 
         int bufferSize = Mathf.Max(8, maxHitColliders);
         hitBuffer = new Collider2D[bufferSize];
+    }
+
+    private void OnEnable()
+    {
+        ResetTrailForSpawn();
+    }
+
+    private void OnDisable()
+    {
+        ResetTrailForRelease();
     }
 
     public void SetPool(ArrowPool pool) => ownerPool = pool;
@@ -239,6 +250,7 @@ public class Arrow : MonoBehaviour
         cachedTravelTime = Mathf.Lerp(minTravelTime, maxTravelTime, time01);
         cachedTravelTime = Mathf.Max(0.01f, cachedTravelTime);
 
+        ResetTrailForSpawn();
         ApplyFlightSorting(0f);
     }
 
@@ -258,6 +270,7 @@ public class Arrow : MonoBehaviour
 
         Vector2 currentPos = EvaluatePosition(t);
         cachedTransform.position = currentPos;
+        EnableTrailAfterFirstStep();
         ApplyFlightSorting(t);
 
         UpdateRotation(t, currentPos);
@@ -393,6 +406,7 @@ public class Arrow : MonoBehaviour
             return;
 
         hasImpacted = true;
+        ResetTrailForRelease();
 
         Vector3 impactPosition = reachedPierceTarget ? lastDirectHitPoint : cachedTransform.position;
         UnitHealth hitTarget = reachedPierceTarget ? lastDirectHitTarget : null;
@@ -943,6 +957,36 @@ public class Arrow : MonoBehaviour
     private static int ResolveSortingOrder(float worldY, int offset)
     {
         return Mathf.RoundToInt(-worldY * SortingOrderYMultiplier) + offset;
+    }
+
+    private void ResetTrailForSpawn()
+    {
+        if (cachedTrailRenderer == null)
+            return;
+
+        cachedTrailRenderer.Clear();
+        cachedTrailRenderer.emitting = false;
+        pendingTrailEmission = true;
+    }
+
+    private void ResetTrailForRelease()
+    {
+        if (cachedTrailRenderer == null)
+            return;
+
+        cachedTrailRenderer.emitting = false;
+        cachedTrailRenderer.Clear();
+        pendingTrailEmission = false;
+    }
+
+    private void EnableTrailAfterFirstStep()
+    {
+        if (!pendingTrailEmission || cachedTrailRenderer == null)
+            return;
+
+        cachedTrailRenderer.Clear();
+        cachedTrailRenderer.emitting = true;
+        pendingTrailEmission = false;
     }
 
     private float GetImpactVfxScaleMultiplier()

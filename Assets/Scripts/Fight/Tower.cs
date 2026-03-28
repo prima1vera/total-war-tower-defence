@@ -15,6 +15,8 @@ public class Tower : MonoBehaviour
     [SerializeField, Min(0f), Tooltip("New target must be closer by at least this distance to force target switch after hold window.")]
     private float targetSwitchDistanceBias = 0.25f;
     [SerializeField] private SpriteRenderer towerSpriteRenderer;
+    [SerializeField, Tooltip("Projectile pool family used before any evolution profile is applied.")]
+    private TowerProjectilePoolKey defaultProjectilePoolKey = TowerProjectilePoolKey.Base;
 
     [Header("Directional Visual")]
     [SerializeField, Tooltip("Enable directional sprite switching based on target aim.")]
@@ -52,6 +54,8 @@ public class Tower : MonoBehaviour
 
     [Header("Ground Visual")]
     [SerializeField] private SpriteRenderer towerGroundRenderer;
+    [SerializeField, Tooltip("Optional animator on TowerGround child used for elemental ground loops.")]
+    private Animator towerGroundAnimator;
     [SerializeField] private Sprite baseGroundSprite;
     [SerializeField] private Sprite fireGroundSprite;
     [SerializeField] private Sprite frostGroundSprite;
@@ -88,7 +92,9 @@ public class Tower : MonoBehaviour
     private int cachedTopSortingOffset = 1;
     private int cachedGroundSortingOffset = 0;
 
-    private const float TopDownSortingPrecision = 1000f;
+    private const float TopDownSortingPrecision = 100f;
+    private const string SortingLayerUnitsAlive = "Units_Alive";
+    private const string SortingLayerGroundVfx = "GroundVFX";
     private const int DefaultTopSortingOffset = 1;
     private const int DefaultGroundSortingOffset = 0;
 
@@ -99,6 +105,7 @@ public class Tower : MonoBehaviour
     public float FireRate => Mathf.Max(0.05f, fireRate);
     public int CurrentVisualLevel => currentVisualLevel;
     public TowerProjectilePoolKey CurrentProjectilePoolKey => currentProjectilePoolKey;
+    public TowerProjectilePoolKey DefaultProjectilePoolKey => defaultProjectilePoolKey;
     public SpriteRenderer TowerSpriteRenderer => towerSpriteRenderer;
     public SpriteRenderer TowerGroundRenderer => towerGroundRenderer;
 
@@ -106,8 +113,10 @@ public class Tower : MonoBehaviour
     {
         EnsureAnimator();
         EnsureSpriteRenderer();
+        EnsureGroundAnimator();
         CacheBaseScale();
         CacheSortingOffsets();
+        currentProjectilePoolKey = defaultProjectilePoolKey;
 
         isAuthoringValid = ValidateAuthoring();
         if (!isAuthoringValid)
@@ -368,6 +377,14 @@ public class Tower : MonoBehaviour
             towerSpriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    private void EnsureGroundAnimator()
+    {
+        if (towerGroundAnimator != null || towerGroundRenderer == null)
+            return;
+
+        towerGroundAnimator = towerGroundRenderer.GetComponent<Animator>();
+    }
+
     private void InitializeDirectionalVisual()
     {
         EnsureSpriteRenderer();
@@ -426,6 +443,26 @@ public class Tower : MonoBehaviour
 
         if (targetGround != null)
             towerGroundRenderer.sprite = targetGround;
+
+        EnsureGroundAnimator();
+        if (towerGroundAnimator == null)
+            return;
+
+        bool shouldAnimateGround =
+            key == TowerProjectilePoolKey.Fire ||
+            key == TowerProjectilePoolKey.Catapult;
+
+        if (shouldAnimateGround)
+        {
+            if (!towerGroundAnimator.enabled)
+                towerGroundAnimator.enabled = true;
+
+            towerGroundAnimator.Play(0, 0, 0f);
+            return;
+        }
+
+        if (towerGroundAnimator.enabled)
+            towerGroundAnimator.enabled = false;
     }
 
     private Sprite ResolveGroundSprite(TowerProjectilePoolKey key)
@@ -507,10 +544,17 @@ public class Tower : MonoBehaviour
             topOffset = groundOffset + 1;
 
         if (towerGroundRenderer != null)
+        {
+            // Ground aura/decal should stay below living units for clean readability near paths.
+            towerGroundRenderer.sortingLayerName = SortingLayerGroundVfx;
             towerGroundRenderer.sortingOrder = baseOrder + groundOffset;
+        }
 
         if (towerSpriteRenderer != null)
+        {
+            towerSpriteRenderer.sortingLayerName = SortingLayerUnitsAlive;
             towerSpriteRenderer.sortingOrder = baseOrder + topOffset;
+        }
     }
 
     private void CacheFireClipLength()

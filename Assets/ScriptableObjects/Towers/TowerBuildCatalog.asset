@@ -23,3 +23,8 @@ MonoBehaviour:
     Cost: 10
     TowerPrefab: {fileID: -996197128515256663, guid: 35730657c26958840b842ba380d2c200, type: 3}
     IsEnabled: 1
+  - OptionId: tower_catapult
+    DisplayName: Catapult
+    Cost: 15
+    TowerPrefab: {fileID: 1551700000000000004, guid: 3f56e45c94e482c43bcf8fb07c45c16f, type: 3}
+    IsEnabled: 1

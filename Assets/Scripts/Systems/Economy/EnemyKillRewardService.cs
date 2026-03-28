@@ -12,6 +12,8 @@ public sealed class EnemyKillRewardService : MonoBehaviour
     private int smallEnemyKillReward = 2;
     [SerializeField, Min(0), Tooltip("Kill reward for enemies resolved as Ogre family.")]
     private int ogreEnemyKillReward = 8;
+    [SerializeField, Min(0), Tooltip("Kill reward for enemies resolved as DeathKnight family.")]
+    private int deathKnightEnemyKillReward = 12;
     [SerializeField, Min(0), Tooltip("Used only if family cannot be resolved from spawn data.")]
     private int fallbackKillReward = 2;
 
@@ -72,6 +74,7 @@ public sealed class EnemyKillRewardService : MonoBehaviour
         return enemyFamily switch
         {
             EnemySpawner.EnemyFamily.Ogre => Mathf.Max(0, ogreEnemyKillReward),
+            EnemySpawner.EnemyFamily.DeathKnight => Mathf.Max(0, deathKnightEnemyKillReward),
             EnemySpawner.EnemyFamily.Small => Mathf.Max(0, smallEnemyKillReward),
             _ => Mathf.Max(0, fallbackKillReward)
         };

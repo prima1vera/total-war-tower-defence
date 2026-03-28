@@ -37,6 +37,12 @@ public sealed class ArcherTowerLevelVisualController : MonoBehaviour
     private int frameIndex;
     private float frameTimer;
     private int currentAppliedSlotCount = 1;
+    private bool sortingOffsetsCached;
+    private int bodySortingOffset = 0;
+    private int[] archerSortingOffsets = Array.Empty<int>();
+
+    private const float TopDownSortingPrecision = 100f;
+    private const string SortingLayerUnitsAlive = "Units_Alive";
 
     private void Awake()
     {
@@ -51,7 +57,9 @@ public sealed class ArcherTowerLevelVisualController : MonoBehaviour
             return;
 
         archerTower.VisualLevelChanged += HandleVisualLevelChanged;
+        CacheSortingOffsets();
         ApplyLevel(archerTower.VisualLevel);
+        SyncSortingOrders();
     }
 
     private void OnDisable()
@@ -66,6 +74,14 @@ public sealed class ArcherTowerLevelVisualController : MonoBehaviour
             return;
 
         AdvanceBodyAnimation(Time.deltaTime);
+    }
+
+    private void LateUpdate()
+    {
+        if (!isWired)
+            return;
+
+        SyncSortingOrders();
     }
 
     private bool ValidateWiring()
@@ -223,5 +239,65 @@ public sealed class ArcherTowerLevelVisualController : MonoBehaviour
 
         int safeIndex = Mathf.Clamp(frameIndex, 0, activeFrames.Length - 1);
         towerBodyRenderer.sprite = activeFrames[safeIndex];
+    }
+
+    private void CacheSortingOffsets()
+    {
+        if (sortingOffsetsCached)
+            return;
+
+        if (towerBodyRenderer != null)
+            bodySortingOffset = towerBodyRenderer.sortingOrder;
+
+        int slotCount = archerSlots == null ? 0 : archerSlots.Length;
+        if (slotCount > 0)
+        {
+            archerSortingOffsets = new int[slotCount];
+            for (int i = 0; i < archerSlots.Length; i++)
+            {
+                if (archerSlots[i] == null)
+                {
+                    archerSortingOffsets[i] = i + 1;
+                    continue;
+                }
+
+                SpriteRenderer archerRenderer = archerSlots[i].GetComponent<SpriteRenderer>();
+                archerSortingOffsets[i] = archerRenderer != null ? archerRenderer.sortingOrder : i + 1;
+            }
+        }
+
+        sortingOffsetsCached = true;
+    }
+
+    private void SyncSortingOrders()
+    {
+        if (towerBodyRenderer == null)
+            return;
+
+        CacheSortingOffsets();
+
+        float pivotY = towerBodyRenderer.bounds.min.y;
+        int baseOrder = Mathf.RoundToInt(-pivotY * TopDownSortingPrecision);
+
+        towerBodyRenderer.sortingLayerName = SortingLayerUnitsAlive;
+        towerBodyRenderer.sortingOrder = baseOrder + bodySortingOffset;
+
+        if (archerSlots == null || archerSlots.Length == 0)
+            return;
+
+        for (int i = 0; i < archerSlots.Length; i++)
+        {
+            Transform slot = archerSlots[i];
+            if (slot == null)
+                continue;
+
+            SpriteRenderer archerRenderer = slot.GetComponent<SpriteRenderer>();
+            if (archerRenderer == null)
+                continue;
+
+            int offset = i < archerSortingOffsets.Length ? archerSortingOffsets[i] : (i + 1);
+            archerRenderer.sortingLayerName = SortingLayerUnitsAlive;
+            archerRenderer.sortingOrder = baseOrder + offset;
+        }
     }
 }

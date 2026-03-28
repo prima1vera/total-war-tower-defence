@@ -40,6 +40,13 @@ public sealed class BuildPlacePanelPresenter : MonoBehaviour
     [SerializeField] private string currencySuffix = "g";
     [SerializeField] private string unavailableLabel = "N/A";
 
+    private static readonly Color PanelBackdropColor = new Color(0f, 0f, 0f, 0.38f);
+    private static readonly Color ButtonAffordableTint = Color.white;
+    private static readonly Color ButtonUnaffordableTint = new Color(0.72f, 0.72f, 0.72f, 0.95f);
+    private static readonly Color ButtonUnavailableTint = new Color(0.45f, 0.45f, 0.45f, 0.65f);
+    private static readonly Vector2 MinPanelSize = new Vector2(180f, 96f);
+    private static readonly Vector2 MinButtonSize = new Vector2(56f, 34f);
+
     private CanvasGroup panelCanvasGroup;
     private bool useCanvasGroupVisibility;
     private bool panelVisible;
@@ -49,6 +56,7 @@ public sealed class BuildPlacePanelPresenter : MonoBehaviour
     {
         InitializeAnchoringReferences();
         InitializePanelVisibilityMode();
+        ApplyVisualDefaults();
         WireButtons();
         SetPanelVisible(false);
     }
@@ -196,6 +204,7 @@ public sealed class BuildPlacePanelPresenter : MonoBehaviour
             bool canAfford = isAvailable && (currencyWallet == null || currencyWallet.CanAfford(option.Cost));
 
             binding.Button.interactable = isAvailable && canAfford;
+            ApplyButtonVisual(binding, isAvailable, canAfford, option);
 
             if (binding.LabelText == null)
                 continue;
@@ -207,9 +216,133 @@ public sealed class BuildPlacePanelPresenter : MonoBehaviour
                 continue;
             }
 
-            binding.LabelText.text = $"{option.DisplayName} ({option.Cost}{currencySuffix})";
-            binding.LabelText.alpha = canAfford ? 1f : 0.6f;
+            binding.LabelText.text = $"{option.Cost}{currencySuffix}";
+            binding.LabelText.color = Color.white;
+            binding.LabelText.alpha = canAfford ? 1f : 0.8f;
         }
+    }
+
+    private void ApplyVisualDefaults()
+    {
+        EnsurePanelBackdrop();
+        EnsureMinimumPanelAndButtonSize();
+    }
+
+    private void EnsurePanelBackdrop()
+    {
+        if (panelRoot == null)
+            return;
+
+        Image backdrop = panelRoot.GetComponent<Image>();
+        if (backdrop == null)
+            backdrop = panelRoot.AddComponent<Image>();
+
+        if (backdrop.sprite == null)
+            backdrop.sprite = ResolveBackdropSprite();
+
+        backdrop.type = backdrop.sprite != null ? Image.Type.Sliced : Image.Type.Simple;
+        backdrop.color = PanelBackdropColor;
+        backdrop.raycastTarget = false;
+    }
+
+    private Sprite ResolveBackdropSprite()
+    {
+        for (int i = 0; i < buildButtons.Length; i++)
+        {
+            Button button = buildButtons[i].Button;
+            if (button == null)
+                continue;
+
+            Image image = button.targetGraphic as Image;
+            if (image == null)
+                image = button.GetComponent<Image>();
+
+            if (image != null && image.sprite != null)
+                return image.sprite;
+        }
+
+        return null;
+    }
+
+    private void EnsureMinimumPanelAndButtonSize()
+    {
+        RectTransform container = GetFloatingTargetRect();
+        if (container != null)
+        {
+            Vector2 size = container.sizeDelta;
+            size.x = Mathf.Max(size.x, MinPanelSize.x);
+            size.y = Mathf.Max(size.y, MinPanelSize.y);
+            container.sizeDelta = size;
+        }
+
+        for (int i = 0; i < buildButtons.Length; i++)
+        {
+            if (buildButtons[i].Button == null)
+                continue;
+
+            RectTransform buttonRect = buildButtons[i].Button.GetComponent<RectTransform>();
+            if (buttonRect == null)
+                continue;
+
+            Vector2 size = buttonRect.sizeDelta;
+            size.x = Mathf.Max(size.x, MinButtonSize.x);
+            size.y = Mathf.Max(size.y, MinButtonSize.y);
+            buttonRect.sizeDelta = size;
+        }
+    }
+
+    private void ApplyButtonVisual(in BuildButtonBinding binding, bool isAvailable, bool canAfford, in TowerBuildOptionDefinition option)
+    {
+        if (binding.Button == null)
+            return;
+
+        Image buttonImage = binding.Button.targetGraphic as Image;
+        if (buttonImage == null)
+            buttonImage = binding.Button.GetComponent<Image>();
+
+        if (buttonImage == null)
+            return;
+
+        if (isAvailable && TryResolveOptionIcon(option, out Sprite icon) && icon != null)
+        {
+            buttonImage.sprite = icon;
+            buttonImage.type = Image.Type.Simple;
+            buttonImage.preserveAspect = true;
+        }
+
+        if (!isAvailable)
+        {
+            buttonImage.color = ButtonUnavailableTint;
+            return;
+        }
+
+        buttonImage.color = canAfford ? ButtonAffordableTint : ButtonUnaffordableTint;
+    }
+
+    private static bool TryResolveOptionIcon(in TowerBuildOptionDefinition option, out Sprite icon)
+    {
+        icon = null;
+        if (option.TowerPrefab == null)
+            return false;
+
+        if (option.TowerPrefab.TryGetComponent(out SpriteRenderer rootRenderer) && rootRenderer.sprite != null)
+        {
+            icon = rootRenderer.sprite;
+            return true;
+        }
+
+        SpriteRenderer[] renderers = option.TowerPrefab.GetComponentsInChildren<SpriteRenderer>(true);
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            SpriteRenderer renderer = renderers[i];
+            if (renderer == null || renderer.sprite == null)
+                continue;
+
+            icon = renderer.sprite;
+            return true;
+        }
+
+        return false;
     }
 
     private void SetPanelVisible(bool isVisible)
