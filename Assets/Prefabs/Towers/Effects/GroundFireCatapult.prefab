@@ -1,0 +1,183 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7224009834721800455
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4977482442914711194}
+  - component: {fileID: 7748683145112243770}
+  - component: {fileID: 8550894502470794478}
+  m_Layer: 20
+  m_Name: GroundFireCatapult
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4977482442914711194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7224009834721800455}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -2.38}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &7748683145112243770
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7224009834721800455}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: -516203043
+  m_SortingLayer: 1
+  m_SortingOrder: 3
+  m_Sprite: {fileID: 21300000, guid: 0f82c91a8967bfb4096247d3c8dc16e5, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!114 &8550894502470794478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7224009834721800455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ce55c5226294678a1b5507f6d66b580, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GroundFireZoneVfx
+  spriteRenderer: {fileID: 7748683145112243770}
+  pixelsPerUnit: 100
+  fireVariants:
+  - start:
+      stripTexture: {fileID: 2800000, guid: 9013485520b3fce4e94dce09c89739b4, type: 3}
+      frameCount: 4
+    loop:
+      stripTexture: {fileID: 2800000, guid: 0f82c91a8967bfb4096247d3c8dc16e5, type: 3}
+      frameCount: 8
+    end:
+      stripTexture: {fileID: 2800000, guid: 2328b516ed14a814c81efbf1a3578911, type: 3}
+      frameCount: 5
+    spawnWeight: 0.16
+    sizeMultiplierRange: {x: 1.02, y: 1.18}
+  - start:
+      stripTexture: {fileID: 2800000, guid: 31d73c36c964f504cae005edfe6a1e40, type: 3}
+      frameCount: 4
+    loop:
+      stripTexture: {fileID: 2800000, guid: f8e1d278658918c4b8fa47409021de79, type: 3}
+      frameCount: 8
+    end:
+      stripTexture: {fileID: 2800000, guid: eadeb88d46c3b4e4b8bf230c9399cf0e, type: 3}
+      frameCount: 5
+    spawnWeight: 0.22
+    sizeMultiplierRange: {x: 0.9, y: 1.06}
+  - start:
+      stripTexture: {fileID: 2800000, guid: 9819f75a315c2e14a85cacfe002fcbc9, type: 3}
+      frameCount: 4
+    loop:
+      stripTexture: {fileID: 2800000, guid: 770240c5f835bdf4a993265701c315b6, type: 3}
+      frameCount: 6
+    end:
+      stripTexture: {fileID: 2800000, guid: 98e64bb36d970d943a2651f590180302, type: 3}
+      frameCount: 4
+    spawnWeight: 0.24
+    sizeMultiplierRange: {x: 0.76, y: 0.94}
+  - start:
+      stripTexture: {fileID: 2800000, guid: 7dbf8045af801a04ab442cad4d9dc8d1, type: 3}
+      frameCount: 4
+    loop:
+      stripTexture: {fileID: 2800000, guid: 7bb1deb97b07bec41aafd99a2907d7aa, type: 3}
+      frameCount: 6
+    end:
+      stripTexture: {fileID: 2800000, guid: 758cfc947c1779645903cd492228e0bc, type: 3}
+      frameCount: 5
+    spawnWeight: 0.22
+    sizeMultiplierRange: {x: 0.62, y: 0.82}
+  - start:
+      stripTexture: {fileID: 2800000, guid: 188b03b6fee94ed4d917153a015777dc, type: 3}
+      frameCount: 2
+    loop:
+      stripTexture: {fileID: 2800000, guid: 452ebf52880c661469ee9dc306558632, type: 3}
+      frameCount: 4
+    end:
+      stripTexture: {fileID: 2800000, guid: 2ad753840f778304c9cef4a528e791d5, type: 3}
+      frameCount: 2
+    spawnWeight: 0.16
+    sizeMultiplierRange: {x: 0.42, y: 0.6}
+  loopFramesLegacy: []
+  tongueCount: 20
+  zoneRadius: 1.15
+  verticalSpread: 1
+  tongueRespawnDelayRange: {x: 0.03, y: 0.17}
+  loopCyclesMin: 1
+  loopCyclesMax: 3
+  startFps: 14
+  loopFps: 11
+  endFps: 13
+  lifetime: 2.6
+  startAlpha: 0.9
+  endAlpha: 0.02
+  startScale: 1
+  endScale: 1.16
+  groundSquash: 0.85
+  unitLayer:
+    serializedVersion: 2
+    m_Bits: 2097152
+  affectRadius: 1.15
+  tickRate: 0.35
+  directDamagePerTick: 0
+  burnDuration: 1.75
+  burnTickDamage: 1
+  burnTickRate: 0.5
+  maxHitColliders: 24
