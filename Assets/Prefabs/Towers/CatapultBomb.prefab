@@ -147,8 +147,8 @@ MonoBehaviour:
   damage: 1
   damageType: 0
   knockbackForce: 0.65
-  maxPierce: 1
-  impactRadius: 0.95
+  maxPierce: 10
+  impactRadius: 1
   impactRadiusScaleWeight: 1
   impactVfxScaleWeight: 1.35
   unitLayer:
@@ -184,7 +184,7 @@ MonoBehaviour:
   directHitGroundBloodEveryMaxHits: 10
   spawnEmbeddedArrowOnDirectHit: 0
   spawnEmbeddedArrowOnGroundImpact: 0
-  embedIntoTargetOnDirectHit: 1
+  embedIntoTargetOnDirectHit: 0
   embeddedArrowPrefab: {fileID: 0}
   embeddedArrowLocalOffset: {x: 0, y: 0, z: 0}
   maxEmbeddedArrowsPerTarget: 7

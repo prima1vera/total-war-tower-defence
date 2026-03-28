@@ -44,10 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7211e33915e4fd2876451a808a237e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxTrackedDeaths: 100
-  maxTrackedRemains: 180
+  authoringPreset: 0
+  autoApplySelectedPresetInEditor: 0
+  maxTrackedDeaths: 80
+  maxTrackedRemains: 140
   overflowToRemainsTransitionDuration: 1
-  overflowBloodFadeDuration: 1.25
+  overflowBloodFadeDuration: 8
   remainsVariants:
   - SourceSprite: {fileID: -868966910, guid: ca1cfbc2cad744941a7bc463777d9a01, type: 3}
     RemainsSprite: {fileID: 21300000, guid: e2ae0418badb4d94b992b89d6db5fa46, type: 3}
@@ -65,9 +67,9 @@ MonoBehaviour:
     RemainsSprite: {fileID: 21300000, guid: 3ffa011fb8760814ebba48bc06668513, type: 3}
   - SourceSprite: {fileID: -1448914209, guid: acbdc7269f83c6f4788fe388a4dbe0ba, type: 3}
     RemainsSprite: {fileID: 21300000, guid: 1300498fda846ec4daa719f44e11561f, type: 3}
-  prewarmCorpseCount: 100
+  prewarmCorpseCount: 80
   bloodPoolPrewarmPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
-  bloodPoolPrewarmCount: 100
+  bloodPoolPrewarmCount: 140
   bloodDecalVariants:
   - {fileID: 904556495, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
   - {fileID: 1359364042, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
@@ -81,17 +83,17 @@ MonoBehaviour:
   - {fileID: 622022122, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
   - {fileID: 669430243, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
   bloodDecalScaleRange: {x: 0.22, y: 0.33}
-  maxTrackedGroundBloodDecals: 220
-  deathBloodSpawnChance: 1
-  clusterBloodChance: 1
+  maxTrackedGroundBloodDecals: 260
+  deathBloodSpawnChance: 0.85
+  clusterBloodChance: 0.85
   clusterWindowSeconds: 2
   clusterScanRadius: 1.5
-  clusterThreshold: 4
-  clusterBloodScaleRange: {x: 0.25, y: 0.5}
+  clusterThreshold: 6
+  clusterBloodScaleRange: {x: 0.2, y: 0.3}
   deathBloodFlowRightToLeft: 1
   deathBloodFlowDistanceRange: {x: 0.08, y: 0.18}
-  deathBloodFlowVerticalJitterRange: {x: -0.02, y: 0.03}
-  deathBloodSettleHorizontalOffsetRange: {x: -0.06, y: 0.02}
-  deathBloodFlowDurationMultiplierRange: {x: 2.4, y: 4.35}
-  deathBloodFlowStartDelayRange: {x: 0, y: 0.5}
-  deathBloodFlowEndAlphaRange: {x: 0.78, y: 0.96}
+  deathBloodFlowVerticalJitterRange: {x: -0.02, y: 0.02}
+  deathBloodSettleHorizontalOffsetRange: {x: -0.06, y: 0.06}
+  deathBloodFlowDurationMultiplierRange: {x: 25, y: 50}
+  deathBloodFlowStartDelayRange: {x: 0, y: 0.8}
+  deathBloodFlowEndAlphaRange: {x: 0.8, y: 0.95}
