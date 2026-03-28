@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 #pragma warning disable CS0649
 
@@ -61,6 +64,19 @@ public class GroundFireZoneVfx : MonoBehaviour
     [SerializeField] private FireVariant[] fireVariants = Array.Empty<FireVariant>();
     [SerializeField] private Sprite[] loopFramesLegacy = Array.Empty<Sprite>();
 
+    private enum FireVisualPreset
+    {
+        Custom,
+        Compact,
+        Chaotic
+    }
+
+    [Header("Preset")]
+    [Tooltip("Quick visual tuning preset for this fire zone.")]
+    [SerializeField] private FireVisualPreset authoringPreset = FireVisualPreset.Custom;
+    [Tooltip("Auto-apply selected preset in Editor on value changes.")]
+    [SerializeField] private bool autoApplySelectedPresetInEditor;
+
     [Header("Tongues")]
     [SerializeField, Min(1)] private int tongueCount = 14;
     [SerializeField, Min(0.1f)] private float zoneRadius = 1.05f;
@@ -104,6 +120,7 @@ public class GroundFireZoneVfx : MonoBehaviour
     private Collider2D[] hitBuffer;
     private FireVariantCache[] variantCaches = Array.Empty<FireVariantCache>();
     private TongueState[] tongues = Array.Empty<TongueState>();
+    private bool isApplyingPresetInValidate;
 
     private void Awake()
     {
@@ -151,6 +168,88 @@ public class GroundFireZoneVfx : MonoBehaviour
                 tongue.Renderer.color = initialColor;
             }
         }
+    }
+
+    private void OnValidate()
+    {
+        if (isApplyingPresetInValidate)
+            return;
+
+        if (autoApplySelectedPresetInEditor && authoringPreset != FireVisualPreset.Custom)
+            ApplyPreset(authoringPreset);
+
+        loopCyclesMin = Mathf.Max(1, loopCyclesMin);
+        loopCyclesMax = Mathf.Max(loopCyclesMin, loopCyclesMax);
+        tongueCount = Mathf.Max(1, tongueCount);
+        zoneRadius = Mathf.Max(0.1f, zoneRadius);
+        verticalSpread = Mathf.Clamp(verticalSpread, 0.1f, 1f);
+    }
+
+    [ContextMenu("Presets/Apply Compact")]
+    private void ApplyCompactFromContextMenu() => ApplyPreset(FireVisualPreset.Compact);
+
+    [ContextMenu("Presets/Apply Chaotic")]
+    private void ApplyChaoticFromContextMenu() => ApplyPreset(FireVisualPreset.Chaotic);
+
+    [ContextMenu("Presets/Apply Selected")]
+    private void ApplySelectedFromContextMenu() => ApplyPreset(authoringPreset);
+
+    public void ApplyCompactPreset() => ApplyPreset(FireVisualPreset.Compact);
+    public void ApplyChaoticPreset() => ApplyPreset(FireVisualPreset.Chaotic);
+
+    private void ApplyPreset(FireVisualPreset preset)
+    {
+        if (preset == FireVisualPreset.Custom)
+            return;
+
+        isApplyingPresetInValidate = true;
+        authoringPreset = preset;
+
+        switch (preset)
+        {
+            case FireVisualPreset.Compact:
+                tongueCount = 12;
+                zoneRadius = 0.92f;
+                verticalSpread = 0.9f;
+                tongueRespawnDelayRange = new Vector2(0.08f, 0.22f);
+                loopCyclesMin = 1;
+                loopCyclesMax = 2;
+                startFps = 13f;
+                loopFps = 10f;
+                endFps = 12f;
+                lifetime = 2.25f;
+                startAlpha = 0.82f;
+                endAlpha = 0.02f;
+                startScale = 1f;
+                endScale = 1.08f;
+                groundSquash = 0.84f;
+                affectRadius = 1.05f;
+                break;
+
+            case FireVisualPreset.Chaotic:
+                tongueCount = 28;
+                zoneRadius = 1.35f;
+                verticalSpread = 1f;
+                tongueRespawnDelayRange = new Vector2(0.02f, 0.12f);
+                loopCyclesMin = 2;
+                loopCyclesMax = 4;
+                startFps = 16f;
+                loopFps = 13f;
+                endFps = 14f;
+                lifetime = 3.2f;
+                startAlpha = 0.95f;
+                endAlpha = 0.03f;
+                startScale = 1f;
+                endScale = 1.24f;
+                groundSquash = 0.88f;
+                affectRadius = 1.28f;
+                break;
+        }
+
+#if UNITY_EDITOR
+        EditorUtility.SetDirty(this);
+#endif
+        isApplyingPresetInValidate = false;
     }
 
     private void Update()

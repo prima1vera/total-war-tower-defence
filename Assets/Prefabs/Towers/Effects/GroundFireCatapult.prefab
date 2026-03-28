@@ -82,7 +82,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &8550894502470794478
@@ -156,25 +156,27 @@ MonoBehaviour:
     spawnWeight: 0.16
     sizeMultiplierRange: {x: 0.42, y: 0.6}
   loopFramesLegacy: []
-  tongueCount: 20
-  zoneRadius: 1.15
+  authoringPreset: 2
+  autoApplySelectedPresetInEditor: 1
+  tongueCount: 28
+  zoneRadius: 1.35
   verticalSpread: 1
-  tongueRespawnDelayRange: {x: 0.03, y: 0.17}
-  loopCyclesMin: 1
-  loopCyclesMax: 3
-  startFps: 14
-  loopFps: 11
-  endFps: 13
-  lifetime: 2.6
-  startAlpha: 0.9
-  endAlpha: 0.02
+  tongueRespawnDelayRange: {x: 0.02, y: 0.12}
+  loopCyclesMin: 2
+  loopCyclesMax: 4
+  startFps: 16
+  loopFps: 13
+  endFps: 14
+  lifetime: 3.2
+  startAlpha: 0.95
+  endAlpha: 0.03
   startScale: 1
-  endScale: 1.16
-  groundSquash: 0.85
+  endScale: 1.24
+  groundSquash: 0.88
   unitLayer:
     serializedVersion: 2
     m_Bits: 2097152
-  affectRadius: 1.15
+  affectRadius: 1.28
   tickRate: 0.35
   directDamagePerTick: 0
   burnDuration: 1.75
