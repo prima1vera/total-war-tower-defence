@@ -10,14 +10,31 @@ public class EnemyPool : MonoBehaviour
     private readonly Queue<GameObject> pooledEnemies = new Queue<GameObject>(32);
     private readonly HashSet<GameObject> activeEnemies = new HashSet<GameObject>();
     private int createdCount;
+    private bool loggedInvalidPoolBinding;
 
     void Awake()
     {
+        if (!IsSceneBound())
+            return;
+
         Prewarm();
     }
 
     public GameObject Spawn(Vector3 position, Quaternion rotation)
     {
+        if (!IsSceneBound())
+        {
+            if (!loggedInvalidPoolBinding)
+            {
+                Debug.LogError($"{name}: EnemyPool reference points to a prefab asset (persistent object). Assign a scene EnemyPool instance under EnemyPools.", this);
+                loggedInvalidPoolBinding = true;
+            }
+
+            return null;
+        }
+
+        loggedInvalidPoolBinding = false;
+
         GameObject enemy = pooledEnemies.Count > 0 ? pooledEnemies.Dequeue() : CreateEnemy();
         if (enemy == null)
             return null;
@@ -62,6 +79,9 @@ public class EnemyPool : MonoBehaviour
         if (enemyPrefab == null)
             return null;
 
+        if (!IsSceneBound())
+            return null;
+
         int clampedMax = Mathf.Max(1, maxPoolSize);
         if (createdCount >= clampedMax)
             return null;
@@ -74,5 +94,10 @@ public class EnemyPool : MonoBehaviour
             poolMember.Bind(this);
 
         return enemy;
+    }
+
+    private bool IsSceneBound()
+    {
+        return gameObject.scene.IsValid() && gameObject.scene.isLoaded;
     }
 }

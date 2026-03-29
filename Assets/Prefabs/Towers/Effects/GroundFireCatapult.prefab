@@ -71,9 +71,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -516203043
-  m_SortingLayer: 1
-  m_SortingOrder: 3
+  m_SortingLayerID: 1981946305
+  m_SortingLayer: 7
+  m_SortingOrder: 4
   m_Sprite: {fileID: 21300000, guid: 0f82c91a8967bfb4096247d3c8dc16e5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -156,10 +156,10 @@ MonoBehaviour:
     spawnWeight: 0.16
     sizeMultiplierRange: {x: 0.42, y: 0.6}
   loopFramesLegacy: []
-  authoringPreset: 2
+  authoringPreset: 0
   autoApplySelectedPresetInEditor: 1
-  tongueCount: 28
-  zoneRadius: 1.35
+  tongueCount: 100
+  zoneRadius: 1
   verticalSpread: 1
   tongueRespawnDelayRange: {x: 0.02, y: 0.12}
   loopCyclesMin: 2
@@ -168,15 +168,15 @@ MonoBehaviour:
   loopFps: 13
   endFps: 14
   lifetime: 3.2
-  startAlpha: 0.95
-  endAlpha: 0.03
+  startAlpha: 1
+  endAlpha: 0.4
   startScale: 1
-  endScale: 1.24
-  groundSquash: 0.88
+  endScale: 1.15
+  groundSquash: 0.6
   unitLayer:
     serializedVersion: 2
     m_Bits: 2097152
-  affectRadius: 1.28
+  affectRadius: 1
   tickRate: 0.35
   directDamagePerTick: 0
   burnDuration: 1.75

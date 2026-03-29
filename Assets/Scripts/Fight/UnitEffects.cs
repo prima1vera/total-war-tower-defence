@@ -1,4 +1,5 @@
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class UnitEffects : MonoBehaviour
 {
@@ -18,8 +19,25 @@ public class UnitEffects : MonoBehaviour
     public GameObject fireEffect;
     public GameObject frostEffectPrefab;
 
+    [Header("Burn Loop (Sprite)")]
+    [SerializeField] private bool useBurnLoopSprite = true;
+    [SerializeField] private Sprite[] burnLoopFrames;
+    [SerializeField, Min(1f)] private float burnLoopFps = 12f;
+    [SerializeField] private Vector3 burnLoopLocalOffset = new Vector3(0f, -0.06f, 0f);
+    [SerializeField] private Vector2 burnLoopScaleRange = new Vector2(0.62f, 0.86f);
+    [SerializeField, Range(0f, 1f)] private float burnLoopAlpha = 0.92f;
+    [SerializeField] private int burnLoopSortingOffset = 1;
+
     private SpriteRenderer sr;
     private UnitHealth health;
+    private SpriteRenderer burnLoopRenderer;
+    private Sprite[] burnLoopResolvedFrames;
+    private ParticleSystem[] fireParticleSystems;
+    private float burnLoopFrameTimer;
+    private float burnLoopFrameDuration = 0.0833f;
+    private int burnLoopFrameIndex;
+    private int burnLoopLastSyncedSortingOrder = int.MinValue;
+    private int burnLoopLastSyncedSortingLayerId = int.MinValue;
 
     private bool fireActive;
     private bool freezeActive;
@@ -32,6 +50,9 @@ public class UnitEffects : MonoBehaviour
     {
         sr = GetComponent<SpriteRenderer>();
         health = GetComponent<UnitHealth>();
+        ResolveLinkedEffectsIfMissing();
+
+        CacheFireVisualComponents();
 
         if (fireEffect != null)
             fireEffect.SetActive(false);
@@ -62,6 +83,7 @@ public class UnitEffects : MonoBehaviour
 
     void Update()
     {
+        UpdateBurnLoopAnimation();
         if (!needsAnimatedUpdate)
             return;
 
@@ -83,10 +105,27 @@ public class UnitEffects : MonoBehaviour
     {
         fireActive = state;
 
-        if (fireEffect != null)
-            fireEffect.SetActive(state);
+        if (!TryApplyBurnLoopState(state) && fireEffect != null)
+            fireEffect.SetActive(false);
 
         ApplyCompositeColor(false);
+    }
+
+    private void ResolveLinkedEffectsIfMissing()
+    {
+        if (fireEffect == null)
+        {
+            Transform fire = transform.Find("Fire");
+            if (fire != null)
+                fireEffect = fire.gameObject;
+        }
+
+        if (frostEffectPrefab == null)
+        {
+            Transform frost = transform.Find("Frost");
+            if (frost != null)
+                frostEffectPrefab = frost.gameObject;
+        }
     }
 
     public void SetFreezeVisual(bool state)
@@ -172,5 +211,166 @@ public class UnitEffects : MonoBehaviour
             && Mathf.Abs(a.g - b.g) <= 0.001f
             && Mathf.Abs(a.b - b.b) <= 0.001f
             && Mathf.Abs(a.a - b.a) <= 0.001f;
+    }
+
+    private void CacheFireVisualComponents()
+    {
+        if (fireEffect == null)
+            return;
+
+        fireParticleSystems = fireEffect.GetComponentsInChildren<ParticleSystem>(true);
+        DisableLegacyFireParticles();
+
+        burnLoopResolvedFrames = ResolveBurnLoopFrames();
+        bool canUseBurnLoop = useBurnLoopSprite && burnLoopResolvedFrames != null && burnLoopResolvedFrames.Length > 0;
+
+        if (!canUseBurnLoop)
+            return;
+
+        burnLoopRenderer = fireEffect.GetComponent<SpriteRenderer>();
+        if (burnLoopRenderer == null)
+            burnLoopRenderer = fireEffect.AddComponent<SpriteRenderer>();
+
+        if (sr != null)
+        {
+            burnLoopRenderer.sortingLayerID = sr.sortingLayerID;
+            burnLoopRenderer.sortingOrder = sr.sortingOrder + burnLoopSortingOffset;
+            burnLoopRenderer.sharedMaterial = sr.sharedMaterial;
+        }
+
+        burnLoopRenderer.drawMode = SpriteDrawMode.Simple;
+        burnLoopRenderer.maskInteraction = SpriteMaskInteraction.None;
+        burnLoopRenderer.enabled = false;
+        burnLoopRenderer.color = new Color(1f, 1f, 1f, Mathf.Clamp01(burnLoopAlpha));
+
+        burnLoopFrameDuration = 1f / Mathf.Max(1f, burnLoopFps);
+    }
+
+    private bool TryApplyBurnLoopState(bool state)
+    {
+        if (!useBurnLoopSprite || burnLoopRenderer == null || burnLoopResolvedFrames == null || burnLoopResolvedFrames.Length == 0 || fireEffect == null)
+            return false;
+
+        if (state)
+        {
+            fireEffect.SetActive(true);
+
+            float minScale = Mathf.Max(0.05f, Mathf.Min(burnLoopScaleRange.x, burnLoopScaleRange.y));
+            float maxScale = Mathf.Max(minScale, Mathf.Max(burnLoopScaleRange.x, burnLoopScaleRange.y));
+            float randomScale = Random.Range(minScale, maxScale);
+
+            fireEffect.transform.localPosition = burnLoopLocalOffset + new Vector3(
+                Random.Range(-0.015f, 0.015f),
+                Random.Range(-0.01f, 0.01f),
+                0f);
+            fireEffect.transform.localScale = new Vector3(randomScale, randomScale, 1f);
+
+            burnLoopFrameDuration = 1f / Mathf.Max(1f, burnLoopFps);
+            burnLoopFrameTimer = Random.Range(0f, burnLoopFrameDuration);
+            burnLoopFrameIndex = Random.Range(0, burnLoopResolvedFrames.Length);
+            burnLoopRenderer.flipX = Random.value > 0.5f;
+            burnLoopRenderer.sprite = burnLoopResolvedFrames[burnLoopFrameIndex];
+            burnLoopRenderer.color = new Color(1f, 1f, 1f, Mathf.Clamp01(burnLoopAlpha));
+            burnLoopRenderer.enabled = true;
+            SyncBurnLoopSorting(true);
+        }
+        else
+        {
+            burnLoopRenderer.enabled = false;
+            fireEffect.SetActive(false);
+        }
+
+        return true;
+    }
+
+    private void UpdateBurnLoopAnimation()
+    {
+        if (!fireActive || burnLoopRenderer == null || !burnLoopRenderer.enabled || burnLoopResolvedFrames == null || burnLoopResolvedFrames.Length == 0)
+            return;
+
+        burnLoopFrameTimer += Time.deltaTime;
+        if (burnLoopFrameTimer >= burnLoopFrameDuration)
+        {
+            burnLoopFrameTimer -= burnLoopFrameDuration;
+            burnLoopFrameIndex = (burnLoopFrameIndex + 1) % burnLoopResolvedFrames.Length;
+            burnLoopRenderer.sprite = burnLoopResolvedFrames[burnLoopFrameIndex];
+        }
+
+        SyncBurnLoopSorting(false);
+    }
+
+    private void SyncBurnLoopSorting(bool force)
+    {
+        if (burnLoopRenderer == null || sr == null)
+            return;
+
+        int targetLayerId = sr.sortingLayerID;
+        int targetOrder = sr.sortingOrder + burnLoopSortingOffset;
+
+        if (!force
+            && burnLoopLastSyncedSortingLayerId == targetLayerId
+            && burnLoopLastSyncedSortingOrder == targetOrder)
+            return;
+
+        burnLoopLastSyncedSortingLayerId = targetLayerId;
+        burnLoopLastSyncedSortingOrder = targetOrder;
+
+        burnLoopRenderer.sortingLayerID = targetLayerId;
+        burnLoopRenderer.sortingOrder = targetOrder;
+    }
+
+    private void DisableLegacyFireParticles()
+    {
+        if (fireParticleSystems == null || fireParticleSystems.Length == 0)
+            return;
+
+        for (int i = 0; i < fireParticleSystems.Length; i++)
+        {
+            ParticleSystem ps = fireParticleSystems[i];
+            if (ps == null)
+                continue;
+
+            var emission = ps.emission;
+            emission.enabled = false;
+
+            ParticleSystemRenderer psRenderer = ps.GetComponent<ParticleSystemRenderer>();
+            if (psRenderer != null)
+                psRenderer.enabled = false;
+
+            if (ps.isPlaying)
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+    }
+
+    private Sprite[] ResolveBurnLoopFrames()
+    {
+        if (burnLoopFrames == null || burnLoopFrames.Length == 0)
+            return null;
+
+        int validCount = 0;
+        for (int i = 0; i < burnLoopFrames.Length; i++)
+        {
+            if (burnLoopFrames[i] != null)
+                validCount++;
+        }
+
+        if (validCount == 0)
+            return null;
+
+        if (validCount == burnLoopFrames.Length)
+            return burnLoopFrames;
+
+        Sprite[] resolved = new Sprite[validCount];
+        int writeIndex = 0;
+        for (int i = 0; i < burnLoopFrames.Length; i++)
+        {
+            Sprite sprite = burnLoopFrames[i];
+            if (sprite == null)
+                continue;
+
+            resolved[writeIndex++] = sprite;
+        }
+
+        return resolved;
     }
 }

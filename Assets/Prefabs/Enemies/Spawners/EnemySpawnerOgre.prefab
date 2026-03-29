@@ -87,7 +87,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5800963742032709484}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5.7007246, y: 2.1898837, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -116,6 +116,9 @@ MonoBehaviour:
   - {fileID: 6787805170885677050}
   autoSpawn: 1
   spawnInterval: 1
+  enemyFamily: 2
+  waveSpawnWeight: 0.4
+  killRewardOverride: -1
 --- !u!1 &6059325489714777347
 GameObject:
   m_ObjectHideFlags: 0

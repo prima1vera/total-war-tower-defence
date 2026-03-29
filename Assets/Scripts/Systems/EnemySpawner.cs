@@ -28,6 +28,7 @@ public class EnemySpawner : MonoBehaviour
 
     private float spawnTimer;
     private bool loggedMissingPool;
+    private bool loggedPersistentPool;
 
     public float WaveSpawnWeight => Mathf.Max(0f, waveSpawnWeight);
     public EnemyFamily ResolvedEnemyFamily => ResolveEnemyFamily();
@@ -74,7 +75,19 @@ public class EnemySpawner : MonoBehaviour
             return null;
         }
 
+        if (!IsScenePool(enemyPool))
+        {
+            if (!loggedPersistentPool)
+            {
+                Debug.LogError($"{name}: EnemyPool reference must point to a scene instance (Hierarchy), not a prefab asset from Project.", this);
+                loggedPersistentPool = true;
+            }
+
+            return null;
+        }
+
         loggedMissingPool = false;
+        loggedPersistentPool = false;
         GameObject spawnedEnemy = enemyPool.Spawn(spawnPoint.position, spawnPoint.rotation);
         RaiseEnemySpawnedEvent(spawnedEnemy);
         return spawnedEnemy;
@@ -135,5 +148,13 @@ public class EnemySpawner : MonoBehaviour
             return;
 
         EnemyRuntimeEvents.RaiseEnemySpawned(unitHealth, ResolveEnemyFamily(), killRewardOverride);
+    }
+
+    private static bool IsScenePool(EnemyPool pool)
+    {
+        if (pool == null)
+            return false;
+
+        return pool.gameObject.scene.IsValid() && pool.gameObject.scene.isLoaded;
     }
 }

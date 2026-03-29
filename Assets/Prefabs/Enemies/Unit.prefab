@@ -9868,6 +9868,21 @@ MonoBehaviour:
   burnTickStrength: 0.8
   fireEffect: {fileID: 6702332221611775603}
   frostEffectPrefab: {fileID: 4952141576655577673}
+  useBurnLoopSprite: 1
+  burnLoopFrames:
+  - {fileID: -1694910721, guid: 4382350fcc125f04d8febf9f9beebdcd, type: 3}
+  - {fileID: 22253128, guid: 4382350fcc125f04d8febf9f9beebdcd, type: 3}
+  - {fileID: -1764246046, guid: 4382350fcc125f04d8febf9f9beebdcd, type: 3}
+  - {fileID: 1891979184, guid: 4382350fcc125f04d8febf9f9beebdcd, type: 3}
+  - {fileID: -105354152, guid: 4382350fcc125f04d8febf9f9beebdcd, type: 3}
+  - {fileID: 1864932581, guid: 4382350fcc125f04d8febf9f9beebdcd, type: 3}
+  - {fileID: -1634850879, guid: 4382350fcc125f04d8febf9f9beebdcd, type: 3}
+  - {fileID: -1582320024, guid: 4382350fcc125f04d8febf9f9beebdcd, type: 3}
+  burnLoopFps: 11
+  burnLoopLocalOffset: {x: 0, y: -0.06, z: 0}
+  burnLoopScaleRange: {x: 1.1, y: 1.55}
+  burnLoopAlpha: 0.96
+  burnLoopSortingOffset: 1
 --- !u!114 &649036997620235078
 MonoBehaviour:
   m_ObjectHideFlags: 0
