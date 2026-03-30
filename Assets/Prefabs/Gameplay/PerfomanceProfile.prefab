@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ab66c8d585a1942b9177fc8dad0511, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startupProfile: 1
+  startupProfile: 2
   applyOnAwake: 1
+  preferHighRefreshOnMobile: 0
+  mobileHighRefreshCap: 120
   waveManager: {fileID: 0}
   enemyDeathVisualManager: {fileID: 0}
