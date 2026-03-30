@@ -70,12 +70,7 @@ public class WaveManager : MonoBehaviour
         if (controlledSpawners == null || controlledSpawners.Length == 0 || waves == null || waves.Length == 0)
             return;
 
-        for (int i = 0; i < controlledSpawners.Length; i++)
-        {
-            EnemySpawner spawner = controlledSpawners[i];
-            if (spawner != null)
-                spawner.SetAutoSpawn(false);
-        }
+        DisableAutoSpawnOnAllSceneSpawners();
 
         RebuildSpawnerCache();
         waveRoutine = StartCoroutine(RunWaves());
@@ -301,6 +296,19 @@ public class WaveManager : MonoBehaviour
         {
             StopCoroutine(waveRoutine);
             waveRoutine = null;
+        }
+    }
+
+    private void DisableAutoSpawnOnAllSceneSpawners()
+    {
+        EnemySpawner[] sceneSpawners = FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None);
+        for (int i = 0; i < sceneSpawners.Length; i++)
+        {
+            EnemySpawner spawner = sceneSpawners[i];
+            if (spawner == null)
+                continue;
+
+            spawner.SetAutoSpawn(false);
         }
     }
 
