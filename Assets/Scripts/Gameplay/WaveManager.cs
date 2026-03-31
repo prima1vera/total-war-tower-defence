@@ -5,6 +5,8 @@ using Random = UnityEngine.Random;
 
 public class WaveManager : MonoBehaviour
 {
+    private static int activeWaveManagers;
+
     [Serializable]
     public struct WaveDefinition
     {
@@ -64,6 +66,19 @@ public class WaveManager : MonoBehaviour
     private float totalWeightOgre;
     private float totalWeightDeathKnight;
     private float totalWeightSmall;
+
+    public static bool HasActiveWaveManager => activeWaveManagers > 0;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStaticState()
+    {
+        activeWaveManagers = 0;
+    }
+
+    private void OnEnable()
+    {
+        activeWaveManagers++;
+    }
 
     private void Start()
     {
@@ -297,11 +312,13 @@ public class WaveManager : MonoBehaviour
             StopCoroutine(waveRoutine);
             waveRoutine = null;
         }
+
+        activeWaveManagers = Mathf.Max(0, activeWaveManagers - 1);
     }
 
     private void DisableAutoSpawnOnAllSceneSpawners()
     {
-        EnemySpawner[] sceneSpawners = FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None);
+        EnemySpawner[] sceneSpawners = FindObjectsByType<EnemySpawner>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         for (int i = 0; i < sceneSpawners.Length; i++)
         {
             EnemySpawner spawner = sceneSpawners[i];

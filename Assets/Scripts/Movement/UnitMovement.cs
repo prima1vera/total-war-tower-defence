@@ -22,11 +22,34 @@ public class UnitMovement : MonoBehaviour
     [SerializeField] private int maxSeparationColliders = 16;
     [SerializeField] private bool destroyOnGoalReached = true;
 
+    [Header("Blocker Combat")]
+    [SerializeField, Tooltip("If enabled, enemy can stop and attack barricades/defenders that block the lane.")]
+    private bool attackPathBlockers = true;
+    [SerializeField, Min(1), Tooltip("Damage dealt to blocker structures/defenders per hit.")]
+    private int blockerAttackDamage = 1;
+    [SerializeField, Min(0.05f), Tooltip("Seconds between enemy melee hits against blockers.")]
+    private float blockerAttackInterval = 0.55f;
+    [SerializeField, Min(0.2f), Tooltip("How far ahead enemy scans for blockers on its lane.")]
+    private float blockerScanRange = 1.1f;
+    [SerializeField, Min(0.05f), Tooltip("Half-width of the lane used to decide if blocker is in-path.")]
+    private float blockerLaneHalfWidth = 0.38f;
+    [SerializeField, Min(0.05f), Tooltip("Extra contact distance before enemy starts attacking blocker.")]
+    private float blockerAttackRange = 0.15f;
+    [SerializeField, Min(0.02f), Tooltip("Retarget cadence for blocker scan.")]
+    private float blockerRetargetInterval = 0.08f;
+
     private Collider2D[] separationBuffer;
     private Transform cachedTransform;
     private EnemyPoolMember enemyPoolMember;
     private float separationTimer;
     private Vector2 cachedSeparation;
+    private Vector2 currentPathDirection = Vector2.down;
+    private IEnemyPathBlocker currentBlocker;
+    private float blockerAttackTimer;
+    private float blockerRetargetTimer;
+    private int lastKnownBlockerRegistryVersion = -1;
+
+    public Vector2 CurrentPathDirection => currentPathDirection;
 
     public void ApplyKnockback(Vector2 direction, float force)
     {
@@ -56,6 +79,11 @@ public class UnitMovement : MonoBehaviour
         speedMultiplier = 1f;
         cachedSeparation = Vector2.zero;
         separationTimer = Random.Range(0f, SeparationRefreshInterval);
+        currentPathDirection = Vector2.down;
+        currentBlocker = null;
+        blockerAttackTimer = 0f;
+        blockerRetargetTimer = Random.Range(0f, blockerRetargetInterval);
+        lastKnownBlockerRegistryVersion = -1;
     }
 
     void Start()
@@ -93,6 +121,10 @@ public class UnitMovement : MonoBehaviour
 
         Transform target = path[waypointIndex];
         Vector3 dir = target.position - cachedTransform.position;
+        currentPathDirection = dir.sqrMagnitude > 0.0001f ? ((Vector2)dir).normalized : currentPathDirection;
+
+        if (TryHandleBlockerCombat(currentPathDirection))
+            return;
 
         separationTimer -= Time.deltaTime;
         if (separationTimer <= 0f)
@@ -130,6 +162,74 @@ public class UnitMovement : MonoBehaviour
                     gameObject.SetActive(false);
             }
         }
+    }
+
+    private bool TryHandleBlockerCombat(Vector2 forward)
+    {
+        if (!attackPathBlockers)
+            return false;
+
+        blockerAttackTimer -= Time.deltaTime;
+        blockerRetargetTimer -= Time.deltaTime;
+
+        if (!IsBlockerRelevant(currentBlocker, forward))
+            currentBlocker = null;
+
+        bool blockerRegistryChanged = lastKnownBlockerRegistryVersion != EnemyPathBlockerRegistry.Version;
+        if (currentBlocker == null && (blockerRetargetTimer <= 0f || blockerRegistryChanged))
+        {
+            EnemyPathBlockerRegistry.TryGetFirstBlockingTarget(
+                cachedTransform.position,
+                forward,
+                blockerScanRange,
+                blockerLaneHalfWidth,
+                out currentBlocker);
+
+            blockerRetargetTimer = Mathf.Max(0.02f, blockerRetargetInterval);
+            lastKnownBlockerRegistryVersion = EnemyPathBlockerRegistry.Version;
+        }
+
+        if (currentBlocker == null)
+            return false;
+
+        Vector2 toBlocker = currentBlocker.WorldPosition - (Vector2)cachedTransform.position;
+        float distanceToCenter = toBlocker.magnitude;
+        float contactDistance = Mathf.Max(0.05f, currentBlocker.BlockRadius + blockerAttackRange);
+
+        if (distanceToCenter > contactDistance)
+            return false;
+
+        if (animator != null && toBlocker.sqrMagnitude > 0.0001f)
+        {
+            Vector2 face = toBlocker.normalized;
+            animator.SetFloat("moveX", face.x);
+            animator.SetFloat("moveY", face.y);
+        }
+
+        if (blockerAttackTimer > 0f)
+            return true;
+
+        currentBlocker.ReceiveBlockDamage(Mathf.Max(1, blockerAttackDamage), unitHealth);
+        blockerAttackTimer = Mathf.Max(0.05f, blockerAttackInterval);
+        return true;
+    }
+
+    private bool IsBlockerRelevant(IEnemyPathBlocker blocker, Vector2 forward)
+    {
+        if (blocker == null || !blocker.IsBlocking)
+            return false;
+
+        Vector2 heading = forward.sqrMagnitude > 0.0001f ? forward.normalized : Vector2.down;
+        Vector2 toBlocker = blocker.WorldPosition - (Vector2)cachedTransform.position;
+        float projection = Vector2.Dot(toBlocker, heading);
+        float blockerRadius = Mathf.Max(0.05f, blocker.BlockRadius);
+
+        if (projection < -blockerRadius || projection > blockerScanRange + blockerRadius)
+            return false;
+
+        float perpendicular = Mathf.Abs(heading.x * toBlocker.y - heading.y * toBlocker.x);
+        float allowedWidth = blockerLaneHalfWidth + blockerRadius;
+        return perpendicular <= allowedWidth;
     }
 
     Vector2 CalculateSeparation()

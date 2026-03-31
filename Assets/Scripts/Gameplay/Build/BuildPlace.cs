@@ -13,6 +13,10 @@ public sealed class BuildPlace : MonoBehaviour
     [SerializeField, Tooltip("If true, marker renderer is hidden while slot is occupied.")]
     private bool hideMarkerWhenOccupied = true;
 
+    [Header("Build Rules")]
+    [SerializeField, Tooltip("Optional whitelist of build option ids allowed on this slot. Empty = any option.")]
+    private string[] allowedOptionIds = Array.Empty<string>();
+
     private TowerUpgradable occupiedTower;
     private string occupiedOptionId;
 
@@ -22,6 +26,7 @@ public sealed class BuildPlace : MonoBehaviour
     public bool IsOccupied => occupiedTower != null && occupiedTower.gameObject.activeInHierarchy && !occupiedTower.IsSold;
     public TowerUpgradable OccupiedTower => occupiedTower;
     public string OccupiedOptionId => occupiedOptionId;
+    public bool HasOptionRestrictions => allowedOptionIds != null && allowedOptionIds.Length > 0;
 
     private void Reset()
     {
@@ -38,6 +43,27 @@ public sealed class BuildPlace : MonoBehaviour
     public bool HasValidId()
     {
         return !string.IsNullOrWhiteSpace(placeId);
+    }
+
+    public bool AllowsOption(string optionId)
+    {
+        if (string.IsNullOrWhiteSpace(optionId))
+            return false;
+
+        if (!HasOptionRestrictions)
+            return true;
+
+        for (int i = 0; i < allowedOptionIds.Length; i++)
+        {
+            string allowed = allowedOptionIds[i];
+            if (string.IsNullOrWhiteSpace(allowed))
+                continue;
+
+            if (string.Equals(allowed, optionId, StringComparison.Ordinal))
+                return true;
+        }
+
+        return false;
     }
 
     [ContextMenu("Generate New Place Id")]

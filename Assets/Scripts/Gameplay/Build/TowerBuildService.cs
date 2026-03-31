@@ -68,6 +68,9 @@ public sealed class TowerBuildService : MonoBehaviour
         if (place == null || !place.HasValidId() || place.IsOccupied)
             return false;
 
+        if (!place.AllowsOption(optionId))
+            return false;
+
         if (!TryGetBuildOption(optionId, out TowerBuildOptionDefinition option))
             return false;
 

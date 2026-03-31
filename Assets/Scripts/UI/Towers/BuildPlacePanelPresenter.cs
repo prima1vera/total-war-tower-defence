@@ -200,7 +200,11 @@ public sealed class BuildPlacePanelPresenter : MonoBehaviour
                 continue;
 
             TowerBuildOptionDefinition option = default;
-            bool isAvailable = canBuild && buildService != null && buildService.TryGetBuildOption(binding.OptionId, out option);
+            bool allowedOnSlot = selectedPlace == null || selectedPlace.AllowsOption(binding.OptionId);
+            bool isAvailable = canBuild
+                               && allowedOnSlot
+                               && buildService != null
+                               && buildService.TryGetBuildOption(binding.OptionId, out option);
             bool canAfford = isAvailable && (currencyWallet == null || currencyWallet.CanAfford(option.Cost));
 
             binding.Button.interactable = isAvailable && canAfford;
