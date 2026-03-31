@@ -120,7 +120,7 @@ MonoBehaviour:
   - {fileID: 320876069, guid: 96a64a12d76eebc478d57854ae40e77b, type: 3}
   - {fileID: -1187005681, guid: 96a64a12d76eebc478d57854ae40e77b, type: 3}
   - {fileID: -2055642863, guid: 96a64a12d76eebc478d57854ae40e77b, type: 3}
-  framesPerSecond: 14
+  framesPerSecond: 20
   holdDuration: 0.02
   startAlpha: 1
   endAlpha: 0

@@ -172,10 +172,13 @@ MonoBehaviour:
   dustPrefab: {fileID: 2408689374836223538, guid: a7f71f2fd0a64b8f968e3cd2aa445cea, type: 3}
   impactWavePrefab: {fileID: 8258618614109444040, guid: 7f0b41a2b3fec194386cb1810b356fdc, type: 3}
   impactDecalPrefab: {fileID: 7112480770416523166, guid: 7a61f8bb1e0b4fd4bb4102033d5beaf7, type: 3}
+  spawnGroundFireZoneOnImpact: 1
+  groundFireZonePrefab: {fileID: 7224009834721800455, guid: c29544968ca74fab93f8cfd4df1e8ff0, type: 3}
+  groundFireZoneScaleMultiplier: 1.05
   spawnBloodOnDirectHit: 0
   directHitBloodFollowDuration: 0.45
-  directHitBloodUseLocalSimulation: 1
-  spawnGroundBloodOnDirectHit: 0
+  directHitBloodUseLocalSimulation: 0
+  spawnGroundBloodOnDirectHit: 1
   directHitGroundBloodPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
   directHitGroundBloodChance: 0.85
   directHitGroundBloodJitter: 0.045

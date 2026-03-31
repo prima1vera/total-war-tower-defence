@@ -55,12 +55,12 @@ TagManager:
   - name: Units_Alive
     uniqueID: 500341947
     locked: 0
+  - name: Effects
+    uniqueID: 1981946305
+    locked: 0
   - name: Layer 2
     uniqueID: 4285942083
     locked: 0
   - name: Projectiles
     uniqueID: 1411873953
-    locked: 0
-  - name: Effects
-    uniqueID: 1981946305
     locked: 0

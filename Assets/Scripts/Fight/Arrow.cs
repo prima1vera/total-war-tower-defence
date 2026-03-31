@@ -86,6 +86,14 @@ public class Arrow : MonoBehaviour
     [Header("VFX (Ground Decal)")]
     public GameObject impactDecalPrefab;
 
+    [Header("Ground Fire (Optional)")]
+    [Tooltip("Spawn persistent burning ground zone after impact.")]
+    [SerializeField] private bool spawnGroundFireZoneOnImpact;
+    [Tooltip("Ground fire zone prefab (looped fire + burn ticks).")]
+    [SerializeField] private GameObject groundFireZonePrefab;
+    [Tooltip("Extra scale multiplier applied to spawned ground fire zone.")]
+    [SerializeField, Min(0.1f)] private float groundFireZoneScaleMultiplier = 1f;
+
     [Header("Archer Impact (Optional)")]
     [Tooltip("Spawn blood splash particles attached to hit target on direct hit.")]
     [SerializeField] private bool spawnBloodOnDirectHit;
@@ -423,6 +431,12 @@ public class Arrow : MonoBehaviour
 
             if (impactDecalPrefab != null)
                 vfxPool.Spawn(impactDecalPrefab, impactPosition, Quaternion.identity, vfxScale);
+
+            if (spawnGroundFireZoneOnImpact && groundFireZonePrefab != null)
+            {
+                Vector3 fireScale = vfxScale * Mathf.Max(0.1f, groundFireZoneScaleMultiplier);
+                vfxPool.Spawn(groundFireZonePrefab, impactPosition, Quaternion.identity, fireScale);
+            }
         }
 
         HandleOptionalDirectHitPresentation(hitTarget, impactPosition);
