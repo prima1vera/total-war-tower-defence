@@ -5,6 +5,9 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class BarracksController : MonoBehaviour
 {
+    private const float RoadFormationSpacing = 0.42f;
+    private const float RoadFormationForwardOffset = -0.18f;
+
     [Header("Defender Prefab")]
     [SerializeField] private DefenderUnit defenderPrefab;
     [SerializeField] private Transform defendersRoot;
@@ -12,23 +15,28 @@ public sealed class BarracksController : MonoBehaviour
     [Header("Slots")]
     [SerializeField, Tooltip("Spawn point per defender slot. If empty, barracks transform is used.")]
     private Transform[] spawnPoints;
-    [SerializeField, Tooltip("Guard points near choke where each defender should hold position.")]
+    [SerializeField, Tooltip("Optional explicit guard points. Ignored when 'Prefer Road Blocking Formation' is enabled.")]
     private Transform[] defensePoints;
+    [SerializeField, Tooltip("When enabled, defenders always form a line directly on the nearest road/path segment.")]
+    private bool preferRoadBlockingFormation = true;
 
     [Header("Respawn")]
     [SerializeField, Min(0.1f)] private float respawnCooldown = 4f;
     [SerializeField] private bool spawnOnEnable = true;
     [SerializeField, Min(1), Tooltip("How many defender slots are active simultaneously.")]
-    private int defendersPerBarracks = 2;
+    private int defendersPerBarracks = 4;
     [SerializeField, Tooltip("If enabled, barracks uses upgrade level as squad size (clamped by Max Defenders From Upgrade).")]
     private bool useUpgradeLevelAsSquadSize;
-    [SerializeField, Min(1)] private int maxDefendersFromUpgrade = 4;
+    [SerializeField, Min(1)] private int maxDefendersFromUpgrade = 6;
 
     private readonly Queue<DefenderUnit> pooledDefenders = new Queue<DefenderUnit>(8);
     private readonly List<Coroutine> respawnCoroutines = new List<Coroutine>(8);
     private readonly List<DefenderUnit> activeDefenders = new List<DefenderUnit>(8);
     private bool isAuthoringValid;
     private int runtimeSquadSize;
+    private bool roadFormationCached;
+    private Vector3 roadFormationAnchor;
+    private Vector2 roadFormationNormal;
 
     private void Awake()
     {
@@ -43,7 +51,8 @@ public sealed class BarracksController : MonoBehaviour
         if (!isAuthoringValid)
             return;
 
-        EnsureRuntimeBuffers();
+        roadFormationCached = false;
+        EnsureRuntimeBuffers(ResolveActiveSlotCount());
         if (spawnOnEnable)
             SpawnAllMissingDefenders();
     }
@@ -59,9 +68,10 @@ public sealed class BarracksController : MonoBehaviour
         if (!isAuthoringValid)
             return;
 
-        EnsureRuntimeBuffers();
         int activeSlotCount = ResolveActiveSlotCount();
-        for (int i = 0; i < defensePoints.Length; i++)
+        EnsureRuntimeBuffers(activeSlotCount);
+
+        for (int i = 0; i < activeDefenders.Count; i++)
         {
             if (i >= activeSlotCount)
             {
@@ -83,6 +93,7 @@ public sealed class BarracksController : MonoBehaviour
         else
             runtimeSquadSize = Mathf.Max(1, defendersPerBarracks);
 
+        roadFormationCached = false;
         if (isActiveAndEnabled)
             SpawnAllMissingDefenders();
     }
@@ -95,41 +106,48 @@ public sealed class BarracksController : MonoBehaviour
             return false;
         }
 
-        if (defensePoints == null || defensePoints.Length == 0)
+        if (!preferRoadBlockingFormation && (defensePoints == null || defensePoints.Length == 0))
         {
-            Debug.LogError($"{name}: BarracksController requires at least one defense point.", this);
+            Debug.LogError($"{name}: BarracksController requires at least one defense point when road formation is disabled.", this);
             return false;
         }
 
-        for (int i = 0; i < defensePoints.Length; i++)
+        if (!preferRoadBlockingFormation)
         {
-            if (defensePoints[i] != null)
-                continue;
+            for (int i = 0; i < defensePoints.Length; i++)
+            {
+                if (defensePoints[i] != null)
+                    continue;
 
-            Debug.LogError($"{name}: defensePoints[{i}] is null.", this);
-            return false;
+                Debug.LogError($"{name}: defensePoints[{i}] is null.", this);
+                return false;
+            }
         }
 
         return true;
     }
 
-    private void EnsureRuntimeBuffers()
+    private void EnsureRuntimeBuffers(int requiredSlots)
     {
-        while (activeDefenders.Count < defensePoints.Length)
+        while (activeDefenders.Count < requiredSlots)
             activeDefenders.Add(null);
 
-        while (respawnCoroutines.Count < defensePoints.Length)
+        while (respawnCoroutines.Count < requiredSlots)
             respawnCoroutines.Add(null);
     }
 
     private int ResolveActiveSlotCount()
     {
-        int maxByPoints = defensePoints != null ? defensePoints.Length : 0;
-        if (maxByPoints <= 0)
+        int target = Mathf.Max(1, runtimeSquadSize);
+
+        if (preferRoadBlockingFormation)
+            return target;
+
+        int availablePoints = defensePoints != null ? defensePoints.Length : 0;
+        if (availablePoints <= 0)
             return 0;
 
-        int target = Mathf.Max(1, runtimeSquadSize);
-        return Mathf.Clamp(target, 0, maxByPoints);
+        return Mathf.Clamp(target, 0, availablePoints);
     }
 
     private void SpawnDefenderForSlot(int slotIndex)
@@ -147,7 +165,7 @@ public sealed class BarracksController : MonoBehaviour
         defender.transform.rotation = Quaternion.identity;
         defender.Died -= HandleDefenderDied;
         defender.Died += HandleDefenderDied;
-        defender.ActivateAt(defensePoints[slotIndex]);
+        defender.ActivateAt(ResolveDefensePoint(slotIndex, ResolveActiveSlotCount()));
 
         activeDefenders[slotIndex] = defender;
     }
@@ -163,7 +181,7 @@ public sealed class BarracksController : MonoBehaviour
             return pooled;
         }
 
-        Transform parent = defendersRoot != null ? defendersRoot : null;
+        Transform parent = defendersRoot != null ? defendersRoot : transform;
         return Instantiate(defenderPrefab, transform.position, Quaternion.identity, parent);
     }
 
@@ -175,6 +193,99 @@ public sealed class BarracksController : MonoBehaviour
         int clamped = Mathf.Clamp(slotIndex, 0, spawnPoints.Length - 1);
         Transform spawn = spawnPoints[clamped];
         return spawn != null ? spawn : null;
+    }
+
+    private Vector3 ResolveDefensePoint(int slotIndex, int totalSlots)
+    {
+        if (!preferRoadBlockingFormation && defensePoints != null && defensePoints.Length > 0)
+        {
+            int clamped = Mathf.Clamp(slotIndex, 0, defensePoints.Length - 1);
+            Transform explicitPoint = defensePoints[clamped];
+            if (explicitPoint != null)
+                return explicitPoint.position;
+        }
+
+        if (!roadFormationCached)
+            roadFormationCached = TryComputeRoadFormationAnchor(out roadFormationAnchor, out roadFormationNormal);
+
+        if (!roadFormationCached)
+            return transform.position;
+
+        int slotCount = Mathf.Max(1, totalSlots);
+        float center = (slotCount - 1) * 0.5f;
+        float sideOffset = (slotIndex - center) * RoadFormationSpacing;
+        Vector3 lateral = (Vector3)(roadFormationNormal * sideOffset);
+        Vector3 forward = new Vector3(0f, RoadFormationForwardOffset, 0f);
+        return roadFormationAnchor + lateral + forward;
+    }
+
+    private bool TryComputeRoadFormationAnchor(out Vector3 anchor, out Vector2 normal)
+    {
+        anchor = transform.position;
+        normal = Vector2.right;
+
+        Transform[][] allPaths = Waypoints.AllPaths;
+        if (allPaths == null || allPaths.Length == 0)
+            return false;
+
+        float bestSqrDistance = float.PositiveInfinity;
+        Vector2 bestTangent = Vector2.down;
+        Vector2 source = transform.position;
+
+        for (int pathIndex = 0; pathIndex < allPaths.Length; pathIndex++)
+        {
+            Transform[] path = allPaths[pathIndex];
+            if (path == null || path.Length == 0)
+                continue;
+
+            for (int waypointIndex = 0; waypointIndex < path.Length; waypointIndex++)
+            {
+                Transform waypoint = path[waypointIndex];
+                if (waypoint == null)
+                    continue;
+
+                Vector2 waypointPosition = waypoint.position;
+                float sqrDistance = (waypointPosition - source).sqrMagnitude;
+                if (sqrDistance >= bestSqrDistance)
+                    continue;
+
+                bestSqrDistance = sqrDistance;
+                anchor = waypoint.position;
+                bestTangent = ResolvePathTangent(path, waypointIndex);
+            }
+        }
+
+        if (float.IsPositiveInfinity(bestSqrDistance))
+            return false;
+
+        if (bestTangent.sqrMagnitude < 0.0001f)
+            bestTangent = Vector2.down;
+
+        bestTangent.Normalize();
+        normal = new Vector2(-bestTangent.y, bestTangent.x);
+        return true;
+    }
+
+    private static Vector2 ResolvePathTangent(Transform[] path, int waypointIndex)
+    {
+        Transform current = path[waypointIndex];
+        if (current == null)
+            return Vector2.down;
+
+        Transform previous = waypointIndex > 0 ? path[waypointIndex - 1] : null;
+        Transform next = waypointIndex < path.Length - 1 ? path[waypointIndex + 1] : null;
+
+        Vector2 tangent;
+        if (previous != null && next != null)
+            tangent = (Vector2)(next.position - previous.position);
+        else if (next != null)
+            tangent = (Vector2)(next.position - current.position);
+        else if (previous != null)
+            tangent = (Vector2)(current.position - previous.position);
+        else
+            tangent = Vector2.down;
+
+        return tangent.sqrMagnitude > 0.0001f ? tangent.normalized : Vector2.down;
     }
 
     private void HandleDefenderDied(DefenderUnit defender)

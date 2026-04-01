@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 public class TowerSelectionInput : MonoBehaviour
 {
+    private static readonly Collider2D[] OverlapBuffer = new Collider2D[24];
+
     [SerializeField] private Camera worldCamera;
     [SerializeField] private TowerSelectionService selectionService;
     [SerializeField] private LayerMask towerLayerMask;
@@ -32,18 +34,42 @@ public class TowerSelectionInput : MonoBehaviour
         world.z = 0f;
 
         Collider2D hit = Physics2D.OverlapPoint(world, towerLayerMask);
-        if (hit != null)
+        if (TryResolveTowerFromCollider(hit, out TowerUpgradable maskedTower))
         {
-            TowerUpgradable tower = hit.GetComponentInParent<TowerUpgradable>();
-            if (tower != null && tower.gameObject.activeInHierarchy && !tower.IsSold)
-            {
-                selectionService.Select(tower);
-                return;
-            }
+            selectionService.Select(maskedTower);
+            return;
+        }
+
+        int overlapCount = Physics2D.OverlapPointNonAlloc(world, OverlapBuffer);
+        for (int i = 0; i < overlapCount; i++)
+        {
+            Collider2D candidate = OverlapBuffer[i];
+            OverlapBuffer[i] = null;
+            if (!TryResolveTowerFromCollider(candidate, out TowerUpgradable tower))
+                continue;
+
+            selectionService.Select(tower);
+            return;
         }
 
         if (clearSelectionOnMiss)
             selectionService.ClearSelection();
+    }
+
+    private static bool TryResolveTowerFromCollider(Collider2D collider, out TowerUpgradable tower)
+    {
+        tower = null;
+        if (collider == null)
+            return false;
+
+        tower = collider.GetComponentInParent<TowerUpgradable>();
+        if (tower == null)
+            return false;
+
+        if (!tower.gameObject.activeInHierarchy || tower.IsSold)
+            return false;
+
+        return true;
     }
 
     private bool IsPointerOverUi(int pointerId)

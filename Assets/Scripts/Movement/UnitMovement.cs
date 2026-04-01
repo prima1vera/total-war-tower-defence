@@ -4,6 +4,9 @@ public class UnitMovement : MonoBehaviour
 {
     private const float SeparationRefreshInterval = 0.06f;
     private const float SeparationRefreshJitter = 0.015f;
+    private const float BlockerMaintainBehindRange = 0.95f;
+    private const float BlockerAggroBehindRange = 1.2f;
+    private const float BlockerAggroLanePadding = 0.2f;
 
     public float speed = 2f;
 
@@ -50,6 +53,28 @@ public class UnitMovement : MonoBehaviour
     private int lastKnownBlockerRegistryVersion = -1;
 
     public Vector2 CurrentPathDirection => currentPathDirection;
+
+    public void NotifyBlockerAggro(IEnemyPathBlocker blocker)
+    {
+        if (!attackPathBlockers || blocker == null || !blocker.IsBlocking)
+            return;
+
+        Vector2 heading = currentPathDirection.sqrMagnitude > 0.0001f ? currentPathDirection.normalized : Vector2.down;
+        Vector2 toBlocker = blocker.WorldPosition - (Vector2)cachedTransform.position;
+        float blockerRadius = Mathf.Max(0.05f, blocker.BlockRadius);
+        float projection = Vector2.Dot(toBlocker, heading);
+        if (projection < -(blockerRadius + BlockerAggroBehindRange) || projection > blockerScanRange + blockerRadius)
+            return;
+
+        float perpendicular = Mathf.Abs(heading.x * toBlocker.y - heading.y * toBlocker.x);
+        float allowedWidth = blockerLaneHalfWidth + blockerRadius + BlockerAggroLanePadding;
+        if (perpendicular > allowedWidth)
+            return;
+
+        currentBlocker = blocker;
+        blockerRetargetTimer = Mathf.Max(0.02f, blockerRetargetInterval);
+        lastKnownBlockerRegistryVersion = EnemyPathBlockerRegistry.Version;
+    }
 
     public void ApplyKnockback(Vector2 direction, float force)
     {
@@ -224,7 +249,7 @@ public class UnitMovement : MonoBehaviour
         float projection = Vector2.Dot(toBlocker, heading);
         float blockerRadius = Mathf.Max(0.05f, blocker.BlockRadius);
 
-        if (projection < -blockerRadius || projection > blockerScanRange + blockerRadius)
+        if (projection < -(blockerRadius + BlockerMaintainBehindRange) || projection > blockerScanRange + blockerRadius)
             return false;
 
         float perpendicular = Mathf.Abs(heading.x * toBlocker.y - heading.y * toBlocker.x);

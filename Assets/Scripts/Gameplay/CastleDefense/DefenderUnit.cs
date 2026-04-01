@@ -42,6 +42,8 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
     private bool hasIsDeadParam;
 
     private Transform guardPoint;
+    private Vector3 staticGuardPoint;
+    private bool useStaticGuardPoint;
     private UnitHealth currentEnemyTarget;
     private int currentHealth;
     private bool initialized;
@@ -81,6 +83,33 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
     public void ActivateAt(Transform guard)
     {
         guardPoint = guard;
+        useStaticGuardPoint = guard == null;
+        staticGuardPoint = guard != null ? guard.position : transform.position;
+        ActivateInternal();
+    }
+
+    public void ActivateAt(Vector3 guardPosition)
+    {
+        guardPoint = null;
+        useStaticGuardPoint = true;
+        staticGuardPoint = guardPosition;
+        ActivateInternal();
+    }
+
+    public void ReceiveBlockDamage(int amount, UnitHealth attacker)
+    {
+        if (!initialized || dead || amount <= 0)
+            return;
+
+        currentHealth -= amount;
+        if (currentHealth > 0)
+            return;
+
+        Die();
+    }
+
+    private void ActivateInternal()
+    {
         currentEnemyTarget = null;
         currentHealth = Mathf.Max(1, maxHealth);
         dead = false;
@@ -94,18 +123,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         ApplyDeadAnimation(false);
         ApplyMovingAnimation(false);
         gameObject.SetActive(true);
-    }
-
-    public void ReceiveBlockDamage(int amount, UnitHealth attacker)
-    {
-        if (!initialized || dead || amount <= 0)
-            return;
-
-        currentHealth -= amount;
-        if (currentHealth > 0)
-            return;
-
-        Die();
     }
 
     private void Update()
@@ -150,6 +167,8 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
 
         Vector2 hitDirection = toTarget.sqrMagnitude > 0.001f ? toTarget.normalized : Vector2.down;
         currentEnemyTarget.TakeDamage(attackDamage, DamageType.Normal, hitDirection, attackKnockback);
+        if (currentEnemyTarget != null && currentEnemyTarget.TryGetComponent(out UnitMovement movement))
+            movement.NotifyBlockerAggro(this);
         TriggerAttackAnimation();
         attackTimer = attackInterval;
     }
@@ -165,30 +184,30 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         if (currentEnemyTarget.IsDead)
             return true;
 
-        if (guardPoint == null)
+        if (!TryGetGuardPoint(out Vector3 guardWorldPosition))
             return false;
 
-        float distFromGuard = Vector2.Distance(currentEnemyTarget.transform.position, guardPoint.position);
+        float distFromGuard = Vector2.Distance(currentEnemyTarget.transform.position, guardWorldPosition);
         return distFromGuard > chaseLimitFromGuard;
     }
 
     private void RefreshTarget()
     {
-        if (guardPoint == null)
+        if (!TryGetGuardPoint(out Vector3 guardWorldPosition))
         {
             currentEnemyTarget = null;
             return;
         }
 
-        EnemyRegistry.TryGetNearestEnemy(guardPoint.position, engageRange, out currentEnemyTarget);
+        EnemyRegistry.TryGetNearestEnemy(guardWorldPosition, engageRange, out currentEnemyTarget);
     }
 
     private void MoveToGuardPoint()
     {
-        if (guardPoint == null)
+        if (!TryGetGuardPoint(out Vector3 guardWorldPosition))
             return;
 
-        MoveTowards(guardPoint.position);
+        MoveTowards(guardWorldPosition);
     }
 
     private void MoveTowards(Vector3 targetPosition)
@@ -207,6 +226,24 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         transform.position = new Vector3(next.x, next.y, transform.position.z);
         ApplyMovingAnimation(true);
         UpdateAnimatorDirection(direction);
+    }
+
+    private bool TryGetGuardPoint(out Vector3 guardWorldPosition)
+    {
+        if (!useStaticGuardPoint && guardPoint != null)
+        {
+            guardWorldPosition = guardPoint.position;
+            return true;
+        }
+
+        if (useStaticGuardPoint)
+        {
+            guardWorldPosition = staticGuardPoint;
+            return true;
+        }
+
+        guardWorldPosition = default;
+        return false;
     }
 
     private void UpdateAnimatorDirection(Vector2 direction)
