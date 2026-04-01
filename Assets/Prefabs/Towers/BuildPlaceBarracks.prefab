@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -646932245806785905}
   - component: {fileID: -6126556625971842649}
   m_Layer: 25
-  m_Name: BuildPlace
+  m_Name: BuildPlaceBarracks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: -516203043
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 1a607d94f4dba2543b7420d6ee0a1293, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f02c64b157f77e447ba646fb3324cc0d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -122,7 +122,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.37, y: 1.28}
+    oldSize: {x: 1.95, y: 1.28}
     newSize: {x: 0.7, y: 1.3}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -143,10 +143,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a0f92cafc14f91b2803b8167f135f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  placeId: 6ca449e3310d424bb7756d409b66e66a
+  placeId: 1f5715b21b1844bd83500f15f33ced04
   placeMarkerRenderer: {fileID: 6088377668033601496}
   hideMarkerWhenOccupied: 1
   allowedOptionIds:
-  - tower_base
-  - tower_archer
-  - tower_catapult
+  - barracks_t1

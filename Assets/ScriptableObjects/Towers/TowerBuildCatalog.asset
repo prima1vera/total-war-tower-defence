@@ -28,3 +28,8 @@ MonoBehaviour:
     Cost: 15
     TowerPrefab: {fileID: 1551700000000000004, guid: 3f56e45c94e482c43bcf8fb07c45c16f, type: 3}
     IsEnabled: 1
+  - OptionId: barracks_t1
+    DisplayName: Barracks
+    Cost: 20
+    TowerPrefab: {fileID: 5269736602336022722, guid: d6573fd99e4368244a0c6e368a43cc16, type: 3}
+    IsEnabled: 1
