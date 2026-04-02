@@ -12,6 +12,8 @@ public class UnitMovement : MonoBehaviour
     private const float BlockerMaintainBehindRange = 0.95f;
     private const float BlockerAggroBehindRange = 1.2f;
     private const float BlockerAggroLanePadding = 0.2f;
+    private const float ForcedAggroMaxDistance = 2.4f;
+    private const float ForcedAggroBreakDistance = 2.9f;
 
     public float speed = 2f;
 
@@ -56,6 +58,7 @@ public class UnitMovement : MonoBehaviour
     private float blockerAttackTimer;
     private float blockerRetargetTimer;
     private int lastKnownBlockerRegistryVersion = -1;
+    private bool hasForcedBlockerAggro;
     private bool hasIsMovingParam;
     private bool hasAttackBoolParam;
     private bool hasAttackTriggerParam;
@@ -67,19 +70,13 @@ public class UnitMovement : MonoBehaviour
         if (!attackPathBlockers || blocker == null || !blocker.IsBlocking)
             return;
 
-        Vector2 heading = currentPathDirection.sqrMagnitude > 0.0001f ? currentPathDirection.normalized : Vector2.down;
         Vector2 toBlocker = blocker.WorldPosition - (Vector2)cachedTransform.position;
-        float blockerRadius = Mathf.Max(0.05f, blocker.BlockRadius);
-        float projection = Vector2.Dot(toBlocker, heading);
-        if (projection < -(blockerRadius + BlockerAggroBehindRange) || projection > blockerScanRange + blockerRadius)
-            return;
-
-        float perpendicular = Mathf.Abs(heading.x * toBlocker.y - heading.y * toBlocker.x);
-        float allowedWidth = blockerLaneHalfWidth + blockerRadius + BlockerAggroLanePadding;
-        if (perpendicular > allowedWidth)
+        float distance = toBlocker.magnitude;
+        if (distance > ForcedAggroMaxDistance)
             return;
 
         currentBlocker = blocker;
+        hasForcedBlockerAggro = true;
         blockerRetargetTimer = Mathf.Max(0.02f, blockerRetargetInterval);
         lastKnownBlockerRegistryVersion = EnemyPathBlockerRegistry.Version;
     }
@@ -117,6 +114,7 @@ public class UnitMovement : MonoBehaviour
         blockerAttackTimer = 0f;
         blockerRetargetTimer = Random.Range(0f, blockerRetargetInterval);
         lastKnownBlockerRegistryVersion = -1;
+        hasForcedBlockerAggro = false;
         SetAttackAnimation(false);
         SetMovingAnimation(false);
     }
@@ -220,8 +218,28 @@ public class UnitMovement : MonoBehaviour
         blockerAttackTimer -= Time.deltaTime;
         blockerRetargetTimer -= Time.deltaTime;
 
-        if (!IsBlockerRelevant(currentBlocker, forward))
-            currentBlocker = null;
+        if (currentBlocker != null)
+        {
+            if (!currentBlocker.IsBlocking)
+            {
+                currentBlocker = null;
+                hasForcedBlockerAggro = false;
+            }
+            else if (hasForcedBlockerAggro)
+            {
+                Vector2 toForcedBlocker = currentBlocker.WorldPosition - (Vector2)cachedTransform.position;
+                float breakDistance = Mathf.Max(ForcedAggroBreakDistance, blockerScanRange + Mathf.Max(0.05f, currentBlocker.BlockRadius) + 0.8f);
+                if (toForcedBlocker.sqrMagnitude > breakDistance * breakDistance)
+                {
+                    currentBlocker = null;
+                    hasForcedBlockerAggro = false;
+                }
+            }
+            else if (!IsBlockerRelevant(currentBlocker, forward))
+            {
+                currentBlocker = null;
+            }
+        }
 
         bool blockerRegistryChanged = lastKnownBlockerRegistryVersion != EnemyPathBlockerRegistry.Version;
         if (currentBlocker == null && (blockerRetargetTimer <= 0f || blockerRegistryChanged))
@@ -232,6 +250,9 @@ public class UnitMovement : MonoBehaviour
                 blockerScanRange,
                 blockerLaneHalfWidth,
                 out currentBlocker);
+
+            if (currentBlocker != null)
+                hasForcedBlockerAggro = false;
 
             blockerRetargetTimer = Mathf.Max(0.02f, blockerRetargetInterval);
             lastKnownBlockerRegistryVersion = EnemyPathBlockerRegistry.Version;
@@ -246,6 +267,23 @@ public class UnitMovement : MonoBehaviour
 
         if (distanceToCenter > contactDistance)
         {
+            if (hasForcedBlockerAggro)
+            {
+                Vector2 pursuitDirection = toBlocker.sqrMagnitude > 0.0001f ? toBlocker.normalized : forward;
+                Vector3 movement = (Vector3)pursuitDirection * speed * speedMultiplier * Time.deltaTime;
+                cachedTransform.Translate(movement, Space.World);
+
+                if (animator != null)
+                {
+                    animator.SetFloat(MoveXHash, pursuitDirection.x);
+                    animator.SetFloat(MoveYHash, pursuitDirection.y);
+                }
+
+                SetMovingAnimation(true);
+                SetAttackAnimation(false);
+                return true;
+            }
+
             SetAttackAnimation(false);
             return false;
         }

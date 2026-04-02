@@ -43,9 +43,11 @@ public class TowerSelectionInput : MonoBehaviour
                 return;
             }
 
-            if (armedRallyBarracks.TrySetRallyPoint(world))
+            bool rallyPointApplied = armedRallyBarracks.TrySetRallyPoint(world);
+            CancelBarracksRallyPlacement();
+
+            if (rallyPointApplied)
             {
-                CancelBarracksRallyPlacement();
                 if (selectionService != null)
                     selectionService.ClearSelection();
             }

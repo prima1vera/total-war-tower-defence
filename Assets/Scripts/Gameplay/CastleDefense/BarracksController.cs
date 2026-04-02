@@ -534,7 +534,7 @@ public sealed class BarracksController : MonoBehaviour
         bool shouldShowCircle = rallyPlacementPreviewActive;
         rallyCircleRenderer.enabled = shouldShowCircle;
 
-        bool shouldShowMarker = hasAnchor && (hasManualRallyPoint || rallyPlacementPreviewActive);
+        bool shouldShowMarker = hasAnchor && rallyPlacementPreviewActive;
         if (rallyPointRenderer != null)
         {
             rallyPointRenderer.enabled = shouldShowMarker && rallyPointSprite != null;

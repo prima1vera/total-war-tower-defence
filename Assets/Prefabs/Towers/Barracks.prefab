@@ -166,6 +166,10 @@ MonoBehaviour:
   rallyMaxDistanceFromBarracks: 3.8
   rallySnapToRoadMaxDistance: 1.2
   rallyCircleWidth: 0.04
+  rallyPointSprite: {fileID: 21300000, guid: 6592803b94704d347a6347db2e7ab8ba, type: 3}
+  rallyPointScale: 0.7
+  rallyPointOffset: {x: 0, y: 0.18, z: 0}
+  rallyPointSortingOffset: 4
   respawnCooldown: 4
   spawnOnEnable: 1
   defendersPerBarracks: 2
