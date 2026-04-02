@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 40
-  moveSpeed: 2.2
+  moveSpeed: 1.2
   stopDistance: 0.06
   engageRange: 2.1
   chaseLimitFromGuard: 3.2
