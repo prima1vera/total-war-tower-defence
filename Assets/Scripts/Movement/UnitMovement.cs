@@ -14,6 +14,7 @@ public class UnitMovement : MonoBehaviour
     private const float BlockerAggroLanePadding = 0.2f;
     private const float ForcedAggroMaxDistance = 2.4f;
     private const float ForcedAggroBreakDistance = 2.9f;
+    private const float EffectiveKnockbackThreshold = 0.08f;
 
     public float speed = 2f;
 
@@ -83,6 +84,9 @@ public class UnitMovement : MonoBehaviour
 
     public void ApplyKnockback(Vector2 direction, float force)
     {
+        if (force < EffectiveKnockbackThreshold || direction.sqrMagnitude <= 0.0001f)
+            return;
+
         knockbackVelocity = direction * force;
         knockbackTimer = 0.1f;
     }

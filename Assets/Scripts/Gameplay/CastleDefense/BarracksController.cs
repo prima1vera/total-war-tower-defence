@@ -42,6 +42,10 @@ public sealed class BarracksController : MonoBehaviour
     private Vector3 rallyPointOffset = new Vector3(0f, 0.18f, 0f);
     [SerializeField, Min(0), Tooltip("Sorting order offset applied to rally marker over barracks layer.")]
     private int rallyPointSortingOffset = 4;
+    [SerializeField, Tooltip("When enabled, rally flag stays visible while this barracks is selected.")]
+    private bool showRallyPointWhenSelected = true;
+    [SerializeField, Min(0f), Tooltip("After setting rally point, keep marker visible for this long and fade it out.")]
+    private float rallyPointFadeAfterSetSeconds = 1.15f;
 
     [Header("Respawn")]
     [SerializeField, Min(0.1f)] private float respawnCooldown = 4f;
@@ -64,6 +68,8 @@ public sealed class BarracksController : MonoBehaviour
     private Vector3 manualRallyPoint;
     private Vector2 manualRallyNormal;
     private bool rallyPlacementPreviewActive;
+    private bool isSelectedInUi;
+    private float rallyPointForcedVisibleUntil;
     private LineRenderer rallyCircleRenderer;
     private SpriteRenderer rallyPointRenderer;
 
@@ -164,6 +170,7 @@ public sealed class BarracksController : MonoBehaviour
         roadFormationCached = true;
         roadFormationAnchor = snappedPoint;
         roadFormationNormal = normal;
+        rallyPointForcedVisibleUntil = Time.time + Mathf.Max(0f, rallyPointFadeAfterSetSeconds);
 
         UpdateRallyPointVisual();
         ReassignDefenderGuardPoints(resetTargets: true);
@@ -173,6 +180,12 @@ public sealed class BarracksController : MonoBehaviour
     public void SetRallyPlacementPreviewActive(bool active)
     {
         rallyPlacementPreviewActive = active;
+        UpdateRallyPointVisual();
+    }
+
+    public void SetSelectedInUi(bool selected)
+    {
+        isSelectedInUi = selected;
         UpdateRallyPointVisual();
     }
 
@@ -534,12 +547,38 @@ public sealed class BarracksController : MonoBehaviour
         bool shouldShowCircle = rallyPlacementPreviewActive;
         rallyCircleRenderer.enabled = shouldShowCircle;
 
-        bool shouldShowMarker = hasAnchor && rallyPlacementPreviewActive;
+        bool shouldShowMarker = false;
+        float markerAlpha = 1f;
+        if (hasAnchor)
+        {
+            if (rallyPlacementPreviewActive)
+            {
+                shouldShowMarker = true;
+                markerAlpha = 1f;
+            }
+            else if (showRallyPointWhenSelected && isSelectedInUi)
+            {
+                shouldShowMarker = true;
+                markerAlpha = 1f;
+            }
+            else if (rallyPointForcedVisibleUntil > Time.time)
+            {
+                shouldShowMarker = true;
+                float duration = Mathf.Max(0.01f, rallyPointFadeAfterSetSeconds);
+                markerAlpha = Mathf.Clamp01((rallyPointForcedVisibleUntil - Time.time) / duration);
+            }
+        }
+
         if (rallyPointRenderer != null)
         {
             rallyPointRenderer.enabled = shouldShowMarker && rallyPointSprite != null;
             if (rallyPointRenderer.enabled)
+            {
                 rallyPointRenderer.transform.position = rallyAnchor + rallyPointOffset;
+                Color markerColor = Color.white;
+                markerColor.a = markerAlpha;
+                rallyPointRenderer.color = markerColor;
+            }
         }
 
         if (!shouldShowCircle)

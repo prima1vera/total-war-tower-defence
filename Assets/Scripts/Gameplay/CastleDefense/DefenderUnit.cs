@@ -52,6 +52,10 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
     private float attackTimer;
 
     public event Action<DefenderUnit> Died;
+    public event Action<DefenderDamageFeedbackEvent> DamageTaken;
+
+    public static event Action<DefenderDamageFeedbackEvent> GlobalDamageTaken;
+    public static event Action<DefenderUnit> GlobalDefenderDied;
 
     public bool IsAlive => initialized && !dead;
     public bool IsBlocking => IsAlive && gameObject.activeInHierarchy;
@@ -59,6 +63,9 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
     public float BlockRadius => ResolveBlockRadius();
     public int PathPriority => pathPriority;
     public float ChaseLimitFromGuard => chaseLimitFromGuard;
+    public int CurrentHealth => Mathf.Max(0, currentHealth);
+    public int MaxHealth => Mathf.Max(1, maxHealth);
+    public float NormalizedHealth => Mathf.Clamp01((float)CurrentHealth / MaxHealth);
 
     private void Awake()
     {
@@ -119,6 +126,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             return;
 
         currentHealth -= amount;
+        RaiseDamageTaken(amount);
         if (currentHealth > 0)
             return;
 
@@ -204,7 +212,8 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             return;
 
         Vector2 hitDirection = toTarget.sqrMagnitude > 0.001f ? toTarget.normalized : Vector2.down;
-        currentEnemyTarget.TakeDamage(attackDamage, DamageType.Normal, hitDirection, attackKnockback);
+        float appliedKnockback = attackKnockback >= 0.08f ? attackKnockback : 0f;
+        currentEnemyTarget.TakeDamage(attackDamage, DamageType.Normal, hitDirection, appliedKnockback);
         if (currentEnemyTarget != null && currentEnemyTarget.TryGetComponent(out UnitMovement movement))
             movement.NotifyBlockerAggro(this);
         TriggerAttackAnimation();
@@ -325,7 +334,21 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             blockerCollider.enabled = false;
 
         Died?.Invoke(this);
+        GlobalDefenderDied?.Invoke(this);
         gameObject.SetActive(false);
+    }
+
+    private void RaiseDamageTaken(int amount)
+    {
+        DefenderDamageFeedbackEvent damageEvent = new DefenderDamageFeedbackEvent(
+            this,
+            amount,
+            Mathf.Max(0, currentHealth),
+            MaxHealth,
+            currentHealth <= 0);
+
+        DamageTaken?.Invoke(damageEvent);
+        GlobalDamageTaken?.Invoke(damageEvent);
     }
 
     private void CacheAnimatorBindings()
@@ -400,5 +423,24 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             animator.SetBool(AttackHash, true);
             animator.SetBool(AttackHash, false);
         }
+    }
+}
+
+public readonly struct DefenderDamageFeedbackEvent
+{
+    public DefenderUnit Target { get; }
+    public int Amount { get; }
+    public int CurrentHealth { get; }
+    public int MaxHealth { get; }
+    public bool IsFatal { get; }
+    public float NormalizedHealth => MaxHealth > 0 ? Mathf.Clamp01((float)CurrentHealth / MaxHealth) : 0f;
+
+    public DefenderDamageFeedbackEvent(DefenderUnit target, int amount, int currentHealth, int maxHealth, bool isFatal)
+    {
+        Target = target;
+        Amount = Mathf.Max(0, amount);
+        CurrentHealth = Mathf.Max(0, currentHealth);
+        MaxHealth = Mathf.Max(1, maxHealth);
+        IsFatal = isFatal;
     }
 }

@@ -111,11 +111,15 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
         if (currencyWallet != null)
             currencyWallet.BalanceChanged -= HandleBalanceChanged;
 
+        SetBarracksSelectedState(false);
         DetachTowerEvents();
     }
 
     private void LateUpdate()
     {
+        if (panelVisible)
+            RefreshBarracksActions();
+
         if (!followSelectedTowerWorldTarget || !panelVisible || currentWorldTarget == null)
             return;
 
@@ -200,14 +204,17 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
 
         if (selectedTower == tower)
         {
+            SetBarracksSelectedState(tower != null);
             RefreshPanel();
             return;
         }
 
+        SetBarracksSelectedState(false);
         DetachTowerEvents();
         selectedTower = tower;
         currentWorldTarget = selectedTower != null ? selectedTower.transform : null;
         AttachTowerEvents();
+        SetBarracksSelectedState(selectedTower != null);
         RefreshPanel();
     }
 
@@ -394,6 +401,15 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
             rallyPointButtonText.text = armed ? rallyArmedLabel : rallyLabel;
             rallyPointButtonText.alpha = hasBarracks ? 1f : 0.6f;
         }
+    }
+
+    private void SetBarracksSelectedState(bool selected)
+    {
+        if (selectedTower == null)
+            return;
+
+        if (selectedTower.TryGetComponent(out BarracksController barracks))
+            barracks.SetSelectedInUi(selected);
     }
 
     private string BuildUpgradeLabel(TowerUpgradeOptionState option, string slotLabel)
