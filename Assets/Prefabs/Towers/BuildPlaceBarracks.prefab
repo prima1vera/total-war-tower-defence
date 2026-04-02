@@ -143,7 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a0f92cafc14f91b2803b8167f135f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  placeId: 1f5715b21b1844bd83500f15f33ced04
+  placeId: d788777cf747445195f52d12137cde0f
   placeMarkerRenderer: {fileID: 6088377668033601496}
   hideMarkerWhenOccupied: 1
   allowedOptionIds:

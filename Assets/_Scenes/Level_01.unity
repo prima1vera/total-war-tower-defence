@@ -7544,10 +7544,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1624595012}
     m_Modifications:
-    - target: {fileID: -6126556625971842649, guid: cb47bd484b985cb4b9ef09ec5896dc19, type: 3}
-      propertyPath: placeId
-      value: d788777cf747445195f52d12137cde0f
-      objectReference: {fileID: 0}
     - target: {fileID: 2095384228686980481, guid: cb47bd484b985cb4b9ef09ec5896dc19, type: 3}
       propertyPath: m_Name
       value: BuildPlaceBarracks (2)
@@ -10052,6 +10048,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3259319733475057691, guid: 0b4d24d500d8a8b44b4d61ccbc07a808, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6088377668033601496, guid: 0b4d24d500d8a8b44b4d61ccbc07a808, type: 3}
+      propertyPath: m_SortingOrder
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
