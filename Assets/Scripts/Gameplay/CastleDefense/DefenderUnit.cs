@@ -58,6 +58,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
     public Vector2 WorldPosition => blockerCollider != null ? blockerCollider.bounds.center : (Vector2)transform.position;
     public float BlockRadius => ResolveBlockRadius();
     public int PathPriority => pathPriority;
+    public float ChaseLimitFromGuard => chaseLimitFromGuard;
 
     private void Awake()
     {

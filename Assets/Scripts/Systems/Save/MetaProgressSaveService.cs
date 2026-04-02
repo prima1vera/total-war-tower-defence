@@ -215,9 +215,10 @@ public sealed class MetaProgressSaveService : MonoBehaviour
             towerId.Tower.Sold += HandleTowerSold;
         }
 
-        for (int i = 0; i < trackedBuildPlaces.Length; i++)
+        BuildPlace[] effectiveBuildPlaces = GetEffectiveBuildPlaces();
+        for (int i = 0; i < effectiveBuildPlaces.Length; i++)
         {
-            BuildPlace place = trackedBuildPlaces[i];
+            BuildPlace place = effectiveBuildPlaces[i];
             if (place == null)
                 continue;
 
@@ -245,9 +246,10 @@ public sealed class MetaProgressSaveService : MonoBehaviour
             towerId.Tower.Sold -= HandleTowerSold;
         }
 
-        for (int i = 0; i < trackedBuildPlaces.Length; i++)
+        BuildPlace[] effectiveBuildPlaces = GetEffectiveBuildPlaces();
+        for (int i = 0; i < effectiveBuildPlaces.Length; i++)
         {
-            BuildPlace place = trackedBuildPlaces[i];
+            BuildPlace place = effectiveBuildPlaces[i];
             if (place == null)
                 continue;
 
@@ -398,9 +400,13 @@ public sealed class MetaProgressSaveService : MonoBehaviour
     {
         if (trackedTowers == null)
             trackedTowers = Array.Empty<TowerPersistentId>();
+        else
+            trackedTowers = RemoveNulls(trackedTowers);
 
         if (trackedBuildPlaces == null)
             trackedBuildPlaces = Array.Empty<BuildPlace>();
+        else
+            trackedBuildPlaces = RemoveNulls(trackedBuildPlaces);
     }
 
     private static T[] RemoveNulls<T>(T[] source) where T : UnityEngine.Object
@@ -475,15 +481,16 @@ public sealed class MetaProgressSaveService : MonoBehaviour
 
     private BuildPlaceSaveRecord[] CaptureBuildPlaceRecords()
     {
-        if (trackedBuildPlaces == null || trackedBuildPlaces.Length == 0)
+        BuildPlace[] effectiveBuildPlaces = GetEffectiveBuildPlaces();
+        if (effectiveBuildPlaces.Length == 0)
             return Array.Empty<BuildPlaceSaveRecord>();
 
         duplicateBuildPlaceIdGuard.Clear();
-        var records = new List<BuildPlaceSaveRecord>(trackedBuildPlaces.Length);
+        var records = new List<BuildPlaceSaveRecord>(effectiveBuildPlaces.Length);
 
-        for (int i = 0; i < trackedBuildPlaces.Length; i++)
+        for (int i = 0; i < effectiveBuildPlaces.Length; i++)
         {
-            BuildPlace place = trackedBuildPlaces[i];
+            BuildPlace place = effectiveBuildPlaces[i];
             if (!ValidateBuildPlace(place))
                 continue;
 
@@ -528,9 +535,10 @@ public sealed class MetaProgressSaveService : MonoBehaviour
                 loadedBuildPlaceMap.Add(record.PlaceId, record);
         }
 
-        for (int i = 0; i < trackedBuildPlaces.Length; i++)
+        BuildPlace[] effectiveBuildPlaces = GetEffectiveBuildPlaces();
+        for (int i = 0; i < effectiveBuildPlaces.Length; i++)
         {
-            BuildPlace place = trackedBuildPlaces[i];
+            BuildPlace place = effectiveBuildPlaces[i];
             if (!ValidateBuildPlace(place))
                 continue;
 
@@ -567,6 +575,39 @@ public sealed class MetaProgressSaveService : MonoBehaviour
             if (!restored)
                 Debug.LogWarning($"MetaProgressSaveService: failed to restore build place '{record.PlaceId}' with option '{record.OptionId}'.", this);
         }
+    }
+
+    private BuildPlace[] GetEffectiveBuildPlaces()
+    {
+        var result = new List<BuildPlace>(trackedBuildPlaces != null ? trackedBuildPlaces.Length : 0);
+        var dedupe = new HashSet<BuildPlace>();
+
+        if (trackedBuildPlaces != null)
+        {
+            for (int i = 0; i < trackedBuildPlaces.Length; i++)
+            {
+                BuildPlace place = trackedBuildPlaces[i];
+                if (place == null || !dedupe.Add(place))
+                    continue;
+
+                result.Add(place);
+            }
+        }
+
+        IReadOnlyList<BuildPlace> activePlaces = BuildPlace.ActivePlaces;
+        if (activePlaces != null)
+        {
+            for (int i = 0; i < activePlaces.Count; i++)
+            {
+                BuildPlace place = activePlaces[i];
+                if (place == null || !dedupe.Add(place))
+                    continue;
+
+                result.Add(place);
+            }
+        }
+
+        return result.ToArray();
     }
 
     private bool ValidateBuildPlace(BuildPlace place)

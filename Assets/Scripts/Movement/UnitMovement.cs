@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class UnitMovement : MonoBehaviour
 {
+    private static readonly int MoveXHash = Animator.StringToHash("moveX");
+    private static readonly int MoveYHash = Animator.StringToHash("moveY");
+    private static readonly int IsMovingHash = Animator.StringToHash("isMoving");
+    private static readonly int AttackHash = Animator.StringToHash("attack");
+
     private const float SeparationRefreshInterval = 0.06f;
     private const float SeparationRefreshJitter = 0.015f;
     private const float BlockerMaintainBehindRange = 0.95f;
@@ -51,6 +56,9 @@ public class UnitMovement : MonoBehaviour
     private float blockerAttackTimer;
     private float blockerRetargetTimer;
     private int lastKnownBlockerRegistryVersion = -1;
+    private bool hasIsMovingParam;
+    private bool hasAttackBoolParam;
+    private bool hasAttackTriggerParam;
 
     public Vector2 CurrentPathDirection => currentPathDirection;
 
@@ -109,12 +117,15 @@ public class UnitMovement : MonoBehaviour
         blockerAttackTimer = 0f;
         blockerRetargetTimer = Random.Range(0f, blockerRetargetInterval);
         lastKnownBlockerRegistryVersion = -1;
+        SetAttackAnimation(false);
+        SetMovingAnimation(false);
     }
 
     void Start()
     {
         unitHealth = GetComponent<UnitHealth>();
         animator = GetComponent<Animator>();
+        CacheAnimatorBindings();
 
         if (Waypoints.AllPaths == null || Waypoints.AllPaths.Length == 0)
         {
@@ -132,15 +143,25 @@ public class UnitMovement : MonoBehaviour
 
     void Update()
     {
-        if (path == null || path.Length == 0) return;
+        if (path == null || path.Length == 0)
+        {
+            SetAttackAnimation(false);
+            SetMovingAnimation(false);
+            return;
+        }
 
         if (unitHealth.CurrentState != UnitState.Moving)
+        {
+            SetAttackAnimation(false);
+            SetMovingAnimation(false);
             return;
+        }
 
         if (knockbackTimer > 0)
         {
             cachedTransform.Translate(knockbackVelocity * Time.deltaTime, Space.World);
             knockbackTimer -= Time.deltaTime;
+            SetAttackAnimation(false);
             return;
         }
 
@@ -167,9 +188,11 @@ public class UnitMovement : MonoBehaviour
         if (animator != null)
         {
             Vector2 direction = dir.normalized;
-            animator.SetFloat("moveX", direction.x);
-            animator.SetFloat("moveY", direction.y);
+            animator.SetFloat(MoveXHash, direction.x);
+            animator.SetFloat(MoveYHash, direction.y);
         }
+        SetAttackAnimation(false);
+        SetMovingAnimation(true);
 
         if ((cachedTransform.position - target.position).sqrMagnitude < 0.01f)
         {
@@ -222,19 +245,26 @@ public class UnitMovement : MonoBehaviour
         float contactDistance = Mathf.Max(0.05f, currentBlocker.BlockRadius + blockerAttackRange);
 
         if (distanceToCenter > contactDistance)
+        {
+            SetAttackAnimation(false);
             return false;
+        }
 
         if (animator != null && toBlocker.sqrMagnitude > 0.0001f)
         {
             Vector2 face = toBlocker.normalized;
-            animator.SetFloat("moveX", face.x);
-            animator.SetFloat("moveY", face.y);
+            animator.SetFloat(MoveXHash, face.x);
+            animator.SetFloat(MoveYHash, face.y);
         }
+
+        SetMovingAnimation(false);
+        SetAttackAnimation(true);
 
         if (blockerAttackTimer > 0f)
             return true;
 
         currentBlocker.ReceiveBlockDamage(Mathf.Max(1, blockerAttackDamage), unitHealth);
+        TriggerAttackAnimation();
         blockerAttackTimer = Mathf.Max(0.05f, blockerAttackInterval);
         return true;
     }
@@ -255,6 +285,54 @@ public class UnitMovement : MonoBehaviour
         float perpendicular = Mathf.Abs(heading.x * toBlocker.y - heading.y * toBlocker.x);
         float allowedWidth = blockerLaneHalfWidth + blockerRadius;
         return perpendicular <= allowedWidth;
+    }
+
+    private void CacheAnimatorBindings()
+    {
+        hasIsMovingParam = false;
+        hasAttackBoolParam = false;
+        hasAttackTriggerParam = false;
+
+        if (animator == null)
+            return;
+
+        AnimatorControllerParameter[] parameters = animator.parameters;
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            AnimatorControllerParameter parameter = parameters[i];
+            if (parameter.nameHash == IsMovingHash && parameter.type == AnimatorControllerParameterType.Bool)
+                hasIsMovingParam = true;
+
+            if (parameter.nameHash == AttackHash && parameter.type == AnimatorControllerParameterType.Bool)
+                hasAttackBoolParam = true;
+
+            if (parameter.nameHash == AttackHash && parameter.type == AnimatorControllerParameterType.Trigger)
+                hasAttackTriggerParam = true;
+        }
+    }
+
+    private void SetMovingAnimation(bool isMoving)
+    {
+        if (animator == null || !hasIsMovingParam)
+            return;
+
+        animator.SetBool(IsMovingHash, isMoving);
+    }
+
+    private void SetAttackAnimation(bool isAttacking)
+    {
+        if (animator == null || !hasAttackBoolParam)
+            return;
+
+        animator.SetBool(AttackHash, isAttacking);
+    }
+
+    private void TriggerAttackAnimation()
+    {
+        if (animator == null || !hasAttackTriggerParam)
+            return;
+
+        animator.SetTrigger(AttackHash);
     }
 
     Vector2 CalculateSeparation()

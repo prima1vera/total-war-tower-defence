@@ -7,15 +7,14 @@ using UnityEngine.InputSystem;
 public class TowerSelectionInput : MonoBehaviour
 {
     private static readonly Collider2D[] OverlapBuffer = new Collider2D[24];
-    private const float MinGroundClickDistanceSqr = 0.0001f;
 
     [SerializeField] private Camera worldCamera;
     [SerializeField] private TowerSelectionService selectionService;
     [SerializeField] private LayerMask towerLayerMask;
     [SerializeField] private bool clearSelectionOnMiss = true;
     [SerializeField] private bool ignorePointerOverUi = true;
-    [SerializeField, Tooltip("When a barracks is selected, click empty ground to move defender rally point.")]
-    private bool allowBarracksRallyOnGroundClick = true;
+
+    private BarracksController armedRallyBarracks;
 
     private void Update()
     {
@@ -35,6 +34,20 @@ public class TowerSelectionInput : MonoBehaviour
 
         Vector3 world = worldCamera.ScreenToWorldPoint(new Vector3(pointerPosition.x, pointerPosition.y, Mathf.Abs(worldCamera.transform.position.z)));
         world.z = 0f;
+
+        if (armedRallyBarracks != null)
+        {
+            if (!armedRallyBarracks.gameObject.activeInHierarchy)
+            {
+                CancelBarracksRallyPlacement();
+                return;
+            }
+
+            if (armedRallyBarracks.TrySetRallyPoint(world))
+                CancelBarracksRallyPlacement();
+
+            return;
+        }
 
         Collider2D hit = Physics2D.OverlapPoint(world, towerLayerMask);
         if (TryResolveTowerFromCollider(hit, out TowerUpgradable maskedTower))
@@ -60,9 +73,6 @@ public class TowerSelectionInput : MonoBehaviour
             return;
         }
 
-        if (!hitBuildPlace && allowBarracksRallyOnGroundClick && TrySetBarracksRally(world))
-            return;
-
         if (clearSelectionOnMiss)
             selectionService.ClearSelection();
     }
@@ -83,24 +93,26 @@ public class TowerSelectionInput : MonoBehaviour
         return true;
     }
 
-    private bool TrySetBarracksRally(Vector3 worldPoint)
+    public bool ArmBarracksRallyPlacement(BarracksController barracks)
     {
-        if (selectionService == null)
+        if (barracks == null || !barracks.gameObject.activeInHierarchy)
             return false;
 
-        TowerUpgradable selected = selectionService.SelectedTower;
-        if (selected == null || !selected.gameObject.activeInHierarchy || selected.IsSold)
+        armedRallyBarracks = barracks;
+        return true;
+    }
+
+    public void CancelBarracksRallyPlacement()
+    {
+        armedRallyBarracks = null;
+    }
+
+    public bool IsBarracksRallyPlacementArmedFor(BarracksController barracks)
+    {
+        if (barracks == null)
             return false;
 
-        if (!selected.TryGetComponent(out BarracksController barracks))
-            return false;
-
-        Vector2 delta = (Vector2)(worldPoint - selected.transform.position);
-        if (delta.sqrMagnitude < MinGroundClickDistanceSqr)
-            return false;
-
-        worldPoint.z = selected.transform.position.z;
-        return barracks.TrySetRallyPoint(worldPoint);
+        return armedRallyBarracks == barracks;
     }
 
     private bool IsPointerOverUi(int pointerId)

@@ -7,7 +7,6 @@ public sealed class BarracksController : MonoBehaviour
 {
     private const float RoadFormationSpacing = 0.42f;
     private const float RoadFormationForwardOffset = -0.18f;
-    private const int RoadFormationWaypointBiasTowardsCastle = 2;
 
     [Header("Defender Prefab")]
     [SerializeField] private DefenderUnit defenderPrefab;
@@ -22,8 +21,14 @@ public sealed class BarracksController : MonoBehaviour
     private bool preferRoadBlockingFormation = true;
     [SerializeField, Min(0.5f), Tooltip("Max distance from barracks where rally point can be placed.")]
     private float rallyMaxDistanceFromBarracks = 3.8f;
+    [SerializeField, Min(0.05f), Tooltip("Max distance from clicked point to nearest road point when placing rally.")]
+    private float rallySnapToRoadMaxDistance = 1.2f;
     [SerializeField, Tooltip("Optional visual marker for rally point.")]
     private Transform rallyPointVisual;
+    [SerializeField, Tooltip("Optional visual circle for defender hold radius.")]
+    private Transform rallyRadiusVisual;
+    [SerializeField, Min(0.2f), Tooltip("Fallback hold radius when prefab value cannot be read.")]
+    private float fallbackRallyHoldRadius = 3.2f;
 
     [Header("Respawn")]
     [SerializeField, Min(0.1f)] private float respawnCooldown = 4f;
@@ -59,12 +64,7 @@ public sealed class BarracksController : MonoBehaviour
         if (!isAuthoringValid)
             return;
 
-        roadFormationCached = hasManualRallyPoint;
-        if (hasManualRallyPoint)
-        {
-            roadFormationAnchor = manualRallyPoint;
-            roadFormationNormal = manualRallyNormal;
-        }
+        roadFormationCached = TryResolveRallyAnchor(out roadFormationAnchor, out roadFormationNormal);
 
         UpdateRallyPointVisual();
         EnsureRuntimeBuffers(ResolveActiveSlotCount());
@@ -78,6 +78,8 @@ public sealed class BarracksController : MonoBehaviour
         ReturnAllActiveDefendersToPool();
         if (rallyPointVisual != null)
             rallyPointVisual.gameObject.SetActive(false);
+        if (rallyRadiusVisual != null)
+            rallyRadiusVisual.gameObject.SetActive(false);
     }
 
     public void SpawnAllMissingDefenders()
@@ -121,15 +123,23 @@ public sealed class BarracksController : MonoBehaviour
             return false;
 
         Vector3 clamped = ClampRallyPoint(worldPosition);
-        Vector2 fallbackNormal = roadFormationNormal.sqrMagnitude > 0.0001f ? roadFormationNormal : Vector2.right;
-        Vector2 normal = ResolveRoadNormalForPosition(clamped, fallbackNormal);
+        if (!TryFindClosestRoadPoint(clamped, out Vector3 snappedPoint, out Vector2 tangent, out float sqrRoadDistance))
+            return false;
+
+        float maxRoadDistance = Mathf.Max(0.05f, rallySnapToRoadMaxDistance);
+        if (sqrRoadDistance > maxRoadDistance * maxRoadDistance)
+            return false;
+
+        Vector2 normal = tangent.sqrMagnitude > 0.0001f
+            ? new Vector2(-tangent.y, tangent.x).normalized
+            : (roadFormationNormal.sqrMagnitude > 0.0001f ? roadFormationNormal : Vector2.right);
 
         hasManualRallyPoint = true;
-        manualRallyPoint = clamped;
+        manualRallyPoint = snappedPoint;
         manualRallyNormal = normal;
 
         roadFormationCached = true;
-        roadFormationAnchor = clamped;
+        roadFormationAnchor = snappedPoint;
         roadFormationNormal = normal;
 
         UpdateRallyPointVisual();
@@ -244,15 +254,8 @@ public sealed class BarracksController : MonoBehaviour
                 return explicitPoint.position;
         }
 
-        if (hasManualRallyPoint)
-        {
-            roadFormationCached = true;
-            roadFormationAnchor = manualRallyPoint;
-            roadFormationNormal = manualRallyNormal;
-        }
-
         if (!roadFormationCached)
-            roadFormationCached = TryComputeRoadFormationAnchor(out roadFormationAnchor, out roadFormationNormal);
+            roadFormationCached = TryResolveRallyAnchor(out roadFormationAnchor, out roadFormationNormal);
 
         if (!roadFormationCached)
             return transform.position;
@@ -265,65 +268,32 @@ public sealed class BarracksController : MonoBehaviour
         return roadFormationAnchor + lateral + forward;
     }
 
+    private bool TryResolveRallyAnchor(out Vector3 anchor, out Vector2 normal)
+    {
+        if (hasManualRallyPoint)
+        {
+            anchor = manualRallyPoint;
+            normal = manualRallyNormal.sqrMagnitude > 0.0001f ? manualRallyNormal : Vector2.right;
+            return true;
+        }
+
+        return TryComputeRoadFormationAnchor(out anchor, out normal);
+    }
+
     private bool TryComputeRoadFormationAnchor(out Vector3 anchor, out Vector2 normal)
     {
         anchor = transform.position;
         normal = Vector2.right;
 
-        Transform[][] allPaths = Waypoints.AllPaths;
-        if (allPaths == null || allPaths.Length == 0)
+        if (!TryFindClosestRoadPoint(transform.position, out Vector3 closestPoint, out Vector2 tangent, out float _))
             return false;
 
-        float bestSqrDistance = float.PositiveInfinity;
-        Vector2 bestTangent = Vector2.down;
-        Vector2 source = transform.position;
-        Transform[] bestPath = null;
-        int bestWaypointIndex = -1;
+        anchor = closestPoint;
+        if (tangent.sqrMagnitude < 0.0001f)
+            tangent = Vector2.down;
 
-        for (int pathIndex = 0; pathIndex < allPaths.Length; pathIndex++)
-        {
-            Transform[] path = allPaths[pathIndex];
-            if (path == null || path.Length == 0)
-                continue;
-
-            for (int waypointIndex = 0; waypointIndex < path.Length; waypointIndex++)
-            {
-                Transform waypoint = path[waypointIndex];
-                if (waypoint == null)
-                    continue;
-
-                Vector2 waypointPosition = waypoint.position;
-                float sqrDistance = (waypointPosition - source).sqrMagnitude;
-                if (sqrDistance >= bestSqrDistance)
-                    continue;
-
-                bestSqrDistance = sqrDistance;
-                bestPath = path;
-                bestWaypointIndex = waypointIndex;
-            }
-        }
-
-        if (float.IsPositiveInfinity(bestSqrDistance) || bestPath == null || bestWaypointIndex < 0)
-            return false;
-
-        // Bias defenders a few waypoints toward the castle so they don't over-commit near the spawn edge.
-        int biasedIndex = Mathf.Clamp(
-            bestWaypointIndex + RoadFormationWaypointBiasTowardsCastle,
-            0,
-            bestPath.Length - 1);
-
-        Transform biasedWaypoint = bestPath[biasedIndex];
-        if (biasedWaypoint == null)
-            return false;
-
-        anchor = biasedWaypoint.position;
-        bestTangent = ResolvePathTangent(bestPath, biasedIndex);
-
-        if (bestTangent.sqrMagnitude < 0.0001f)
-            bestTangent = Vector2.down;
-
-        bestTangent.Normalize();
-        normal = new Vector2(-bestTangent.y, bestTangent.x);
+        tangent.Normalize();
+        normal = new Vector2(-tangent.y, tangent.x).normalized;
         return true;
     }
 
@@ -471,14 +441,27 @@ public sealed class BarracksController : MonoBehaviour
 
     private Vector2 ResolveRoadNormalForPosition(Vector3 worldPosition, Vector2 fallbackNormal)
     {
-        Transform[][] allPaths = Waypoints.AllPaths;
-        if (allPaths == null || allPaths.Length == 0)
+        if (!TryFindClosestRoadPoint(worldPosition, out Vector3 _, out Vector2 tangent, out float _))
             return fallbackNormal;
 
-        float bestSqrDistance = float.PositiveInfinity;
-        Transform[] bestPath = null;
-        int bestWaypointIndex = -1;
-        Vector2 source = worldPosition;
+        if (tangent.sqrMagnitude < 0.0001f)
+            tangent = fallbackNormal.sqrMagnitude > 0.0001f ? fallbackNormal : Vector2.down;
+
+        tangent.Normalize();
+        return new Vector2(-tangent.y, tangent.x).normalized;
+    }
+
+    private bool TryFindClosestRoadPoint(Vector2 worldPosition, out Vector3 closestPoint, out Vector2 tangent, out float sqrDistance)
+    {
+        closestPoint = transform.position;
+        tangent = Vector2.down;
+        sqrDistance = float.PositiveInfinity;
+
+        Transform[][] allPaths = Waypoints.AllPaths;
+        if (allPaths == null || allPaths.Length == 0)
+            return false;
+
+        bool found = false;
 
         for (int pathIndex = 0; pathIndex < allPaths.Length; pathIndex++)
         {
@@ -486,32 +469,47 @@ public sealed class BarracksController : MonoBehaviour
             if (path == null || path.Length == 0)
                 continue;
 
-            for (int waypointIndex = 0; waypointIndex < path.Length; waypointIndex++)
+            for (int i = 0; i < path.Length - 1; i++)
             {
-                Transform waypoint = path[waypointIndex];
-                if (waypoint == null)
+                Transform from = path[i];
+                Transform to = path[i + 1];
+                if (from == null || to == null)
                     continue;
 
-                Vector2 waypointPosition = waypoint.position;
-                float sqrDistance = (waypointPosition - source).sqrMagnitude;
-                if (sqrDistance >= bestSqrDistance)
+                Vector2 a = from.position;
+                Vector2 b = to.position;
+                Vector2 segment = b - a;
+                float segmentLengthSqr = segment.sqrMagnitude;
+                if (segmentLengthSqr < 0.0001f)
                     continue;
 
-                bestSqrDistance = sqrDistance;
-                bestPath = path;
-                bestWaypointIndex = waypointIndex;
+                float t = Mathf.Clamp01(Vector2.Dot(worldPosition - a, segment) / segmentLengthSqr);
+                Vector2 projected = a + segment * t;
+                float projectedSqrDistance = (projected - worldPosition).sqrMagnitude;
+                if (projectedSqrDistance >= sqrDistance)
+                    continue;
+
+                sqrDistance = projectedSqrDistance;
+                closestPoint = new Vector3(projected.x, projected.y, transform.position.z);
+                tangent = segment.normalized;
+                found = true;
+            }
+
+            if (path.Length == 1 && path[0] != null)
+            {
+                Vector2 p = path[0].position;
+                float pointSqrDistance = (p - worldPosition).sqrMagnitude;
+                if (pointSqrDistance >= sqrDistance)
+                    continue;
+
+                sqrDistance = pointSqrDistance;
+                closestPoint = new Vector3(p.x, p.y, transform.position.z);
+                tangent = Vector2.down;
+                found = true;
             }
         }
 
-        if (bestPath == null || bestWaypointIndex < 0)
-            return fallbackNormal;
-
-        Vector2 tangent = ResolvePathTangent(bestPath, bestWaypointIndex);
-        if (tangent.sqrMagnitude < 0.0001f)
-            tangent = fallbackNormal.sqrMagnitude > 0.0001f ? fallbackNormal : Vector2.down;
-
-        tangent.Normalize();
-        return new Vector2(-tangent.y, tangent.x).normalized;
+        return found;
     }
 
     private void ReassignDefenderGuardPoints(bool resetTargets)
@@ -530,16 +528,34 @@ public sealed class BarracksController : MonoBehaviour
 
     private void UpdateRallyPointVisual()
     {
-        if (rallyPointVisual == null)
-            return;
+        bool shouldShow = TryResolveRallyAnchor(out Vector3 anchor, out Vector2 _);
+        if (rallyPointVisual != null)
+        {
+            if (rallyPointVisual.gameObject.activeSelf != shouldShow)
+                rallyPointVisual.gameObject.SetActive(shouldShow);
 
-        bool shouldShow = hasManualRallyPoint;
-        if (rallyPointVisual.gameObject.activeSelf != shouldShow)
-            rallyPointVisual.gameObject.SetActive(shouldShow);
+            if (shouldShow)
+                rallyPointVisual.position = anchor;
+        }
 
-        if (!shouldShow)
-            return;
+        if (rallyRadiusVisual != null)
+        {
+            if (rallyRadiusVisual.gameObject.activeSelf != shouldShow)
+                rallyRadiusVisual.gameObject.SetActive(shouldShow);
 
-        rallyPointVisual.position = manualRallyPoint;
+            if (shouldShow)
+            {
+                float holdRadius = defenderPrefab != null
+                    ? Mathf.Max(0.2f, defenderPrefab.ChaseLimitFromGuard)
+                    : Mathf.Max(0.2f, fallbackRallyHoldRadius);
+                float diameter = holdRadius * 2f;
+
+                rallyRadiusVisual.position = anchor;
+                Vector3 scale = rallyRadiusVisual.localScale;
+                scale.x = diameter;
+                scale.y = diameter;
+                rallyRadiusVisual.localScale = scale;
+            }
+        }
     }
 }

@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public sealed class BuildPlace : MonoBehaviour
 {
+    private static readonly List<BuildPlace> ActiveRuntimePlaces = new List<BuildPlace>(64);
+    private static readonly HashSet<BuildPlace> ActiveRuntimePlaceSet = new HashSet<BuildPlace>();
+
     [SerializeField, Tooltip("Stable unique build slot id used in save data.")]
     private string placeId;
 
@@ -27,11 +31,35 @@ public sealed class BuildPlace : MonoBehaviour
     public TowerUpgradable OccupiedTower => occupiedTower;
     public string OccupiedOptionId => occupiedOptionId;
     public bool HasOptionRestrictions => allowedOptionIds != null && allowedOptionIds.Length > 0;
+    public static IReadOnlyList<BuildPlace> ActivePlaces => ActiveRuntimePlaces;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetRuntimeRegistry()
+    {
+        ActiveRuntimePlaces.Clear();
+        ActiveRuntimePlaceSet.Clear();
+    }
 
     private void Reset()
     {
         EnsurePlaceId();
         RefreshMarkerVisibility();
+    }
+
+    private void OnEnable()
+    {
+        RegisterRuntimeInstance(this);
+        RefreshMarkerVisibility();
+    }
+
+    private void OnDisable()
+    {
+        UnregisterRuntimeInstance(this);
+    }
+
+    private void OnDestroy()
+    {
+        UnregisterRuntimeInstance(this);
     }
 
     private void OnValidate()
@@ -146,5 +174,21 @@ public sealed class BuildPlace : MonoBehaviour
             return;
 
         placeId = Guid.NewGuid().ToString("N");
+    }
+
+    private static void RegisterRuntimeInstance(BuildPlace place)
+    {
+        if (place == null || !ActiveRuntimePlaceSet.Add(place))
+            return;
+
+        ActiveRuntimePlaces.Add(place);
+    }
+
+    private static void UnregisterRuntimeInstance(BuildPlace place)
+    {
+        if (place == null || !ActiveRuntimePlaceSet.Remove(place))
+            return;
+
+        ActiveRuntimePlaces.Remove(place);
     }
 }
