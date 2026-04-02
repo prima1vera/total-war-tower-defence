@@ -44,7 +44,11 @@ public class TowerSelectionInput : MonoBehaviour
             }
 
             if (armedRallyBarracks.TrySetRallyPoint(world))
+            {
                 CancelBarracksRallyPlacement();
+                if (selectionService != null)
+                    selectionService.ClearSelection();
+            }
 
             return;
         }
@@ -98,12 +102,19 @@ public class TowerSelectionInput : MonoBehaviour
         if (barracks == null || !barracks.gameObject.activeInHierarchy)
             return false;
 
+        if (armedRallyBarracks != null && armedRallyBarracks != barracks)
+            armedRallyBarracks.SetRallyPlacementPreviewActive(false);
+
         armedRallyBarracks = barracks;
+        armedRallyBarracks.SetRallyPlacementPreviewActive(true);
         return true;
     }
 
     public void CancelBarracksRallyPlacement()
     {
+        if (armedRallyBarracks != null)
+            armedRallyBarracks.SetRallyPlacementPreviewActive(false);
+
         armedRallyBarracks = null;
     }
 

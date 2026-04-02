@@ -101,6 +101,16 @@ public class UnitEffects : MonoBehaviour
             needsAnimatedUpdate = false;
     }
 
+    void LateUpdate()
+    {
+        SyncBurnLoopSorting(false);
+    }
+
+    void OnWillRenderObject()
+    {
+        SyncBurnLoopSorting(false);
+    }
+
     public void SetFireVisual(bool state)
     {
         fireActive = state;
