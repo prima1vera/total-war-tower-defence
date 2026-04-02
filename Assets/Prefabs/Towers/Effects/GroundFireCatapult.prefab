@@ -169,7 +169,7 @@ MonoBehaviour:
   endFps: 14
   lifetime: 3.2
   startAlpha: 1
-  endAlpha: 0.4
+  endAlpha: 0
   startScale: 1
   endScale: 1.15
   groundSquash: 0.6
