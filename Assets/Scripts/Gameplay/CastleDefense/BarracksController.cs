@@ -7,6 +7,7 @@ public sealed class BarracksController : MonoBehaviour
 {
     private const float RoadFormationSpacing = 0.42f;
     private const float RoadFormationForwardOffset = -0.18f;
+    private const int RoadFormationWaypointBiasTowardsCastle = 2;
 
     [Header("Defender Prefab")]
     [SerializeField] private DefenderUnit defenderPrefab;
@@ -19,6 +20,10 @@ public sealed class BarracksController : MonoBehaviour
     private Transform[] defensePoints;
     [SerializeField, Tooltip("When enabled, defenders always form a line directly on the nearest road/path segment.")]
     private bool preferRoadBlockingFormation = true;
+    [SerializeField, Min(0.5f), Tooltip("Max distance from barracks where rally point can be placed.")]
+    private float rallyMaxDistanceFromBarracks = 3.8f;
+    [SerializeField, Tooltip("Optional visual marker for rally point.")]
+    private Transform rallyPointVisual;
 
     [Header("Respawn")]
     [SerializeField, Min(0.1f)] private float respawnCooldown = 4f;
@@ -37,6 +42,9 @@ public sealed class BarracksController : MonoBehaviour
     private bool roadFormationCached;
     private Vector3 roadFormationAnchor;
     private Vector2 roadFormationNormal;
+    private bool hasManualRallyPoint;
+    private Vector3 manualRallyPoint;
+    private Vector2 manualRallyNormal;
 
     private void Awake()
     {
@@ -51,7 +59,14 @@ public sealed class BarracksController : MonoBehaviour
         if (!isAuthoringValid)
             return;
 
-        roadFormationCached = false;
+        roadFormationCached = hasManualRallyPoint;
+        if (hasManualRallyPoint)
+        {
+            roadFormationAnchor = manualRallyPoint;
+            roadFormationNormal = manualRallyNormal;
+        }
+
+        UpdateRallyPointVisual();
         EnsureRuntimeBuffers(ResolveActiveSlotCount());
         if (spawnOnEnable)
             SpawnAllMissingDefenders();
@@ -61,6 +76,8 @@ public sealed class BarracksController : MonoBehaviour
     {
         StopAllRespawns();
         ReturnAllActiveDefendersToPool();
+        if (rallyPointVisual != null)
+            rallyPointVisual.gameObject.SetActive(false);
     }
 
     public void SpawnAllMissingDefenders()
@@ -96,6 +113,28 @@ public sealed class BarracksController : MonoBehaviour
         roadFormationCached = false;
         if (isActiveAndEnabled)
             SpawnAllMissingDefenders();
+    }
+
+    public bool TrySetRallyPoint(Vector3 worldPosition)
+    {
+        if (!isAuthoringValid || !preferRoadBlockingFormation)
+            return false;
+
+        Vector3 clamped = ClampRallyPoint(worldPosition);
+        Vector2 fallbackNormal = roadFormationNormal.sqrMagnitude > 0.0001f ? roadFormationNormal : Vector2.right;
+        Vector2 normal = ResolveRoadNormalForPosition(clamped, fallbackNormal);
+
+        hasManualRallyPoint = true;
+        manualRallyPoint = clamped;
+        manualRallyNormal = normal;
+
+        roadFormationCached = true;
+        roadFormationAnchor = clamped;
+        roadFormationNormal = normal;
+
+        UpdateRallyPointVisual();
+        ReassignDefenderGuardPoints(resetTargets: true);
+        return true;
     }
 
     private bool ValidateAuthoring()
@@ -205,6 +244,13 @@ public sealed class BarracksController : MonoBehaviour
                 return explicitPoint.position;
         }
 
+        if (hasManualRallyPoint)
+        {
+            roadFormationCached = true;
+            roadFormationAnchor = manualRallyPoint;
+            roadFormationNormal = manualRallyNormal;
+        }
+
         if (!roadFormationCached)
             roadFormationCached = TryComputeRoadFormationAnchor(out roadFormationAnchor, out roadFormationNormal);
 
@@ -231,6 +277,8 @@ public sealed class BarracksController : MonoBehaviour
         float bestSqrDistance = float.PositiveInfinity;
         Vector2 bestTangent = Vector2.down;
         Vector2 source = transform.position;
+        Transform[] bestPath = null;
+        int bestWaypointIndex = -1;
 
         for (int pathIndex = 0; pathIndex < allPaths.Length; pathIndex++)
         {
@@ -250,13 +298,26 @@ public sealed class BarracksController : MonoBehaviour
                     continue;
 
                 bestSqrDistance = sqrDistance;
-                anchor = waypoint.position;
-                bestTangent = ResolvePathTangent(path, waypointIndex);
+                bestPath = path;
+                bestWaypointIndex = waypointIndex;
             }
         }
 
-        if (float.IsPositiveInfinity(bestSqrDistance))
+        if (float.IsPositiveInfinity(bestSqrDistance) || bestPath == null || bestWaypointIndex < 0)
             return false;
+
+        // Bias defenders a few waypoints toward the castle so they don't over-commit near the spawn edge.
+        int biasedIndex = Mathf.Clamp(
+            bestWaypointIndex + RoadFormationWaypointBiasTowardsCastle,
+            0,
+            bestPath.Length - 1);
+
+        Transform biasedWaypoint = bestPath[biasedIndex];
+        if (biasedWaypoint == null)
+            return false;
+
+        anchor = biasedWaypoint.position;
+        bestTangent = ResolvePathTangent(bestPath, biasedIndex);
 
         if (bestTangent.sqrMagnitude < 0.0001f)
             bestTangent = Vector2.down;
@@ -395,5 +456,90 @@ public sealed class BarracksController : MonoBehaviour
         activeDefenders[slotIndex] = null;
         if (defender != null)
             ReturnDefenderToPool(defender);
+    }
+
+    private Vector3 ClampRallyPoint(Vector3 worldPosition)
+    {
+        Vector2 fromBarracks = (Vector2)(worldPosition - transform.position);
+        float maxDistance = Mathf.Max(0.5f, rallyMaxDistanceFromBarracks);
+        if (fromBarracks.sqrMagnitude > maxDistance * maxDistance)
+            worldPosition = transform.position + (Vector3)(fromBarracks.normalized * maxDistance);
+
+        worldPosition.z = transform.position.z;
+        return worldPosition;
+    }
+
+    private Vector2 ResolveRoadNormalForPosition(Vector3 worldPosition, Vector2 fallbackNormal)
+    {
+        Transform[][] allPaths = Waypoints.AllPaths;
+        if (allPaths == null || allPaths.Length == 0)
+            return fallbackNormal;
+
+        float bestSqrDistance = float.PositiveInfinity;
+        Transform[] bestPath = null;
+        int bestWaypointIndex = -1;
+        Vector2 source = worldPosition;
+
+        for (int pathIndex = 0; pathIndex < allPaths.Length; pathIndex++)
+        {
+            Transform[] path = allPaths[pathIndex];
+            if (path == null || path.Length == 0)
+                continue;
+
+            for (int waypointIndex = 0; waypointIndex < path.Length; waypointIndex++)
+            {
+                Transform waypoint = path[waypointIndex];
+                if (waypoint == null)
+                    continue;
+
+                Vector2 waypointPosition = waypoint.position;
+                float sqrDistance = (waypointPosition - source).sqrMagnitude;
+                if (sqrDistance >= bestSqrDistance)
+                    continue;
+
+                bestSqrDistance = sqrDistance;
+                bestPath = path;
+                bestWaypointIndex = waypointIndex;
+            }
+        }
+
+        if (bestPath == null || bestWaypointIndex < 0)
+            return fallbackNormal;
+
+        Vector2 tangent = ResolvePathTangent(bestPath, bestWaypointIndex);
+        if (tangent.sqrMagnitude < 0.0001f)
+            tangent = fallbackNormal.sqrMagnitude > 0.0001f ? fallbackNormal : Vector2.down;
+
+        tangent.Normalize();
+        return new Vector2(-tangent.y, tangent.x).normalized;
+    }
+
+    private void ReassignDefenderGuardPoints(bool resetTargets)
+    {
+        int activeSlotCount = ResolveActiveSlotCount();
+        for (int i = 0; i < activeDefenders.Count; i++)
+        {
+            DefenderUnit defender = activeDefenders[i];
+            if (defender == null || !defender.IsAlive || i >= activeSlotCount)
+                continue;
+
+            Vector3 guardPosition = ResolveDefensePoint(i, activeSlotCount);
+            defender.UpdateGuardPoint(guardPosition, resetTargets);
+        }
+    }
+
+    private void UpdateRallyPointVisual()
+    {
+        if (rallyPointVisual == null)
+            return;
+
+        bool shouldShow = hasManualRallyPoint;
+        if (rallyPointVisual.gameObject.activeSelf != shouldShow)
+            rallyPointVisual.gameObject.SetActive(shouldShow);
+
+        if (!shouldShow)
+            return;
+
+        rallyPointVisual.position = manualRallyPoint;
     }
 }

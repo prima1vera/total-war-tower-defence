@@ -7203,8 +7203,8 @@ Transform:
   - {fileID: 818832874}
   - {fileID: 255493461}
   - {fileID: 7429450009831727655}
-  - {fileID: 732506901}
   - {fileID: 948297037}
+  - {fileID: 732506901}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
@@ -40022,7 +40022,7 @@ PrefabInstance:
       objectReference: {fileID: 616228513}
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedBuildPlaces.Array.size
-      value: 9
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedBuildPlacesCollectRoot
@@ -40031,27 +40031,27 @@ PrefabInstance:
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedBuildPlaces.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1329732885}
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedBuildPlaces.Array.data[1]
       value: 
-      objectReference: {fileID: 1329732885}
+      objectReference: {fileID: 1956781710}
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedBuildPlaces.Array.data[2]
       value: 
-      objectReference: {fileID: 1956781710}
+      objectReference: {fileID: 1927502275}
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedBuildPlaces.Array.data[3]
       value: 
-      objectReference: {fileID: 1927502275}
+      objectReference: {fileID: 457097171}
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedBuildPlaces.Array.data[4]
       value: 
-      objectReference: {fileID: 457097171}
+      objectReference: {fileID: 1363256813}
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedBuildPlaces.Array.data[5]
       value: 
-      objectReference: {fileID: 1363256813}
+      objectReference: {fileID: 1433317366}
     - target: {fileID: 5877209055756452655, guid: 60c66d83d3355094bbc5f5b6e350ec31, type: 3}
       propertyPath: trackedBuildPlaces.Array.data[6]
       value: 

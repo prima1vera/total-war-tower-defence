@@ -96,6 +96,22 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         ActivateInternal();
     }
 
+    public void UpdateGuardPoint(Vector3 guardPosition, bool resetTarget)
+    {
+        guardPoint = null;
+        useStaticGuardPoint = true;
+        staticGuardPoint = guardPosition;
+
+        if (!initialized || dead)
+            return;
+
+        if (resetTarget)
+        {
+            currentEnemyTarget = null;
+            targetRefreshTimer = 0f;
+        }
+    }
+
     public void ReceiveBlockDamage(int amount, UnitHealth attacker)
     {
         if (!initialized || dead || amount <= 0)
@@ -139,6 +155,18 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             targetRefreshTimer = targetRefreshInterval;
         }
 
+        if (currentEnemyTarget != null && TryGetGuardPoint(out Vector3 guardForLeash))
+        {
+            float hardLeashDistance = Mathf.Max(0.2f, chaseLimitFromGuard + 0.15f);
+            float selfDistanceFromGuard = Vector2.Distance(transform.position, guardForLeash);
+            if (selfDistanceFromGuard > hardLeashDistance)
+            {
+                currentEnemyTarget = null;
+                MoveToGuardPoint();
+                return;
+            }
+        }
+
         if (currentEnemyTarget == null)
         {
             MoveToGuardPoint();
@@ -156,7 +184,16 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
 
         if (distance > hitDistance)
         {
-            MoveTowards(currentEnemyTarget.transform.position);
+            Vector3 chaseDestination = currentEnemyTarget.transform.position;
+            if (TryGetGuardPoint(out Vector3 guardForClamp))
+            {
+                Vector2 fromGuard = (Vector2)(chaseDestination - guardForClamp);
+                float leashDistance = Mathf.Max(0.2f, chaseLimitFromGuard);
+                if (fromGuard.sqrMagnitude > leashDistance * leashDistance)
+                    chaseDestination = guardForClamp + (Vector3)(fromGuard.normalized * leashDistance);
+            }
+
+            MoveTowards(chaseDestination);
             return;
         }
 
@@ -188,7 +225,11 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             return false;
 
         float distFromGuard = Vector2.Distance(currentEnemyTarget.transform.position, guardWorldPosition);
-        return distFromGuard > chaseLimitFromGuard;
+        if (distFromGuard > chaseLimitFromGuard)
+            return true;
+
+        float selfDistFromGuard = Vector2.Distance(transform.position, guardWorldPosition);
+        return selfDistFromGuard > chaseLimitFromGuard + 0.15f;
     }
 
     private void RefreshTarget()
@@ -199,7 +240,8 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             return;
         }
 
-        EnemyRegistry.TryGetNearestEnemy(guardWorldPosition, engageRange, out currentEnemyTarget);
+        float searchRadius = Mathf.Max(0.2f, Mathf.Min(engageRange, chaseLimitFromGuard + 0.35f));
+        EnemyRegistry.TryGetNearestEnemy(guardWorldPosition, searchRadius, out currentEnemyTarget);
     }
 
     private void MoveToGuardPoint()

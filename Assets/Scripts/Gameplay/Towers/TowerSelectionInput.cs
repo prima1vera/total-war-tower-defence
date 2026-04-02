@@ -7,12 +7,15 @@ using UnityEngine.InputSystem;
 public class TowerSelectionInput : MonoBehaviour
 {
     private static readonly Collider2D[] OverlapBuffer = new Collider2D[24];
+    private const float MinGroundClickDistanceSqr = 0.0001f;
 
     [SerializeField] private Camera worldCamera;
     [SerializeField] private TowerSelectionService selectionService;
     [SerializeField] private LayerMask towerLayerMask;
     [SerializeField] private bool clearSelectionOnMiss = true;
     [SerializeField] private bool ignorePointerOverUi = true;
+    [SerializeField, Tooltip("When a barracks is selected, click empty ground to move defender rally point.")]
+    private bool allowBarracksRallyOnGroundClick = true;
 
     private void Update()
     {
@@ -41,16 +44,24 @@ public class TowerSelectionInput : MonoBehaviour
         }
 
         int overlapCount = Physics2D.OverlapPointNonAlloc(world, OverlapBuffer);
+        bool hitBuildPlace = false;
         for (int i = 0; i < overlapCount; i++)
         {
             Collider2D candidate = OverlapBuffer[i];
             OverlapBuffer[i] = null;
+
+            if (!hitBuildPlace && candidate != null && candidate.GetComponentInParent<BuildPlace>() != null)
+                hitBuildPlace = true;
+
             if (!TryResolveTowerFromCollider(candidate, out TowerUpgradable tower))
                 continue;
 
             selectionService.Select(tower);
             return;
         }
+
+        if (!hitBuildPlace && allowBarracksRallyOnGroundClick && TrySetBarracksRally(world))
+            return;
 
         if (clearSelectionOnMiss)
             selectionService.ClearSelection();
@@ -70,6 +81,26 @@ public class TowerSelectionInput : MonoBehaviour
             return false;
 
         return true;
+    }
+
+    private bool TrySetBarracksRally(Vector3 worldPoint)
+    {
+        if (selectionService == null)
+            return false;
+
+        TowerUpgradable selected = selectionService.SelectedTower;
+        if (selected == null || !selected.gameObject.activeInHierarchy || selected.IsSold)
+            return false;
+
+        if (!selected.TryGetComponent(out BarracksController barracks))
+            return false;
+
+        Vector2 delta = (Vector2)(worldPoint - selected.transform.position);
+        if (delta.sqrMagnitude < MinGroundClickDistanceSqr)
+            return false;
+
+        worldPoint.z = selected.transform.position.z;
+        return barracks.TrySetRallyPoint(worldPoint);
     }
 
     private bool IsPointerOverUi(int pointerId)
