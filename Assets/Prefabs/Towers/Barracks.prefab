@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2744352151789538154}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.37, y: -0.329, z: 0}
+  m_LocalPosition: {x: -0.156, y: -0.219, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -163,6 +163,8 @@ MonoBehaviour:
   - {fileID: 4538536293101741814}
   - {fileID: 6491666845818591021}
   preferRoadBlockingFormation: 1
+  rallyMaxDistanceFromBarracks: 3.8
+  rallyPointVisual: {fileID: 0}
   respawnCooldown: 4
   spawnOnEnable: 1
   defendersPerBarracks: 2
@@ -238,7 +240,7 @@ Transform:
   m_GameObject: {fileID: 5760209535104457330}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.072, y: -0.464, z: 0}
+  m_LocalPosition: {x: -0.044, y: -0.291, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
