@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [DisallowMultipleComponent]
 public sealed class BarracksController : MonoBehaviour
@@ -10,6 +13,9 @@ public sealed class BarracksController : MonoBehaviour
     private const int RallyCircleSegments = 40;
     private static readonly Color RallyCircleColor = new Color(1f, 0.92f, 0.35f, 0.72f);
     private static Material rallyCircleMaterial;
+#if UNITY_EDITOR
+    private const string DefaultRallyPointSpritePath = "Assets/Sprites/Barracks/RallyPoint96.png";
+#endif
 
     [Header("Defender Prefab")]
     [SerializeField] private DefenderUnit defenderPrefab;
@@ -28,6 +34,14 @@ public sealed class BarracksController : MonoBehaviour
     private float rallySnapToRoadMaxDistance = 1.2f;
     [SerializeField, Min(0.01f), Tooltip("Width of rally radius line in world units.")]
     private float rallyCircleWidth = 0.04f;
+    [SerializeField, Tooltip("Marker sprite shown at active rally point.")]
+    private Sprite rallyPointSprite;
+    [SerializeField, Min(0.05f), Tooltip("World-space marker size multiplier.")]
+    private float rallyPointScale = 0.7f;
+    [SerializeField, Tooltip("World-space marker offset from ground point.")]
+    private Vector3 rallyPointOffset = new Vector3(0f, 0.18f, 0f);
+    [SerializeField, Min(0), Tooltip("Sorting order offset applied to rally marker over barracks layer.")]
+    private int rallyPointSortingOffset = 4;
 
     [Header("Respawn")]
     [SerializeField, Min(0.1f)] private float respawnCooldown = 4f;
@@ -51,13 +65,20 @@ public sealed class BarracksController : MonoBehaviour
     private Vector2 manualRallyNormal;
     private bool rallyPlacementPreviewActive;
     private LineRenderer rallyCircleRenderer;
+    private SpriteRenderer rallyPointRenderer;
 
     private void Awake()
     {
+#if UNITY_EDITOR
+        if (rallyPointSprite == null)
+            rallyPointSprite = AssetDatabase.LoadAssetAtPath<Sprite>(DefaultRallyPointSpritePath);
+#endif
+
         isAuthoringValid = ValidateAuthoring();
         runtimeSquadSize = Mathf.Max(1, defendersPerBarracks);
 
         EnsureRallyCircleRenderer();
+        EnsureRallyPointRenderer();
         SetRallyPlacementPreviewActive(false);
 
         if (!isAuthoringValid)
@@ -504,18 +525,28 @@ public sealed class BarracksController : MonoBehaviour
     private void UpdateRallyPointVisual()
     {
         EnsureRallyCircleRenderer();
+        EnsureRallyPointRenderer();
+
         if (rallyCircleRenderer == null)
             return;
 
-        bool hasAnchor = TryResolveRallyAnchor(out Vector3 anchor, out Vector2 _);
-        bool shouldShow = rallyPlacementPreviewActive && hasAnchor;
-        rallyCircleRenderer.enabled = shouldShow;
-        if (!shouldShow)
+        bool hasAnchor = TryResolveRallyAnchor(out Vector3 rallyAnchor, out Vector2 _);
+        bool shouldShowCircle = rallyPlacementPreviewActive;
+        rallyCircleRenderer.enabled = shouldShowCircle;
+
+        bool shouldShowMarker = hasAnchor && (hasManualRallyPoint || rallyPlacementPreviewActive);
+        if (rallyPointRenderer != null)
+        {
+            rallyPointRenderer.enabled = shouldShowMarker && rallyPointSprite != null;
+            if (rallyPointRenderer.enabled)
+                rallyPointRenderer.transform.position = rallyAnchor + rallyPointOffset;
+        }
+
+        if (!shouldShowCircle)
             return;
 
-        float holdRadius = defenderPrefab != null
-            ? Mathf.Max(0.2f, defenderPrefab.ChaseLimitFromGuard)
-            : 3.2f;
+        float holdRadius = Mathf.Max(0.5f, rallyMaxDistanceFromBarracks);
+        Vector3 circleAnchor = transform.position;
 
         float z = transform.position.z - 0.01f;
         for (int i = 0; i < RallyCircleSegments; i++)
@@ -523,8 +554,8 @@ public sealed class BarracksController : MonoBehaviour
             float t = (float)i / RallyCircleSegments;
             float angle = t * Mathf.PI * 2f;
             Vector3 point = new Vector3(
-                anchor.x + Mathf.Cos(angle) * holdRadius,
-                anchor.y + Mathf.Sin(angle) * holdRadius,
+                circleAnchor.x + Mathf.Cos(angle) * holdRadius,
+                circleAnchor.y + Mathf.Sin(angle) * holdRadius,
                 z);
             rallyCircleRenderer.SetPosition(i, point);
         }
@@ -571,4 +602,45 @@ public sealed class BarracksController : MonoBehaviour
             rallyCircleRenderer.sortingOrder = 500;
         }
     }
+
+    private void EnsureRallyPointRenderer()
+    {
+        if (rallyPointRenderer == null)
+        {
+            Transform markerTransform = transform.Find("__RallyPointMarker");
+            if (markerTransform == null)
+            {
+                GameObject marker = new GameObject("__RallyPointMarker");
+                markerTransform = marker.transform;
+                markerTransform.SetParent(transform, false);
+            }
+
+            rallyPointRenderer = markerTransform.GetComponent<SpriteRenderer>();
+            if (rallyPointRenderer == null)
+                rallyPointRenderer = markerTransform.gameObject.AddComponent<SpriteRenderer>();
+        }
+
+        if (rallyPointRenderer == null)
+            return;
+
+        rallyPointRenderer.sprite = rallyPointSprite;
+        rallyPointRenderer.enabled = false;
+        float scale = Mathf.Max(0.05f, rallyPointScale);
+        rallyPointRenderer.transform.localScale = new Vector3(scale, scale, 1f);
+
+        SpriteRenderer barracksSprite = GetComponent<SpriteRenderer>();
+        if (barracksSprite != null)
+        {
+            rallyPointRenderer.sortingLayerID = barracksSprite.sortingLayerID;
+            rallyPointRenderer.sortingOrder = barracksSprite.sortingOrder + Mathf.Max(0, rallyPointSortingOffset);
+        }
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (rallyPointSprite == null)
+            rallyPointSprite = AssetDatabase.LoadAssetAtPath<Sprite>(DefaultRallyPointSpritePath);
+    }
+#endif
 }
