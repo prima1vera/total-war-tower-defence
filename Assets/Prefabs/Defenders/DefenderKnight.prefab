@@ -183,12 +183,14 @@ MonoBehaviour:
   stopDistance: 0.01
   engageRange: 2
   chaseLimitFromGuard: 1
-  attackRange: 0.45
+  attackRange: 0.65
   attackDamage: 2
   attackInterval: 0.75
   attackKnockback: 0.04
   targetRefreshInterval: 0.12
+  notifyEnemyAggroOnHit: 0
   blockRadius: 0.35
   pathPriority: 50
+  maxAttackersPerDefender: 2
   blockerCollider: {fileID: 211212325863951469}
   animator: {fileID: 8455280624236355907}

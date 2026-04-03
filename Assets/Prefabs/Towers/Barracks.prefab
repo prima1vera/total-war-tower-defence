@@ -171,11 +171,11 @@ MonoBehaviour:
   rallyPointOffset: {x: 0, y: 0.18, z: 0}
   rallyPointSortingOffset: 4
   showRallyPointWhenSelected: 1
-  respawnCooldown: 4
+  respawnCooldown: 10
   spawnOnEnable: 1
-  defendersPerBarracks: 2
+  defendersPerBarracks: 6
   useUpgradeLevelAsSquadSize: 0
-  maxDefendersFromUpgrade: 4
+  maxDefendersFromUpgrade: 6
   rallyPointAnimationFramesSerialized:
   - {fileID: 1679439458, guid: aab95232420829a4e8d49e8e1e2d09f7, type: 3}
   - {fileID: -1593431249, guid: aab95232420829a4e8d49e8e1e2d09f7, type: 3}
