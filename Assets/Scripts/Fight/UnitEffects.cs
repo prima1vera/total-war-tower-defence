@@ -150,21 +150,19 @@ public class UnitEffects : MonoBehaviour
 
     private void HandleDamageTaken(DamageFeedbackEvent damageEvent)
     {
-        switch (damageEvent.FeedbackKind)
+        if (damageEvent.FeedbackKind == DamageFeedbackKind.BurnTick)
         {
-            case DamageFeedbackKind.DirectHit:
-                TriggerHitFlash();
-                break;
-
-            case DamageFeedbackKind.BurnTick:
-                TriggerBurnTickFlash();
-                break;
+            TriggerBurnTickFlash();
+            return;
         }
+
+        if (damageEvent.Amount > 0)
+            TriggerHitFlash();
     }
 
     private void TriggerHitFlash()
     {
-        hitFlashTimer = Mathf.Max(hitFlashTimer, hitFlashDuration);
+        hitFlashTimer = hitFlashDuration;
         needsAnimatedUpdate = true;
         ApplyCompositeColor(false);
     }
@@ -182,6 +180,8 @@ public class UnitEffects : MonoBehaviour
             return;
 
         Color baseColor = ResolveStatusColor();
+        bool nearWhiteBase = IsNearWhite(baseColor);
+        bool nearWhiteFlash = IsNearWhite(hitFlashColor);
 
         float burnFactor = burnTickDuration > 0f ? Mathf.Clamp01(burnTickTimer / burnTickDuration) : 0f;
         burnFactor *= burnTickStrength;
@@ -189,9 +189,20 @@ public class UnitEffects : MonoBehaviour
         Color composed = Color.Lerp(baseColor, burnTickColor, burnFactor);
 
         float hitFactor = hitFlashDuration > 0f ? Mathf.Clamp01(hitFlashTimer / hitFlashDuration) : 0f;
-        hitFactor *= hitFlashStrength;
+        hitFactor = Mathf.Pow(hitFactor, 0.65f) * hitFlashStrength;
 
-        composed = Color.Lerp(composed, hitFlashColor, hitFactor);
+        Color resolvedHitFlashColor = hitFlashColor;
+        if (nearWhiteBase && nearWhiteFlash)
+            resolvedHitFlashColor = Color.white;
+
+        if (nearWhiteBase && hitFactor > 0f)
+        {
+            // Base white sprites need pre-contrast so direct-hit flash is visible
+            // even for fast-hit sources (archers/melee/catapult splash).
+            composed = Color.Lerp(composed, new Color(0.18f, 0.18f, 0.18f, 1f), hitFactor * 0.9f);
+        }
+
+        composed = Color.Lerp(composed, resolvedHitFlashColor, hitFactor);
         composed.a = 1f;
 
         if (force || !Approximately(appliedColor, composed))
@@ -221,6 +232,11 @@ public class UnitEffects : MonoBehaviour
             && Mathf.Abs(a.g - b.g) <= 0.001f
             && Mathf.Abs(a.b - b.b) <= 0.001f
             && Mathf.Abs(a.a - b.a) <= 0.001f;
+    }
+
+    private static bool IsNearWhite(Color color)
+    {
+        return color.r >= 0.95f && color.g >= 0.95f && color.b >= 0.95f;
     }
 
     private void CacheFireVisualComponents()

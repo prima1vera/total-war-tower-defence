@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 211212325863951469}
   - component: {fileID: 851888596654604266}
   - component: {fileID: 3914141438623587621}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: DefenderKnight
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -8,14 +9,22 @@ using UnityEditor;
 [DisallowMultipleComponent]
 public sealed class BarracksController : MonoBehaviour
 {
-    private const float RoadFormationSpacing = 0.42f;
+    private const float RoadFormationSpacing = 0.52f;
     private const float RoadFormationForwardOffset = -0.18f;
     private const int RallyCircleSegments = 40;
+    private const float RallyPointAnimationFps = 10f;
     private static readonly Color RallyCircleColor = new Color(1f, 0.92f, 0.35f, 0.72f);
     private static Material rallyCircleMaterial;
 #if UNITY_EDITOR
     private const string DefaultRallyPointSpritePath = "Assets/Sprites/Barracks/RallyPoint96.png";
 #endif
+    private static readonly string[] LegacyRallyVisualNames =
+    {
+        "RallyPointVisual",
+        "RallyRadiusVisual",
+        "RallyPoint",
+        "RallyRadius"
+    };
 
     [Header("Defender Prefab")]
     [SerializeField] private DefenderUnit defenderPrefab;
@@ -44,8 +53,6 @@ public sealed class BarracksController : MonoBehaviour
     private int rallyPointSortingOffset = 4;
     [SerializeField, Tooltip("When enabled, rally flag stays visible while this barracks is selected.")]
     private bool showRallyPointWhenSelected = true;
-    [SerializeField, Min(0f), Tooltip("After setting rally point, keep marker visible for this long and fade it out.")]
-    private float rallyPointFadeAfterSetSeconds = 1.15f;
 
     [Header("Respawn")]
     [SerializeField, Min(0.1f)] private float respawnCooldown = 4f;
@@ -69,9 +76,13 @@ public sealed class BarracksController : MonoBehaviour
     private Vector2 manualRallyNormal;
     private bool rallyPlacementPreviewActive;
     private bool isSelectedInUi;
-    private float rallyPointForcedVisibleUntil;
     private LineRenderer rallyCircleRenderer;
     private SpriteRenderer rallyPointRenderer;
+    private Sprite[] rallyPointAnimationFrames;
+    [SerializeField, HideInInspector] private Sprite[] rallyPointAnimationFramesSerialized;
+    private float rallyPointAnimationTimer;
+    private int rallyPointAnimationFrameIndex;
+    private bool rallyPointWasVisibleLastFrame;
 
     private void Awake()
     {
@@ -79,6 +90,7 @@ public sealed class BarracksController : MonoBehaviour
         if (rallyPointSprite == null)
             rallyPointSprite = AssetDatabase.LoadAssetAtPath<Sprite>(DefaultRallyPointSpritePath);
 #endif
+        DisableLegacyRallyVisuals();
 
         isAuthoringValid = ValidateAuthoring();
         runtimeSquadSize = Mathf.Max(1, defendersPerBarracks);
@@ -96,6 +108,7 @@ public sealed class BarracksController : MonoBehaviour
         if (!isAuthoringValid)
             return;
 
+        DisableLegacyRallyVisuals();
         roadFormationCached = TryResolveRallyAnchor(out roadFormationAnchor, out roadFormationNormal);
 
         UpdateRallyPointVisual();
@@ -109,6 +122,11 @@ public sealed class BarracksController : MonoBehaviour
         StopAllRespawns();
         ReturnAllActiveDefendersToPool();
         SetRallyPlacementPreviewActive(false);
+    }
+
+    private void Update()
+    {
+        AnimateRallyPointMarker();
     }
 
     public void SpawnAllMissingDefenders()
@@ -170,8 +188,6 @@ public sealed class BarracksController : MonoBehaviour
         roadFormationCached = true;
         roadFormationAnchor = snappedPoint;
         roadFormationNormal = normal;
-        rallyPointForcedVisibleUntil = Time.time + Mathf.Max(0f, rallyPointFadeAfterSetSeconds);
-
         UpdateRallyPointVisual();
         ReassignDefenderGuardPoints(resetTargets: true);
         return true;
@@ -547,27 +563,7 @@ public sealed class BarracksController : MonoBehaviour
         bool shouldShowCircle = rallyPlacementPreviewActive;
         rallyCircleRenderer.enabled = shouldShowCircle;
 
-        bool shouldShowMarker = false;
-        float markerAlpha = 1f;
-        if (hasAnchor)
-        {
-            if (rallyPlacementPreviewActive)
-            {
-                shouldShowMarker = true;
-                markerAlpha = 1f;
-            }
-            else if (showRallyPointWhenSelected && isSelectedInUi)
-            {
-                shouldShowMarker = true;
-                markerAlpha = 1f;
-            }
-            else if (rallyPointForcedVisibleUntil > Time.time)
-            {
-                shouldShowMarker = true;
-                float duration = Mathf.Max(0.01f, rallyPointFadeAfterSetSeconds);
-                markerAlpha = Mathf.Clamp01((rallyPointForcedVisibleUntil - Time.time) / duration);
-            }
-        }
+        bool shouldShowMarker = hasAnchor && (rallyPlacementPreviewActive || (showRallyPointWhenSelected && isSelectedInUi));
 
         if (rallyPointRenderer != null)
         {
@@ -575,9 +571,7 @@ public sealed class BarracksController : MonoBehaviour
             if (rallyPointRenderer.enabled)
             {
                 rallyPointRenderer.transform.position = rallyAnchor + rallyPointOffset;
-                Color markerColor = Color.white;
-                markerColor.a = markerAlpha;
-                rallyPointRenderer.color = markerColor;
+                rallyPointRenderer.color = Color.white;
             }
         }
 
@@ -673,6 +667,173 @@ public sealed class BarracksController : MonoBehaviour
             rallyPointRenderer.sortingLayerID = barracksSprite.sortingLayerID;
             rallyPointRenderer.sortingOrder = barracksSprite.sortingOrder + Mathf.Max(0, rallyPointSortingOffset);
         }
+
+        EnsureRallyPointAnimationFrames();
+    }
+
+    private void AnimateRallyPointMarker()
+    {
+        if (rallyPointRenderer == null)
+            return;
+
+        bool visible = rallyPointRenderer.enabled;
+        if (!visible)
+        {
+            rallyPointWasVisibleLastFrame = false;
+            return;
+        }
+
+        if (!rallyPointWasVisibleLastFrame)
+        {
+            rallyPointAnimationTimer = 0f;
+            rallyPointAnimationFrameIndex = 0;
+            rallyPointWasVisibleLastFrame = true;
+            ApplyCurrentRallyFrame();
+        }
+
+        if (rallyPointAnimationFrames == null || rallyPointAnimationFrames.Length <= 1)
+            return;
+
+        float frameDuration = 1f / Mathf.Max(1f, RallyPointAnimationFps);
+        rallyPointAnimationTimer += Time.deltaTime;
+        while (rallyPointAnimationTimer >= frameDuration)
+        {
+            rallyPointAnimationTimer -= frameDuration;
+            rallyPointAnimationFrameIndex = (rallyPointAnimationFrameIndex + 1) % rallyPointAnimationFrames.Length;
+            ApplyCurrentRallyFrame();
+        }
+    }
+
+    private void EnsureRallyPointAnimationFrames()
+    {
+#if UNITY_EDITOR
+        if (rallyPointSprite == null)
+        {
+            rallyPointAnimationFrames = null;
+            return;
+        }
+
+        string atlasPath = AssetDatabase.GetAssetPath(rallyPointSprite.texture);
+        if (string.IsNullOrWhiteSpace(atlasPath))
+        {
+            rallyPointAnimationFrames = new[] { rallyPointSprite };
+            return;
+        }
+
+        Object[] allAssets = AssetDatabase.LoadAllAssetsAtPath(atlasPath);
+        if (allAssets == null || allAssets.Length == 0)
+        {
+            rallyPointAnimationFrames = new[] { rallyPointSprite };
+            return;
+        }
+
+        string prefix = GetRallySpritePrefix(rallyPointSprite.name);
+        List<Sprite> frames = new List<Sprite>(allAssets.Length);
+        for (int i = 0; i < allAssets.Length; i++)
+        {
+            if (allAssets[i] is not Sprite sprite)
+                continue;
+
+            if (!sprite.name.StartsWith(prefix))
+                continue;
+
+            frames.Add(sprite);
+        }
+
+        if (frames.Count == 0)
+        {
+            rallyPointAnimationFrames = new[] { rallyPointSprite };
+            return;
+        }
+
+        rallyPointAnimationFrames = frames
+            .OrderBy(sprite => sprite.name, System.StringComparer.Ordinal)
+            .ToArray();
+#else
+        rallyPointAnimationFrames = (rallyPointAnimationFramesSerialized != null && rallyPointAnimationFramesSerialized.Length > 0)
+            ? rallyPointAnimationFramesSerialized
+            : (rallyPointSprite != null ? new[] { rallyPointSprite } : null);
+#endif
+    }
+
+    private void ApplyCurrentRallyFrame()
+    {
+        if (rallyPointRenderer == null)
+            return;
+
+        if (rallyPointAnimationFrames == null || rallyPointAnimationFrames.Length == 0)
+        {
+            rallyPointRenderer.sprite = rallyPointSprite;
+            return;
+        }
+
+        int clampedIndex = Mathf.Clamp(rallyPointAnimationFrameIndex, 0, rallyPointAnimationFrames.Length - 1);
+        rallyPointRenderer.sprite = rallyPointAnimationFrames[clampedIndex];
+    }
+
+    private static string GetRallySpritePrefix(string spriteName)
+    {
+        if (string.IsNullOrWhiteSpace(spriteName))
+            return string.Empty;
+
+        int lastUnderscore = spriteName.LastIndexOf('_');
+        if (lastUnderscore <= 0)
+            return spriteName;
+
+        bool hasNumericSuffix = true;
+        for (int i = lastUnderscore + 1; i < spriteName.Length; i++)
+        {
+            if (!char.IsDigit(spriteName[i]))
+            {
+                hasNumericSuffix = false;
+                break;
+            }
+        }
+
+        return hasNumericSuffix ? spriteName.Substring(0, lastUnderscore + 1) : spriteName;
+    }
+
+    private void DisableLegacyRallyVisuals()
+    {
+        for (int i = 0; i < LegacyRallyVisualNames.Length; i++)
+            DisableLegacyVisualObject(LegacyRallyVisualNames[i]);
+
+        // Defensive cleanup for old authoring children renamed manually.
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform child = transform.GetChild(i);
+            if (child == null || string.IsNullOrWhiteSpace(child.name))
+                continue;
+
+            string lowerName = child.name.ToLowerInvariant();
+            if (!lowerName.Contains("rally"))
+                continue;
+
+            if (child.name == "__RallyPointMarker")
+                continue;
+
+            DisableLegacyVisualObject(child.name);
+        }
+    }
+
+    private void DisableLegacyVisualObject(string objectName)
+    {
+        if (string.IsNullOrWhiteSpace(objectName))
+            return;
+
+        Transform legacyTransform = transform.Find(objectName);
+        if (legacyTransform == null)
+            return;
+
+        SpriteRenderer spriteRenderer = legacyTransform.GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+            spriteRenderer.enabled = false;
+
+        LineRenderer lineRenderer = legacyTransform.GetComponent<LineRenderer>();
+        if (lineRenderer != null)
+            lineRenderer.enabled = false;
+
+        legacyTransform.gameObject.SetActive(false);
     }
 
 #if UNITY_EDITOR
@@ -680,6 +841,12 @@ public sealed class BarracksController : MonoBehaviour
     {
         if (rallyPointSprite == null)
             rallyPointSprite = AssetDatabase.LoadAssetAtPath<Sprite>(DefaultRallyPointSpritePath);
+
+        if (rallyPointRenderer != null)
+            rallyPointRenderer.sprite = rallyPointSprite;
+
+        EnsureRallyPointAnimationFrames();
+        rallyPointAnimationFramesSerialized = rallyPointAnimationFrames;
     }
 #endif
 }

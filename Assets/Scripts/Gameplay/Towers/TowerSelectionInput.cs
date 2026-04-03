@@ -45,6 +45,8 @@ public class TowerSelectionInput : MonoBehaviour
 
             armedRallyBarracks.TrySetRallyPoint(world);
             CancelBarracksRallyPlacement();
+            if (selectionService != null)
+                selectionService.ClearSelection();
 
             return;
         }
@@ -57,14 +59,10 @@ public class TowerSelectionInput : MonoBehaviour
         }
 
         int overlapCount = Physics2D.OverlapPointNonAlloc(world, OverlapBuffer);
-        bool hitBuildPlace = false;
         for (int i = 0; i < overlapCount; i++)
         {
             Collider2D candidate = OverlapBuffer[i];
             OverlapBuffer[i] = null;
-
-            if (!hitBuildPlace && candidate != null && candidate.GetComponentInParent<BuildPlace>() != null)
-                hitBuildPlace = true;
 
             if (!TryResolveTowerFromCollider(candidate, out TowerUpgradable tower))
                 continue;
