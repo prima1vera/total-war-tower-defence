@@ -181,7 +181,7 @@ MonoBehaviour:
   maxHealth: 40
   moveSpeed: 1.5
   stopDistance: 0.01
-  engageRange: 2
+  engageRange: 2.4
   chaseLimitFromGuard: 1
   attackRange: 0.65
   attackDamage: 2
@@ -191,6 +191,6 @@ MonoBehaviour:
   notifyEnemyAggroOnHit: 0
   blockRadius: 0.35
   pathPriority: 50
-  maxAttackersPerDefender: 3
+  maxAttackersPerDefender: 2
   blockerCollider: {fileID: 211212325863951469}
   animator: {fileID: 8455280624236355907}

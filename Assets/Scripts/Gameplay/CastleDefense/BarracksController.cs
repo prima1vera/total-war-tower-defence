@@ -9,11 +9,11 @@ using UnityEditor;
 [DisallowMultipleComponent]
 public sealed class BarracksController : MonoBehaviour
 {
-    private const float RoadFormationSpacing = 0.44f;
-    private const float RoadFormationRowDepth = 0.36f;
-    private const float RoadFormationFrontOffset = 0.04f;
-    private const float RoadFormationHalfWidth = 0.88f;
-    private const int RoadFormationMaxPerRow = 3;
+    private const float RoadFormationSpacing = 0.4f;
+    private const float RoadFormationRowDepth = 0.24f;
+    private const float RoadFormationFrontOffset = 0.02f;
+    private const float RoadFormationHalfWidth = 1.08f;
+    private const int RoadFormationMaxPerRow = 4;
     private const int RallyCircleSegments = 40;
     private const float RallyPointAnimationFps = 10f;
     private static readonly Color RallyCircleColor = new Color(1f, 0.92f, 0.35f, 0.72f);

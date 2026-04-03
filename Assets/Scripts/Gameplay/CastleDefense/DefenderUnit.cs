@@ -24,7 +24,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     [SerializeField, Min(0f)] private float stopDistance = 0.06f;
 
     [Header("Melee Combat")]
-    [SerializeField, Min(0.2f)] private float engageRange = 2.1f;
+    [SerializeField, Min(0.2f)] private float engageRange = 2.4f;
     [SerializeField, Min(0.2f)] private float chaseLimitFromGuard = 3.2f;
     [SerializeField, Min(0.1f)] private float attackRange = 0.65f;
     [SerializeField, Min(1)] private int attackDamage = 2;
@@ -337,14 +337,16 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         }
         if (distance > hitDistance)
         {
-            if (engagingAttackers.Contains(target) && toTarget.sqrMagnitude > 0.0001f)
+            bool isEngagedTarget = engagingAttackers.Contains(target);
+            if (toTarget.sqrMagnitude > 0.0001f)
             {
-                float maxStepDistance = hitDistance + 0.45f;
+                float maxStepDistance = hitDistance + (isEngagedTarget ? 0.45f : 0.32f);
                 if (distance <= maxStepDistance)
                 {
                     Vector2 desiredContactPoint = targetPosition - toTarget.normalized * Mathf.Max(0.08f, hitDistance * 0.9f);
                     float contactDistanceFromGuard = Vector2.Distance(desiredContactPoint, guardWorldPosition);
-                    if (contactDistanceFromGuard <= combatAnchorRadius + 0.08f)
+                    float allowedContactRadius = combatAnchorRadius + (isEngagedTarget ? 0.08f : 0.02f);
+                    if (contactDistanceFromGuard <= allowedContactRadius)
                     {
                         MoveTowards(new Vector3(desiredContactPoint.x, desiredContactPoint.y, transform.position.z), applySeparation: false);
                         SetAttackAnimation(false);
@@ -388,6 +390,10 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         if (currentEnemyTarget.IsDead)
             return true;
 
+        float distFromSelf = Vector2.Distance(currentEnemyTarget.transform.position, WorldPosition);
+        if (distFromSelf > Mathf.Max(attackRange + 0.35f, engageRange + 0.8f))
+            return true;
+
         float distFromGuard = Vector2.Distance(currentEnemyTarget.transform.position, guardWorldPosition);
         if (distFromGuard > Mathf.Max(attackRange + 0.2f, engageRange))
             return true;
@@ -403,8 +409,9 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
             return;
         }
 
-        float searchRadius = Mathf.Max(0.2f, engageRange);
-        EnemyRegistry.TryGetNearestEnemy(guardWorldPosition, searchRadius, out UnitHealth refreshedTarget);
+        Vector2 searchOrigin = WorldPosition;
+        float searchRadius = Mathf.Max(0.3f, engageRange + 0.35f);
+        EnemyRegistry.TryGetNearestEnemy(searchOrigin, searchRadius, out UnitHealth refreshedTarget);
         SetCurrentEnemyTarget(refreshedTarget);
     }
 
