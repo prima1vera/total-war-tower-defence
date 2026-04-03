@@ -26,7 +26,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     [Header("Melee Combat")]
     [SerializeField, Min(0.2f)] private float engageRange = 2.1f;
     [SerializeField, Min(0.2f)] private float chaseLimitFromGuard = 3.2f;
-    [SerializeField, Min(0.1f)] private float attackRange = 0.45f;
+    [SerializeField, Min(0.1f)] private float attackRange = 0.65f;
     [SerializeField, Min(1)] private int attackDamage = 2;
     [SerializeField, Min(0.05f)] private float attackInterval = 0.75f;
     [SerializeField, Min(0f)] private float attackKnockback = 0.04f;
@@ -337,6 +337,22 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         }
         if (distance > hitDistance)
         {
+            if (engagingAttackers.Contains(target) && toTarget.sqrMagnitude > 0.0001f)
+            {
+                float maxStepDistance = hitDistance + 0.45f;
+                if (distance <= maxStepDistance)
+                {
+                    Vector2 desiredContactPoint = targetPosition - toTarget.normalized * Mathf.Max(0.08f, hitDistance * 0.9f);
+                    float contactDistanceFromGuard = Vector2.Distance(desiredContactPoint, guardWorldPosition);
+                    if (contactDistanceFromGuard <= combatAnchorRadius + 0.08f)
+                    {
+                        MoveTowards(new Vector3(desiredContactPoint.x, desiredContactPoint.y, transform.position.z), applySeparation: false);
+                        SetAttackAnimation(false);
+                        return;
+                    }
+                }
+            }
+
             ApplyMovingAnimation(false);
             SetAttackAnimation(false);
             UpdateAnimatorDirection(toTarget.sqrMagnitude > 0.0001f ? toTarget.normalized : Vector2.down);

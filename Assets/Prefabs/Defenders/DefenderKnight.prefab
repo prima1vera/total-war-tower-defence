@@ -191,6 +191,6 @@ MonoBehaviour:
   notifyEnemyAggroOnHit: 0
   blockRadius: 0.35
   pathPriority: 50
-  maxAttackersPerDefender: 2
+  maxAttackersPerDefender: 3
   blockerCollider: {fileID: 211212325863951469}
   animator: {fileID: 8455280624236355907}

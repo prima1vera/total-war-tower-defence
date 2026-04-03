@@ -470,31 +470,6 @@ public class UnitMovement : MonoBehaviour
                     preferredBlocker = null;
             }
 
-            if (preferredBlocker == null)
-            {
-                EnemyPathBlockerRegistry.TryGetFirstBlockingTarget(
-                    cachedTransform.position,
-                    heading,
-                    effectiveScanRange,
-                    effectiveLaneHalfWidth,
-                    unitHealth,
-                    ignoreEngagementCapacity: true,
-                    out preferredBlocker);
-            }
-
-            if (preferredBlocker == null)
-            {
-                EnemyPathBlockerRegistry.TryGetNearestBlockingTarget(
-                    cachedTransform.position,
-                    radialFallbackDistance,
-                    unitHealth,
-                    ignoreEngagementCapacity: true,
-                    out preferredBlocker);
-
-                if (!IsFallbackBlockerUsable(preferredBlocker, heading))
-                    preferredBlocker = null;
-            }
-
             SetCurrentBlocker(preferredBlocker);
 
             if (currentBlocker != null)
@@ -553,6 +528,15 @@ public class UnitMovement : MonoBehaviour
                     TryAcquireCurrentBlockerReservation();
                 }
             }
+
+            if (!hasBlockerAttackReservation)
+            {
+                // No free melee slot: keep marching to the next choke instead of idling in rear queue.
+                SetCurrentBlocker(null);
+                hasForcedBlockerAggro = false;
+                blockerRetargetTimer = Mathf.Min(blockerRetargetTimer, 0.02f);
+                return false;
+            }
         }
         else
         {
@@ -578,13 +562,6 @@ public class UnitMovement : MonoBehaviour
             }
 
             SetMovingAnimation(true);
-            SetAttackAnimation(false);
-            return true;
-        }
-
-        if (!hasBlockerAttackReservation)
-        {
-            SetMovingAnimation(false);
             SetAttackAnimation(false);
             return true;
         }
