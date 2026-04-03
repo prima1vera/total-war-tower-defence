@@ -32,6 +32,10 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     [SerializeField, Min(0f)] private float attackKnockback = 0.04f;
     [SerializeField, Min(0.02f)] private float targetRefreshInterval = 0.12f;
     [SerializeField] private bool notifyEnemyAggroOnHit = false;
+    [SerializeField, Tooltip("Keep this defender anchored to its guard slot instead of lunging forward alone.")]
+    private bool holdFormationLine = true;
+    [SerializeField, Min(0.02f), Tooltip("Allowed drift radius around guard slot while holding formation.")]
+    private float formationHoldRadius = 0.16f;
 
     [Header("Blocking")]
     [SerializeField, Min(0.1f)] private float blockRadius = 0.35f;
@@ -261,8 +265,11 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
             return;
 
         float distanceToGuard = Vector2.Distance(transform.position, guardWorldPosition);
-        float combatAnchorRadius = Mathf.Max(attackRange + 0.18f, 0.55f);
-        float hardAnchorRadius = Mathf.Max(chaseLimitFromGuard, combatAnchorRadius + 0.45f);
+        float combatAnchorRadius = holdFormationLine
+            ? Mathf.Max(stopDistance + 0.02f, formationHoldRadius)
+            : Mathf.Max(attackRange + 0.18f, 0.55f);
+        float hardAnchorPadding = holdFormationLine ? 0.28f : 0.45f;
+        float hardAnchorRadius = Mathf.Max(chaseLimitFromGuard, combatAnchorRadius + hardAnchorPadding);
         if (distanceToGuard > hardAnchorRadius)
         {
             SetCurrentEnemyTarget(null);
@@ -297,7 +304,9 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
             float targetDistanceFromGuard = Vector2.Distance(target.transform.position, guardWorldPosition);
             float allowedTargetDistance = engagingAttackers.Contains(target)
                 ? Mathf.Max(chaseLimitFromGuard + 0.6f, attackRange + 0.45f)
-                : Mathf.Max(attackRange + 0.2f, chaseLimitFromGuard);
+                : holdFormationLine
+                    ? Mathf.Max(attackRange + combatAnchorRadius + 0.2f, attackRange + 0.35f)
+                    : Mathf.Max(attackRange + 0.2f, chaseLimitFromGuard);
 
             if (targetDistanceFromGuard > allowedTargetDistance)
             {
@@ -337,20 +346,23 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         }
         if (distance > hitDistance)
         {
-            bool isEngagedTarget = engagingAttackers.Contains(target);
-            if (toTarget.sqrMagnitude > 0.0001f)
+            if (!holdFormationLine)
             {
-                float maxStepDistance = hitDistance + (isEngagedTarget ? 0.45f : 0.32f);
-                if (distance <= maxStepDistance)
+                bool isEngagedTarget = engagingAttackers.Contains(target);
+                if (toTarget.sqrMagnitude > 0.0001f)
                 {
-                    Vector2 desiredContactPoint = targetPosition - toTarget.normalized * Mathf.Max(0.08f, hitDistance * 0.9f);
-                    float contactDistanceFromGuard = Vector2.Distance(desiredContactPoint, guardWorldPosition);
-                    float allowedContactRadius = combatAnchorRadius + (isEngagedTarget ? 0.08f : 0.02f);
-                    if (contactDistanceFromGuard <= allowedContactRadius)
+                    float maxStepDistance = hitDistance + (isEngagedTarget ? 0.45f : 0.32f);
+                    if (distance <= maxStepDistance)
                     {
-                        MoveTowards(new Vector3(desiredContactPoint.x, desiredContactPoint.y, transform.position.z), applySeparation: false);
-                        SetAttackAnimation(false);
-                        return;
+                        Vector2 desiredContactPoint = targetPosition - toTarget.normalized * Mathf.Max(0.08f, hitDistance * 0.9f);
+                        float contactDistanceFromGuard = Vector2.Distance(desiredContactPoint, guardWorldPosition);
+                        float allowedContactRadius = combatAnchorRadius + (isEngagedTarget ? 0.08f : 0.02f);
+                        if (contactDistanceFromGuard <= allowedContactRadius)
+                        {
+                            MoveTowards(new Vector3(desiredContactPoint.x, desiredContactPoint.y, transform.position.z), applySeparation: false);
+                            SetAttackAnimation(false);
+                            return;
+                        }
                     }
                 }
             }
@@ -395,7 +407,10 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
             return true;
 
         float distFromGuard = Vector2.Distance(currentEnemyTarget.transform.position, guardWorldPosition);
-        if (distFromGuard > Mathf.Max(attackRange + 0.2f, engageRange))
+        float maxGuardTargetDistance = holdFormationLine
+            ? Mathf.Max(attackRange + formationHoldRadius + 0.25f, attackRange + 0.4f)
+            : Mathf.Max(attackRange + 0.2f, engageRange);
+        if (distFromGuard > maxGuardTargetDistance)
             return true;
 
         return !currentEnemyTarget.gameObject.activeInHierarchy;
@@ -409,8 +424,10 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
             return;
         }
 
-        Vector2 searchOrigin = WorldPosition;
-        float searchRadius = Mathf.Max(0.3f, engageRange + 0.35f);
+        Vector2 searchOrigin = holdFormationLine ? (Vector2)guardWorldPosition : WorldPosition;
+        float searchRadius = holdFormationLine
+            ? Mathf.Max(0.4f, attackRange + formationHoldRadius + 0.45f)
+            : Mathf.Max(0.3f, engageRange + 0.35f);
         EnemyRegistry.TryGetNearestEnemy(searchOrigin, searchRadius, out UnitHealth refreshedTarget);
         SetCurrentEnemyTarget(refreshedTarget);
     }
