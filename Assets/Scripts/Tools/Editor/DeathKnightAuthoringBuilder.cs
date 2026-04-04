@@ -16,6 +16,9 @@ public static class DeathKnightAuthoringBuilder
     private const string RunLeftSheet = SpriteRoot + "/dk_walk_left.png";
     private const string RunRightSheet = SpriteRoot + "/dk_walk_right.png";
     private const string RunUpSheet = SpriteRoot + "/dk_walk_up.png";
+    private const string AttackDownSheet = SpriteRoot + "/dk_attack_1_down.png";
+    private const string AttackRightSheet = SpriteRoot + "/dk_attack_1_right.png";
+    private const string AttackUpSheet = SpriteRoot + "/dk_attack_1_up.png";
     private const string Die1Sheet = SpriteRoot + "/dk_dead_1.png";
     private const string Die2Sheet = SpriteRoot + "/dk_dead_2.png";
     private const string Die3Sheet = SpriteRoot + "/dk_dead_3.png";
@@ -25,6 +28,9 @@ public static class DeathKnightAuthoringBuilder
     private const string RunLeftClipPath = AnimRoot + "/Run_Left_DeathKnight.anim";
     private const string RunRightClipPath = AnimRoot + "/Run_Right_DeathKnight.anim";
     private const string RunUpClipPath = AnimRoot + "/Run_Up_DeathKnight.anim";
+    private const string AttackDownClipPath = AnimRoot + "/Attack_Down_DeathKnight.anim";
+    private const string AttackRightClipPath = AnimRoot + "/Attack_Right_DeathKnight.anim";
+    private const string AttackUpClipPath = AnimRoot + "/Attack_Up_DeathKnight.anim";
     private const string Die1ClipPath = AnimRoot + "/Die_DeathKnight_1.anim";
     private const string Die2ClipPath = AnimRoot + "/Die_DeathKnight_2.anim";
     private const string Die3ClipPath = AnimRoot + "/Die_DeathKnight_3.anim";
@@ -43,6 +49,7 @@ public static class DeathKnightAuthoringBuilder
     private const int FrameWidth = 96;
     private const int FrameHeight = 96;
     private const float RunFps = 12f;
+    private const float AttackFps = 10f;
     private const float DeathFps = 12f;
 
     [MenuItem(MenuBuild)]
@@ -71,6 +78,9 @@ public static class DeathKnightAuthoringBuilder
         Sprite[] runLeftSprites = ImportSliceAndCollectSprites(RunLeftSheet, forceRebuild);
         Sprite[] runRightSprites = ImportSliceAndCollectSprites(RunRightSheet, forceRebuild);
         Sprite[] runUpSprites = ImportSliceAndCollectSprites(RunUpSheet, forceRebuild);
+        Sprite[] attackDownSprites = ImportSliceAndCollectSprites(AttackDownSheet, forceRebuild);
+        Sprite[] attackRightSprites = ImportSliceAndCollectSprites(AttackRightSheet, forceRebuild);
+        Sprite[] attackUpSprites = ImportSliceAndCollectSprites(AttackUpSheet, forceRebuild);
         Sprite[] die1Sprites = ImportSliceAndCollectSprites(Die1Sheet, forceRebuild);
         Sprite[] die2Sprites = ImportSliceAndCollectSprites(Die2Sheet, forceRebuild);
         Sprite[] die3Sprites = ImportSliceAndCollectSprites(Die3Sheet, forceRebuild);
@@ -80,6 +90,9 @@ public static class DeathKnightAuthoringBuilder
         ValidateSpriteSet(runLeftSprites, RunLeftSheet);
         ValidateSpriteSet(runRightSprites, RunRightSheet);
         ValidateSpriteSet(runUpSprites, RunUpSheet);
+        ValidateSpriteSet(attackDownSprites, AttackDownSheet);
+        ValidateSpriteSet(attackRightSprites, AttackRightSheet);
+        ValidateSpriteSet(attackUpSprites, AttackUpSheet);
         ValidateSpriteSet(die1Sprites, Die1Sheet);
         ValidateSpriteSet(die2Sprites, Die2Sheet);
         ValidateSpriteSet(die3Sprites, Die3Sheet);
@@ -89,6 +102,9 @@ public static class DeathKnightAuthoringBuilder
         AnimationClip runLeftClip = CreateOrUpdateClip(RunLeftClipPath, runLeftSprites, RunFps, true);
         AnimationClip runRightClip = CreateOrUpdateClip(RunRightClipPath, runRightSprites, RunFps, true);
         AnimationClip runUpClip = CreateOrUpdateClip(RunUpClipPath, runUpSprites, RunFps, true);
+        AnimationClip attackDownClip = CreateOrUpdateClip(AttackDownClipPath, attackDownSprites, AttackFps, true);
+        AnimationClip attackRightClip = CreateOrUpdateClip(AttackRightClipPath, attackRightSprites, AttackFps, true);
+        AnimationClip attackUpClip = CreateOrUpdateClip(AttackUpClipPath, attackUpSprites, AttackFps, true);
         AnimationClip die1Clip = CreateOrUpdateClip(Die1ClipPath, die1Sprites, DeathFps, false);
         AnimationClip die2Clip = CreateOrUpdateClip(Die2ClipPath, die2Sprites, DeathFps, false);
         AnimationClip die3Clip = CreateOrUpdateClip(Die3ClipPath, die3Sprites, DeathFps, false);
@@ -99,6 +115,9 @@ public static class DeathKnightAuthoringBuilder
             runLeftClip,
             runRightClip,
             runUpClip,
+            attackDownClip,
+            attackRightClip,
+            attackUpClip,
             die1Clip,
             die2Clip,
             die3Clip,
@@ -318,6 +337,9 @@ public static class DeathKnightAuthoringBuilder
         AnimationClip runLeftClip,
         AnimationClip runRightClip,
         AnimationClip runUpClip,
+        AnimationClip attackDownClip,
+        AnimationClip attackRightClip,
+        AnimationClip attackUpClip,
         AnimationClip die1Clip,
         AnimationClip die2Clip,
         AnimationClip die3Clip,
@@ -331,6 +353,8 @@ public static class DeathKnightAuthoringBuilder
 
         controller.AddParameter("moveX", AnimatorControllerParameterType.Float);
         controller.AddParameter("moveY", AnimatorControllerParameterType.Float);
+        controller.AddParameter("isMoving", AnimatorControllerParameterType.Bool);
+        controller.AddParameter("attack", AnimatorControllerParameterType.Bool);
         controller.AddParameter("isDead", AnimatorControllerParameterType.Bool);
         controller.AddParameter("deathIndex", AnimatorControllerParameterType.Int);
 
@@ -354,9 +378,39 @@ public static class DeathKnightAuthoringBuilder
         runBlendTree.AddChild(runUpClip, new Vector2(0f, 1f));
         runBlendTree.AddChild(runDownClip, new Vector2(0f, -1f));
 
+        BlendTree attackBlendTree = new BlendTree
+        {
+            name = "DeathKnightAttackBlendTree",
+            blendType = BlendTreeType.SimpleDirectional2D,
+            blendParameter = "moveX",
+            blendParameterY = "moveY",
+            useAutomaticThresholds = false
+        };
+
+        AssetDatabase.AddObjectToAsset(attackBlendTree, controller);
+        attackBlendTree.AddChild(attackRightClip, new Vector2(1f, 0f));
+        attackBlendTree.AddChild(attackRightClip, new Vector2(-1f, 0f));
+        attackBlendTree.AddChild(attackUpClip, new Vector2(0f, 1f));
+        attackBlendTree.AddChild(attackDownClip, new Vector2(0f, -1f));
+
         AnimatorState runState = sm.AddState("Run", new Vector3(220f, 60f, 0f));
         runState.motion = runBlendTree;
+
+        AnimatorState attackState = sm.AddState("Attack", new Vector3(220f, 165f, 0f));
+        attackState.motion = attackBlendTree;
         sm.defaultState = runState;
+
+        AnimatorStateTransition runToAttack = runState.AddTransition(attackState);
+        runToAttack.hasExitTime = false;
+        runToAttack.hasFixedDuration = true;
+        runToAttack.duration = 0.05f;
+        runToAttack.AddCondition(AnimatorConditionMode.If, 0f, "attack");
+
+        AnimatorStateTransition attackToRun = attackState.AddTransition(runState);
+        attackToRun.hasExitTime = false;
+        attackToRun.hasFixedDuration = true;
+        attackToRun.duration = 0.05f;
+        attackToRun.AddCondition(AnimatorConditionMode.IfNot, 0f, "attack");
 
         AnimatorState dieState1 = sm.AddState("Die_1", new Vector3(430f, 0f, 0f));
         AnimatorState dieState2 = sm.AddState("Die_2", new Vector3(430f, 70f, 0f));

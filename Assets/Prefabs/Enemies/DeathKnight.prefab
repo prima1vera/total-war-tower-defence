@@ -4796,7 +4796,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1981946305
-  m_SortingLayer: 7
+  m_SortingLayer: 5
   m_SortingOrder: 2
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -9626,7 +9626,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1981946305
-  m_SortingLayer: 7
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -9830,6 +9830,13 @@ MonoBehaviour:
     m_Bits: 4294967295
   maxSeparationColliders: 16
   destroyOnGoalReached: 1
+  attackPathBlockers: 1
+  blockerAttackDamage: 1
+  blockerAttackInterval: 0.55
+  blockerScanRange: 1.1
+  blockerLaneHalfWidth: 0.38
+  blockerAttackRange: 0.15
+  blockerRetargetInterval: 0.08
 --- !u!114 &6938057876305032362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9842,7 +9849,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a166122f46c6d4290d6556a85e25a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitHealth
-  maxHealth: 300
+  maxHealth: 180
   bloodPoolPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
   bloodSplashPrefab: {fileID: 6567675628769267437, guid: bcdc8edaa307d5941a4f80c7fd13bf4f, type: 3}
   despawnToPoolDelay: 2

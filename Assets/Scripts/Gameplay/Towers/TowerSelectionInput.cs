@@ -6,11 +6,15 @@ using UnityEngine.InputSystem;
 
 public class TowerSelectionInput : MonoBehaviour
 {
+    private static readonly Collider2D[] OverlapBuffer = new Collider2D[24];
+
     [SerializeField] private Camera worldCamera;
     [SerializeField] private TowerSelectionService selectionService;
     [SerializeField] private LayerMask towerLayerMask;
     [SerializeField] private bool clearSelectionOnMiss = true;
     [SerializeField] private bool ignorePointerOverUi = true;
+
+    private BarracksController armedRallyBarracks;
 
     private void Update()
     {
@@ -31,19 +35,89 @@ public class TowerSelectionInput : MonoBehaviour
         Vector3 world = worldCamera.ScreenToWorldPoint(new Vector3(pointerPosition.x, pointerPosition.y, Mathf.Abs(worldCamera.transform.position.z)));
         world.z = 0f;
 
-        Collider2D hit = Physics2D.OverlapPoint(world, towerLayerMask);
-        if (hit != null)
+        if (armedRallyBarracks != null)
         {
-            TowerUpgradable tower = hit.GetComponentInParent<TowerUpgradable>();
-            if (tower != null && tower.gameObject.activeInHierarchy && !tower.IsSold)
+            if (!armedRallyBarracks.gameObject.activeInHierarchy)
             {
-                selectionService.Select(tower);
+                CancelBarracksRallyPlacement();
                 return;
             }
+
+            armedRallyBarracks.TrySetRallyPoint(world);
+            CancelBarracksRallyPlacement();
+            if (selectionService != null)
+                selectionService.ClearSelection();
+
+            return;
+        }
+
+        Collider2D hit = Physics2D.OverlapPoint(world, towerLayerMask);
+        if (TryResolveTowerFromCollider(hit, out TowerUpgradable maskedTower))
+        {
+            selectionService.Select(maskedTower);
+            return;
+        }
+
+        int overlapCount = Physics2D.OverlapPointNonAlloc(world, OverlapBuffer);
+        for (int i = 0; i < overlapCount; i++)
+        {
+            Collider2D candidate = OverlapBuffer[i];
+            OverlapBuffer[i] = null;
+
+            if (!TryResolveTowerFromCollider(candidate, out TowerUpgradable tower))
+                continue;
+
+            selectionService.Select(tower);
+            return;
         }
 
         if (clearSelectionOnMiss)
             selectionService.ClearSelection();
+    }
+
+    private static bool TryResolveTowerFromCollider(Collider2D collider, out TowerUpgradable tower)
+    {
+        tower = null;
+        if (collider == null)
+            return false;
+
+        tower = collider.GetComponentInParent<TowerUpgradable>();
+        if (tower == null)
+            return false;
+
+        if (!tower.gameObject.activeInHierarchy || tower.IsSold)
+            return false;
+
+        return true;
+    }
+
+    public bool ArmBarracksRallyPlacement(BarracksController barracks)
+    {
+        if (barracks == null || !barracks.gameObject.activeInHierarchy)
+            return false;
+
+        if (armedRallyBarracks != null && armedRallyBarracks != barracks)
+            armedRallyBarracks.SetRallyPlacementPreviewActive(false);
+
+        armedRallyBarracks = barracks;
+        armedRallyBarracks.SetRallyPlacementPreviewActive(true);
+        return true;
+    }
+
+    public void CancelBarracksRallyPlacement()
+    {
+        if (armedRallyBarracks != null)
+            armedRallyBarracks.SetRallyPlacementPreviewActive(false);
+
+        armedRallyBarracks = null;
+    }
+
+    public bool IsBarracksRallyPlacementArmedFor(BarracksController barracks)
+    {
+        if (barracks == null)
+            return false;
+
+        return armedRallyBarracks == barracks;
     }
 
     private bool IsPointerOverUi(int pointerId)

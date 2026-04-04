@@ -4796,7 +4796,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1981946305
-  m_SortingLayer: 7
+  m_SortingLayer: 5
   m_SortingOrder: 2
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -9626,7 +9626,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1981946305
-  m_SortingLayer: 7
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -9830,6 +9830,13 @@ MonoBehaviour:
     m_Bits: 4294967295
   maxSeparationColliders: 16
   destroyOnGoalReached: 1
+  attackPathBlockers: 1
+  blockerAttackDamage: 1
+  blockerAttackInterval: 0.55
+  blockerScanRange: 1.1
+  blockerLaneHalfWidth: 0.38
+  blockerAttackRange: 0.15
+  blockerRetargetInterval: 0.08
 --- !u!114 &4431284854324352027
 MonoBehaviour:
   m_ObjectHideFlags: 0

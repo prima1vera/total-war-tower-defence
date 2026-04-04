@@ -15,7 +15,10 @@ public class TopDownSorter : MonoBehaviour
 
     void LateUpdate()
     {
-        if (sr == null || unitHealth == null || unitHealth.IsDead)
+        if (sr == null)
+            return;
+
+        if (unitHealth != null && unitHealth.IsDead)
             return;
 
         float y = (col != null) ? col.bounds.min.y : transform.position.y;

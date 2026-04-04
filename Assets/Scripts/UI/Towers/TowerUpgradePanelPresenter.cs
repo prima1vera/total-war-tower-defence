@@ -7,6 +7,7 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
     [Header("Dependencies")]
     [SerializeField] private TowerSelectionService selectionService;
     [SerializeField] private PlayerCurrencyWallet currencyWallet;
+    [SerializeField] private TowerSelectionInput selectionInput;
 
     [Header("Panel")]
     [SerializeField] private GameObject panelRoot;
@@ -27,6 +28,8 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
     [SerializeField] private TMP_Text upgradeButtonCText;
     [SerializeField] private Button sellButton;
     [SerializeField] private TMP_Text sellButtonText;
+    [SerializeField] private Button rallyPointButton;
+    [SerializeField] private TMP_Text rallyPointButtonText;
 
     [Header("Optional")]
     [SerializeField] private TMP_Text goldText;
@@ -47,6 +50,8 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
     [SerializeField] private string levelPrefix = "Lv";
     [SerializeField] private string goldPrefix = "Gold";
     [SerializeField] private string sellLabel = "Sell";
+    [SerializeField] private string rallyLabel = "Rally";
+    [SerializeField] private string rallyArmedLabel = "Tap Ground";
     [SerializeField] private string currencySuffix = "g";
     [SerializeField] private string damageShortLabel = "DMG";
     [SerializeField] private string rangeShortLabel = "RNG";
@@ -74,6 +79,9 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
 
         if (sellButton != null)
             sellButton.onClick.AddListener(HandleSell);
+
+        if (rallyPointButton != null)
+            rallyPointButton.onClick.AddListener(HandleRallyPoint);
 
         InitializePanelVisibilityMode();
         SetPanelVisible(false);
@@ -103,11 +111,15 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
         if (currencyWallet != null)
             currencyWallet.BalanceChanged -= HandleBalanceChanged;
 
+        SetBarracksSelectedState(false);
         DetachTowerEvents();
     }
 
     private void LateUpdate()
     {
+        if (panelVisible)
+            RefreshBarracksActions();
+
         if (!followSelectedTowerWorldTarget || !panelVisible || currentWorldTarget == null)
             return;
 
@@ -187,16 +199,22 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
         if (tower != null && (!tower.gameObject.activeInHierarchy || tower.IsSold))
             tower = null;
 
+        if (selectionInput != null && selectedTower != tower)
+            selectionInput.CancelBarracksRallyPlacement();
+
         if (selectedTower == tower)
         {
+            SetBarracksSelectedState(tower != null);
             RefreshPanel();
             return;
         }
 
+        SetBarracksSelectedState(false);
         DetachTowerEvents();
         selectedTower = tower;
         currentWorldTarget = selectedTower != null ? selectedTower.transform : null;
         AttachTowerEvents();
+        SetBarracksSelectedState(selectedTower != null);
         RefreshPanel();
     }
 
@@ -267,7 +285,26 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
         if (selectedTower == null)
             return;
 
+        if (selectionInput != null)
+            selectionInput.CancelBarracksRallyPlacement();
+
         selectedTower.TrySell(currencyWallet);
+    }
+
+    private void HandleRallyPoint()
+    {
+        if (selectedTower == null || selectionInput == null)
+            return;
+
+        if (!selectedTower.TryGetComponent(out BarracksController barracks))
+            return;
+
+        if (selectionInput.IsBarracksRallyPlacementArmedFor(barracks))
+            selectionInput.CancelBarracksRallyPlacement();
+        else
+            selectionInput.ArmBarracksRallyPlacement(barracks);
+
+        RefreshBarracksActions();
     }
 
     private void RefreshPanel()
@@ -279,6 +316,7 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
         if (!hasSelection)
         {
             RefreshUpgradeButtons();
+            RefreshBarracksActions();
             return;
         }
 
@@ -304,6 +342,7 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
         }
 
         RefreshUpgradeButtons();
+        RefreshBarracksActions();
     }
 
     private void RefreshUpgradeButtons()
@@ -340,6 +379,37 @@ public class TowerUpgradePanelPresenter : MonoBehaviour
 
         if (sellButton != null)
             sellButton.interactable = true;
+    }
+
+    private void RefreshBarracksActions()
+    {
+        if (rallyPointButton == null && rallyPointButtonText == null)
+            return;
+
+        BarracksController barracks = null;
+        bool hasBarracks = selectedTower != null && selectedTower.TryGetComponent(out barracks);
+        bool armed = hasBarracks && selectionInput != null && selectionInput.IsBarracksRallyPlacementArmedFor(barracks);
+
+        if (rallyPointButton != null)
+        {
+            rallyPointButton.gameObject.SetActive(hasBarracks);
+            rallyPointButton.interactable = hasBarracks && selectionInput != null;
+        }
+
+        if (rallyPointButtonText != null)
+        {
+            rallyPointButtonText.text = armed ? rallyArmedLabel : rallyLabel;
+            rallyPointButtonText.alpha = hasBarracks ? 1f : 0.6f;
+        }
+    }
+
+    private void SetBarracksSelectedState(bool selected)
+    {
+        if (selectedTower == null)
+            return;
+
+        if (selectedTower.TryGetComponent(out BarracksController barracks))
+            barracks.SetSelectedInUi(selected);
     }
 
     private string BuildUpgradeLabel(TowerUpgradeOptionState option, string slotLabel)

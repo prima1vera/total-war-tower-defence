@@ -146,7 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Arrow
   damage: 1
   damageType: 0
-  knockbackForce: 0.65
+  knockbackForce: 0
   maxPierce: 10
   impactRadius: 1
   impactRadiusScaleWeight: 1

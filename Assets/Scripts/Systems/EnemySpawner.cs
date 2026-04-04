@@ -38,6 +38,12 @@ public class EnemySpawner : MonoBehaviour
 
     void Update()
     {
+        if (autoSpawn && WaveManager.HasActiveWaveManager)
+        {
+            autoSpawn = false;
+            return;
+        }
+
         if (!autoSpawn)
             return;
 

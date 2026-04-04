@@ -14,6 +14,7 @@ public class TowerUpgradable : MonoBehaviour
     [SerializeField] private Tower tower;
     [SerializeField] private ArcherTower archerTower;
     [SerializeField] private ArcherTowerProjectileEmitter archerEmitter;
+    [SerializeField] private BarracksController barracksController;
 
     [Header("Upgrade Data")]
     [SerializeField] private TowerUpgradeTree upgradeTree;
@@ -43,6 +44,9 @@ public class TowerUpgradable : MonoBehaviour
 
         if (archerEmitter == null)
             archerEmitter = GetComponent<ArcherTowerProjectileEmitter>();
+
+        if (barracksController == null)
+            barracksController = GetComponent<BarracksController>();
 
         if (initializeOnAwake)
             Initialize();
@@ -246,9 +250,15 @@ public class TowerUpgradable : MonoBehaviour
                 archerEmitter.ApplyEvolutionProfile(level.EvolutionProfile);
         }
 
+        if (barracksController != null)
+        {
+            hasAnyUpgradeTarget = true;
+            barracksController.ApplyUpgradeLevel(level.Level);
+        }
+
         if (!hasAnyUpgradeTarget)
         {
-            Debug.LogWarning($"{name}: TowerUpgradable has no upgrade target (Tower or ArcherTower).", this);
+            Debug.LogWarning($"{name}: TowerUpgradable has no upgrade target (Tower, ArcherTower, ArcherEmitter or BarracksController).", this);
         }
 
         cachedTowerDisplayName = ResolveDisplayName(level);

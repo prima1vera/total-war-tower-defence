@@ -75,7 +75,7 @@ public class UnitHealth : MonoBehaviour
 
         currentHealth -= dmg;
 
-        if (movement != null)
+        if (movement != null && knockbackForce > 0.001f)
             movement.ApplyKnockback(hitDirection, knockbackForce);
 
         RaiseDamageTaken(dmg, type, DamageFeedbackKind.DirectHit);

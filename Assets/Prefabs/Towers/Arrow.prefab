@@ -146,7 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Arrow
   damage: 1
   damageType: 0
-  knockbackForce: 1
+  knockbackForce: 0
   maxPierce: 3
   impactRadius: 0.1
   impactRadiusScaleWeight: 1
@@ -164,9 +164,17 @@ MonoBehaviour:
   directHitProbeRadius: 0.11
   directHitProbeForwardOffset: 0.08
   modelForwardAngleOffset: 0
+  useAdaptiveFlightSorting: 0
+  highArcProjectilesThreshold: 0.42
+  flightSortingOrderOffset: 2
+  embeddedOnTargetSortingOrderOffset: 1
+  embeddedGroundSortingOrderOffset: 0
   dustPrefab: {fileID: 2408689374836223538, guid: b92c8a1c6a875fd409b91b1ef31a322b, type: 3}
   impactWavePrefab: {fileID: 0}
   impactDecalPrefab: {fileID: 0}
+  spawnGroundFireZoneOnImpact: 0
+  groundFireZonePrefab: {fileID: 0}
+  groundFireZoneScaleMultiplier: 1
   spawnBloodOnDirectHit: 1
   directHitBloodFollowDuration: 0.45
   directHitBloodUseLocalSimulation: 1
@@ -303,7 +311,3 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
-
-
-
-
