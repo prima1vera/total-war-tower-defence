@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b90d27a8a80e5fe47a0cbe8a7f08ee7e
+guid: 403bb01ed0e718a49a320313b23bdd55
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,169 +110,190 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: noBKG_KnightRun_strip_0
+      name: DefenderSpartanSpritesheetWalkLeft_00
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 96
-        height: 64
+        width: 64
+        height: 68
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 6edff7432be9c4d4a96ce6572be71cd4
-      internalID: 1786896332
+      spriteID: d6993e5f790def300800000000000000
+      internalID: 287896777282263405
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: noBKG_KnightRun_strip_1
+      name: DefenderSpartanSpritesheetWalkLeft_01
       rect:
         serializedVersion: 2
-        x: 96
+        x: 64
         y: 0
-        width: 96
-        height: 64
+        width: 65
+        height: 68
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 2ee7d5f330ef0c149a5c6cd9bd59e4b7
-      internalID: 144494407
+      spriteID: ae73e124cf5719b80800000000000000
+      internalID: -8389794904513038358
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: noBKG_KnightRun_strip_2
+      name: DefenderSpartanSpritesheetWalkLeft_02
       rect:
         serializedVersion: 2
-        x: 192
+        x: 129
         y: 0
-        width: 96
-        height: 64
+        width: 64
+        height: 68
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 536acb5c38c4f8a4f816d5909f0c2dfa
-      internalID: -968774728
+      spriteID: e6a89fbe128692c90800000000000000
+      internalID: -7194104434845447570
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: noBKG_KnightRun_strip_3
+      name: DefenderSpartanSpritesheetWalkLeft_03
       rect:
         serializedVersion: 2
-        x: 288
+        x: 193
         y: 0
-        width: 96
-        height: 64
+        width: 65
+        height: 68
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: e382b70119b485942adb753079f3d8ef
-      internalID: -850376126
+      spriteID: a14cdf1900d501770800000000000000
+      internalID: 8579459547171505178
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: noBKG_KnightRun_strip_4
+      name: DefenderSpartanSpritesheetWalkLeft_04
       rect:
         serializedVersion: 2
-        x: 384
+        x: 258
         y: 0
-        width: 96
-        height: 64
+        width: 64
+        height: 68
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 4c769f617e7774a48a305e136a207d87
-      internalID: 1676109941
+      spriteID: b8362f9a74ee96a80800000000000000
+      internalID: -8472979232359554165
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: noBKG_KnightRun_strip_5
+      name: DefenderSpartanSpritesheetWalkLeft_05
       rect:
         serializedVersion: 2
-        x: 480
+        x: 322
         y: 0
-        width: 96
-        height: 64
+        width: 65
+        height: 68
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: fc71a538513bb2c44b3f8cc7eea98b10
-      internalID: -1619243188
+      spriteID: f02f4f95d581dd3e0800000000000000
+      internalID: -2027437468026605041
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: noBKG_KnightRun_strip_6
+      name: DefenderSpartanSpritesheetWalkLeft_06
       rect:
         serializedVersion: 2
-        x: 576
+        x: 387
         y: 0
-        width: 96
-        height: 64
+        width: 64
+        height: 68
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 38895126ef5ef39438088c2d210f8d6e
-      internalID: 1096687452
+      spriteID: a73be4c34c0c35560800000000000000
+      internalID: 7301391369955619706
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: noBKG_KnightRun_strip_7
+      name: DefenderSpartanSpritesheetWalkLeft_07
       rect:
         serializedVersion: 2
-        x: 672
+        x: 451
         y: 0
-        width: 96
-        height: 64
+        width: 65
+        height: 68
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 00b9512047709d74f8b2592dfbe2e30a
-      internalID: 1622838096
+      spriteID: d423287b29cededb0800000000000000
+      internalID: -4760889116172602803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DefenderSpartanSpritesheetWalkLeft_08
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 0
+        width: 64
+        height: 68
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8024b675a685e3330800000000000000
+      internalID: 3692485958246810120
       vertices: []
       indices: 
       edges: []
@@ -288,14 +309,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      noBKG_KnightRun_strip_0: 1786896332
-      noBKG_KnightRun_strip_1: 144494407
-      noBKG_KnightRun_strip_2: -968774728
-      noBKG_KnightRun_strip_3: -850376126
-      noBKG_KnightRun_strip_4: 1676109941
-      noBKG_KnightRun_strip_5: -1619243188
-      noBKG_KnightRun_strip_6: 1096687452
-      noBKG_KnightRun_strip_7: 1622838096
+      DefenderSpartanSpritesheetWalkLeft_00: 287896777282263405
+      DefenderSpartanSpritesheetWalkLeft_01: -8389794904513038358
+      DefenderSpartanSpritesheetWalkLeft_02: -7194104434845447570
+      DefenderSpartanSpritesheetWalkLeft_03: 8579459547171505178
+      DefenderSpartanSpritesheetWalkLeft_04: -8472979232359554165
+      DefenderSpartanSpritesheetWalkLeft_05: -2027437468026605041
+      DefenderSpartanSpritesheetWalkLeft_06: 7301391369955619706
+      DefenderSpartanSpritesheetWalkLeft_07: -4760889116172602803
+      DefenderSpartanSpritesheetWalkLeft_08: 3692485958246810120
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

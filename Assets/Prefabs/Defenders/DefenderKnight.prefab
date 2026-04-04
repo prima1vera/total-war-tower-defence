@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4.857737, y: 2.8177776, z: -0.003672044}
-  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayerID: 500341947
   m_SortingLayer: 4
   m_SortingOrder: 1
-  m_Sprite: {fileID: 1447346515, guid: b593a53d2394fad40be9c88d4d7aca94, type: 3}
+  m_Sprite: {fileID: -2704189970167070036, guid: bc2d99dadf854674dbc68525bb940266, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -98,7 +98,7 @@ Animator:
   m_GameObject: {fileID: 8600750394382599522}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: fb8be0253c5146f40b7ef961b58698ef, type: 2}
+  m_Controller: {fileID: 9100000, guid: 193b62491eb4b424588f507508472687, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -145,7 +145,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.64, y: 0.64}
+    oldSize: {x: 0.64, y: 0.68}
     newSize: {x: 0.64, y: 0.64}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -191,6 +191,10 @@ MonoBehaviour:
   notifyEnemyAggroOnHit: 0
   holdFormationLine: 1
   formationHoldRadius: 0.16
+  useFourDirectionFacing: 1
+  lockFacingDuringAttack: 1
+  attackFacingLockDuration: 0.18
+  facingAxisDeadZone: 0.08
   blockRadius: 0.35
   pathPriority: 50
   maxAttackersPerDefender: 2
