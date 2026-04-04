@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -6,32 +7,50 @@ using UnityEngine;
 
 public static class DefenderKnightAuthoringBuilder
 {
-    private const string MenuBuild = "TWTD/Validation/Build Defender Knight Assets";
-    private const string MenuRebuild = "TWTD/Validation/Rebuild Defender Knight Assets (Force Slice)";
+    private const string MenuBuild = "TWTD/Validation/Build Defender Spartan Assets";
+    private const string MenuRebuild = "TWTD/Validation/Rebuild Defender Spartan Assets (Force Slice)";
 
-    private const string SpriteRoot = "Assets/Sprites/DefenderKnight";
-    private const string AnimRoot = "Assets/Animations/Units/DefenderKnight";
+    private const string SpriteRoot = "Assets/Sprites/Defenders/Spartan";
+    private const string AnimRoot = "Assets/Animations/Units/DefenderSpartan";
 
-    private const string IdleSheet = SpriteRoot + "/KnightIdle.png";
-    private const string RunSheet = SpriteRoot + "/KnightRun.png";
-    private const string AttackSheet = SpriteRoot + "/KnightAttack.png";
-    private const string DeathSheet = SpriteRoot + "/KnightDeath.png";
+    private const string IdleSheet = SpriteRoot + "/DefenderSpartanSpritesheetIdle.png";
+    private const string DieSheet = SpriteRoot + "/DefenderSpartanSpritesheetDie.png";
 
-    private const string IdleClipPath = AnimRoot + "/DefenderKnight_Idle.anim";
-    private const string RunClipPath = AnimRoot + "/DefenderKnight_Run.anim";
-    private const string AttackClipPath = AnimRoot + "/DefenderKnight_Attack.anim";
-    private const string DeathClipPath = AnimRoot + "/DefenderKnight_Death.anim";
-    private const string ControllerPath = AnimRoot + "/DefenderKnightAnimationController.controller";
+    private const string WalkDownSheet = SpriteRoot + "/DefenderSpartanSpritesheetWalkDown.png";
+    private const string WalkLeftSheet = SpriteRoot + "/DefenderSpartanSpritesheetWalkLeft.png";
+    private const string WalkRightSheet = SpriteRoot + "/DefenderSpartanSpritesheetWalkRight.png";
+    private const string WalkUpSheet = SpriteRoot + "/DefenderSpartanSpritesheetWalkUp.png";
 
+    private const string AttackDownSheet = SpriteRoot + "/DefenderSpartanSpritesheetAttackDown.png";
+    private const string AttackLeftSheet = SpriteRoot + "/DefenderSpartanSpritesheetAttackLeft.png";
+    private const string AttackRightSheet = SpriteRoot + "/DefenderSpartanSpritesheetAttackRight.png";
+    private const string AttackUpSheet = SpriteRoot + "/DefenderSpartanSpritesheetAttackUp.png";
+
+    private const int IdleFrames = 7;
+    private const int DieFrames = 6;
+    private const int WalkFrames = 9;
+    private const int AttackFrames = 8;
+
+    private const string IdleClipPath = AnimRoot + "/Idle_DefenderSpartan.anim";
+    private const string DieClipPath = AnimRoot + "/Die_DefenderSpartan.anim";
+
+    private const string WalkDownClipPath = AnimRoot + "/Walk_Down_DefenderSpartan.anim";
+    private const string WalkLeftClipPath = AnimRoot + "/Walk_Left_DefenderSpartan.anim";
+    private const string WalkRightClipPath = AnimRoot + "/Walk_Right_DefenderSpartan.anim";
+    private const string WalkUpClipPath = AnimRoot + "/Walk_Up_DefenderSpartan.anim";
+
+    private const string AttackDownClipPath = AnimRoot + "/Attack_Down_DefenderSpartan.anim";
+    private const string AttackLeftClipPath = AnimRoot + "/Attack_Left_DefenderSpartan.anim";
+    private const string AttackRightClipPath = AnimRoot + "/Attack_Right_DefenderSpartan.anim";
+    private const string AttackUpClipPath = AnimRoot + "/Attack_Up_DefenderSpartan.anim";
+
+    private const string ControllerPath = AnimRoot + "/DefenderSpartanAnimationController.controller";
     private const string PrefabPath = "Assets/Prefabs/Defenders/DefenderKnight.prefab";
 
-    private const int FrameWidth = 64;
-    private const int FrameHeight = 64;
-
     private const float IdleFps = 8f;
-    private const float RunFps = 12f;
-    private const float AttackFps = 14f;
-    private const float DeathFps = 12f;
+    private const float WalkFps = 12f;
+    private const float AttackFps = 12f;
+    private const float DieFps = 10f;
 
     [MenuItem(MenuBuild)]
     private static void BuildMenu()
@@ -56,52 +75,66 @@ public static class DefenderKnightAuthoringBuilder
     {
         EnsureDirectory(AnimRoot);
 
-        Sprite[] idleSprites = ImportAndLoadSprites(IdleSheet, forceSlice);
-        Sprite[] runSprites = ImportAndLoadSprites(RunSheet, forceSlice);
-        Sprite[] attackSprites = ImportAndLoadSprites(AttackSheet, forceSlice);
-        Sprite[] deathSprites = ImportAndLoadSprites(DeathSheet, forceSlice);
+        Sprite[] idleSprites = ImportSliceAndCollectSprites(IdleSheet, IdleFrames, forceSlice);
+        Sprite[] dieSprites = ImportSliceAndCollectSprites(DieSheet, DieFrames, forceSlice);
 
-        ValidateSpriteSet(idleSprites, IdleSheet);
-        ValidateSpriteSet(runSprites, RunSheet);
-        ValidateSpriteSet(attackSprites, AttackSheet);
-        ValidateSpriteSet(deathSprites, DeathSheet);
+        Sprite[] walkDownSprites = ImportSliceAndCollectSprites(WalkDownSheet, WalkFrames, forceSlice);
+        Sprite[] walkLeftSprites = ImportSliceAndCollectSprites(WalkLeftSheet, WalkFrames, forceSlice);
+        Sprite[] walkRightSprites = ImportSliceAndCollectSprites(WalkRightSheet, WalkFrames, forceSlice);
+        Sprite[] walkUpSprites = ImportSliceAndCollectSprites(WalkUpSheet, WalkFrames, forceSlice);
+
+        Sprite[] attackDownSprites = ImportSliceAndCollectSprites(AttackDownSheet, AttackFrames, forceSlice);
+        Sprite[] attackLeftSprites = ImportSliceAndCollectSprites(AttackLeftSheet, AttackFrames, forceSlice);
+        Sprite[] attackRightSprites = ImportSliceAndCollectSprites(AttackRightSheet, AttackFrames, forceSlice);
+        Sprite[] attackUpSprites = ImportSliceAndCollectSprites(AttackUpSheet, AttackFrames, forceSlice);
 
         AnimationClip idleClip = CreateOrUpdateClip(IdleClipPath, idleSprites, IdleFps, true);
-        AnimationClip runClip = CreateOrUpdateClip(RunClipPath, runSprites, RunFps, true);
-        AnimationClip attackClip = CreateOrUpdateClip(AttackClipPath, attackSprites, AttackFps, false);
-        AnimationClip deathClip = CreateOrUpdateClip(DeathClipPath, deathSprites, DeathFps, false);
+        AnimationClip dieClip = CreateOrUpdateClip(DieClipPath, dieSprites, DieFps, false);
 
-        AnimatorController controller = CreateOrReplaceController(idleClip, runClip, attackClip, deathClip);
+        AnimationClip walkDownClip = CreateOrUpdateClip(WalkDownClipPath, walkDownSprites, WalkFps, true);
+        AnimationClip walkLeftClip = CreateOrUpdateClip(WalkLeftClipPath, walkLeftSprites, WalkFps, true);
+        AnimationClip walkRightClip = CreateOrUpdateClip(WalkRightClipPath, walkRightSprites, WalkFps, true);
+        AnimationClip walkUpClip = CreateOrUpdateClip(WalkUpClipPath, walkUpSprites, WalkFps, true);
+
+        AnimationClip attackDownClip = CreateOrUpdateClip(AttackDownClipPath, attackDownSprites, AttackFps, false);
+        AnimationClip attackLeftClip = CreateOrUpdateClip(AttackLeftClipPath, attackLeftSprites, AttackFps, false);
+        AnimationClip attackRightClip = CreateOrUpdateClip(AttackRightClipPath, attackRightSprites, AttackFps, false);
+        AnimationClip attackUpClip = CreateOrUpdateClip(AttackUpClipPath, attackUpSprites, AttackFps, false);
+
+        AnimatorController controller = CreateOrReplaceController(
+            idleClip,
+            dieClip,
+            walkDownClip,
+            walkLeftClip,
+            walkRightClip,
+            walkUpClip,
+            attackDownClip,
+            attackLeftClip,
+            attackRightClip,
+            attackUpClip);
+
         PatchDefenderPrefab(controller, idleSprites[0]);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("[DefenderKnightAuthoringBuilder] DefenderKnight prefab + clips + controller are ready.");
+        Debug.Log("[DefenderKnightAuthoringBuilder] Defender prefab was upgraded to Spartan animations.");
     }
 
-    private static Sprite[] ImportAndLoadSprites(string texturePath, bool forceSlice)
+    private static Sprite[] ImportSliceAndCollectSprites(string texturePath, int frameCount, bool forceSlice)
     {
         if (!File.Exists(texturePath))
-        {
-            Debug.LogError($"[DefenderKnightAuthoringBuilder] Missing texture: {texturePath}");
-            return new Sprite[0];
-        }
+            throw new InvalidOperationException($"[DefenderKnightAuthoringBuilder] Missing texture: {texturePath}");
 
         TextureImporter importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
         if (importer == null)
-        {
-            Debug.LogError($"[DefenderKnightAuthoringBuilder] TextureImporter missing for: {texturePath}");
-            return new Sprite[0];
-        }
+            throw new InvalidOperationException($"[DefenderKnightAuthoringBuilder] TextureImporter missing for: {texturePath}");
 
         Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
         if (texture == null)
-        {
-            Debug.LogError($"[DefenderKnightAuthoringBuilder] Texture not loadable: {texturePath}");
-            return new Sprite[0];
-        }
+            throw new InvalidOperationException($"[DefenderKnightAuthoringBuilder] Texture not loadable at: {texturePath}");
 
         bool changed = false;
+
         if (importer.textureType != TextureImporterType.Sprite)
         {
             importer.textureType = TextureImporterType.Sprite;
@@ -132,49 +165,67 @@ public static class DefenderKnightAuthoringBuilder
             changed = true;
         }
 
-        if (forceSlice)
+        SpriteMetaData[] desiredSheet = BuildStripMeta(texturePath, texture.width, texture.height, frameCount);
+        if (forceSlice || NeedReplaceSheet(importer.spritesheet, desiredSheet))
         {
-            int columns = Mathf.Max(1, texture.width / FrameWidth);
-            int rows = Mathf.Max(1, texture.height / FrameHeight);
-            importer.spritesheet = BuildSheetMeta(texturePath, columns, rows);
+            importer.spritesheet = desiredSheet;
             changed = true;
         }
 
         if (changed)
             importer.SaveAndReimport();
 
-        return LoadSortedSprites(texturePath);
+        Sprite[] sprites = LoadSortedSprites(texturePath);
+        if (sprites.Length != frameCount)
+            throw new InvalidOperationException(
+                $"[DefenderKnightAuthoringBuilder] '{texturePath}' expected {frameCount} frames, got {sprites.Length}.");
+
+        return sprites;
     }
 
-    private static SpriteMetaData[] BuildSheetMeta(string texturePath, int columns, int rows)
+    private static SpriteMetaData[] BuildStripMeta(string texturePath, int width, int height, int frameCount)
     {
-        List<SpriteMetaData> meta = new List<SpriteMetaData>(columns * rows);
         string baseName = Path.GetFileNameWithoutExtension(texturePath);
-        int frameIndex = 0;
+        SpriteMetaData[] meta = new SpriteMetaData[frameCount];
 
-        for (int row = rows - 1; row >= 0; row--)
+        for (int i = 0; i < frameCount; i++)
         {
-            for (int col = 0; col < columns; col++)
-            {
-                SpriteMetaData data = new SpriteMetaData
-                {
-                    name = $"{baseName}_{frameIndex:D2}",
-                    alignment = (int)SpriteAlignment.Center,
-                    pivot = new Vector2(0.5f, 0.5f),
-                    rect = new Rect(col * FrameWidth, row * FrameHeight, FrameWidth, FrameHeight)
-                };
+            int xMin = Mathf.RoundToInt((float)(i * width) / frameCount);
+            int xMax = Mathf.RoundToInt((float)((i + 1) * width) / frameCount);
+            int frameWidth = Mathf.Max(1, xMax - xMin);
 
-                meta.Add(data);
-                frameIndex++;
-            }
+            meta[i] = new SpriteMetaData
+            {
+                name = $"{baseName}_{i:D2}",
+                alignment = (int)SpriteAlignment.Center,
+                pivot = new Vector2(0.5f, 0.5f),
+                rect = new Rect(xMin, 0, frameWidth, height)
+            };
         }
 
-        return meta.ToArray();
+        return meta;
+    }
+
+    private static bool NeedReplaceSheet(SpriteMetaData[] current, SpriteMetaData[] desired)
+    {
+        if (current == null || current.Length != desired.Length)
+            return true;
+
+        for (int i = 0; i < desired.Length; i++)
+        {
+            if (current[i].name != desired[i].name)
+                return true;
+
+            if (current[i].rect != desired[i].rect)
+                return true;
+        }
+
+        return false;
     }
 
     private static Sprite[] LoadSortedSprites(string texturePath)
     {
-        Object[] loaded = AssetDatabase.LoadAllAssetsAtPath(texturePath);
+        UnityEngine.Object[] loaded = AssetDatabase.LoadAllAssetsAtPath(texturePath);
         List<Sprite> sprites = new List<Sprite>(loaded != null ? loaded.Length : 0);
         if (loaded != null)
         {
@@ -189,14 +240,11 @@ public static class DefenderKnightAuthoringBuilder
         return sprites.ToArray();
     }
 
-    private static void ValidateSpriteSet(Sprite[] sprites, string sourcePath)
-    {
-        if (sprites == null || sprites.Length == 0)
-            throw new System.InvalidOperationException($"[DefenderKnightAuthoringBuilder] No sprites found for '{sourcePath}'.");
-    }
-
     private static AnimationClip CreateOrUpdateClip(string clipPath, Sprite[] sprites, float frameRate, bool loop)
     {
+        if (sprites == null || sprites.Length == 0)
+            throw new InvalidOperationException($"[DefenderKnightAuthoringBuilder] Empty sprite list for {clipPath}.");
+
         AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
         if (clip == null)
         {
@@ -221,9 +269,8 @@ public static class DefenderKnightAuthoringBuilder
             propertyName = "m_Sprite"
         };
 
-        int keyCount = loop ? sprites.Length + 1 : sprites.Length;
+        int keyCount = sprites.Length + 1;
         ObjectReferenceKeyframe[] keys = new ObjectReferenceKeyframe[keyCount];
-
         for (int i = 0; i < sprites.Length; i++)
         {
             keys[i] = new ObjectReferenceKeyframe
@@ -233,14 +280,11 @@ public static class DefenderKnightAuthoringBuilder
             };
         }
 
-        if (loop)
+        keys[keyCount - 1] = new ObjectReferenceKeyframe
         {
-            keys[keyCount - 1] = new ObjectReferenceKeyframe
-            {
-                time = sprites.Length * frameTime,
-                value = sprites[0]
-            };
-        }
+            time = sprites.Length * frameTime,
+            value = loop ? sprites[0] : sprites[sprites.Length - 1]
+        };
 
         clip.frameRate = fps;
         AnimationUtility.SetObjectReferenceCurve(clip, binding, keys);
@@ -263,67 +307,104 @@ public static class DefenderKnightAuthoringBuilder
 
     private static AnimatorController CreateOrReplaceController(
         AnimationClip idleClip,
-        AnimationClip runClip,
-        AnimationClip attackClip,
-        AnimationClip deathClip)
+        AnimationClip dieClip,
+        AnimationClip walkDownClip,
+        AnimationClip walkLeftClip,
+        AnimationClip walkRightClip,
+        AnimationClip walkUpClip,
+        AnimationClip attackDownClip,
+        AnimationClip attackLeftClip,
+        AnimationClip attackRightClip,
+        AnimationClip attackUpClip)
     {
-        if (AssetDatabase.LoadAssetAtPath<Object>(ControllerPath) != null)
+        if (AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(ControllerPath) != null)
             AssetDatabase.DeleteAsset(ControllerPath);
 
         AnimatorController controller = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
-        controller.name = "DefenderKnightAnimationController";
+        controller.name = "DefenderSpartanAnimationController";
 
+        controller.AddParameter("moveX", AnimatorControllerParameterType.Float);
+        controller.AddParameter("moveY", AnimatorControllerParameterType.Float);
         controller.AddParameter("isMoving", AnimatorControllerParameterType.Bool);
         controller.AddParameter("attack", AnimatorControllerParameterType.Trigger);
         controller.AddParameter("isDead", AnimatorControllerParameterType.Bool);
 
         AnimatorStateMachine sm = controller.layers[0].stateMachine;
-        sm.anyStatePosition = new Vector3(340f, -20f, 0f);
-        sm.entryPosition = new Vector3(40f, 90f, 0f);
+        sm.anyStatePosition = new Vector3(390f, -70f, 0f);
+        sm.entryPosition = new Vector3(50f, 120f, 0f);
 
-        AnimatorState idle = sm.AddState("Idle", new Vector3(180f, 80f, 0f));
-        AnimatorState run = sm.AddState("Run", new Vector3(360f, 80f, 0f));
-        AnimatorState attack = sm.AddState("Attack", new Vector3(540f, 80f, 0f));
-        AnimatorState death = sm.AddState("Death", new Vector3(360f, 230f, 0f));
+        BlendTree walkBlendTree = new BlendTree
+        {
+            name = "DefenderSpartanWalkBlendTree",
+            blendType = BlendTreeType.SimpleDirectional2D,
+            blendParameter = "moveX",
+            blendParameterY = "moveY",
+            useAutomaticThresholds = false
+        };
+        AssetDatabase.AddObjectToAsset(walkBlendTree, controller);
+        walkBlendTree.AddChild(walkRightClip, new Vector2(1f, 0f));
+        walkBlendTree.AddChild(walkLeftClip, new Vector2(-1f, 0f));
+        walkBlendTree.AddChild(walkUpClip, new Vector2(0f, 1f));
+        walkBlendTree.AddChild(walkDownClip, new Vector2(0f, -1f));
 
-        idle.motion = idleClip;
-        run.motion = runClip;
-        attack.motion = attackClip;
-        death.motion = deathClip;
+        BlendTree attackBlendTree = new BlendTree
+        {
+            name = "DefenderSpartanAttackBlendTree",
+            blendType = BlendTreeType.SimpleDirectional2D,
+            blendParameter = "moveX",
+            blendParameterY = "moveY",
+            useAutomaticThresholds = false
+        };
+        AssetDatabase.AddObjectToAsset(attackBlendTree, controller);
+        attackBlendTree.AddChild(attackRightClip, new Vector2(1f, 0f));
+        attackBlendTree.AddChild(attackLeftClip, new Vector2(-1f, 0f));
+        attackBlendTree.AddChild(attackUpClip, new Vector2(0f, 1f));
+        attackBlendTree.AddChild(attackDownClip, new Vector2(0f, -1f));
 
-        sm.defaultState = idle;
+        AnimatorState idleState = sm.AddState("Idle", new Vector3(140f, 60f, 0f));
+        idleState.motion = idleClip;
+        sm.defaultState = idleState;
 
-        AnimatorStateTransition idleToRun = idle.AddTransition(run);
-        idleToRun.hasExitTime = false;
-        idleToRun.duration = 0.06f;
-        idleToRun.AddCondition(AnimatorConditionMode.If, 0f, "isMoving");
+        AnimatorState walkState = sm.AddState("Walk", new Vector3(320f, 60f, 0f));
+        walkState.motion = walkBlendTree;
 
-        AnimatorStateTransition runToIdle = run.AddTransition(idle);
-        runToIdle.hasExitTime = false;
-        runToIdle.duration = 0.06f;
-        runToIdle.AddCondition(AnimatorConditionMode.IfNot, 0f, "isMoving");
+        AnimatorState attackState = sm.AddState("Attack", new Vector3(500f, 60f, 0f));
+        attackState.motion = attackBlendTree;
 
-        AnimatorStateTransition anyToAttack = sm.AddAnyStateTransition(attack);
+        AnimatorState deathState = sm.AddState("Death", new Vector3(320f, 210f, 0f));
+        deathState.motion = dieClip;
+
+        AnimatorStateTransition idleToWalk = idleState.AddTransition(walkState);
+        idleToWalk.hasExitTime = false;
+        idleToWalk.duration = 0.06f;
+        idleToWalk.AddCondition(AnimatorConditionMode.If, 0f, "isMoving");
+
+        AnimatorStateTransition walkToIdle = walkState.AddTransition(idleState);
+        walkToIdle.hasExitTime = false;
+        walkToIdle.duration = 0.06f;
+        walkToIdle.AddCondition(AnimatorConditionMode.IfNot, 0f, "isMoving");
+
+        AnimatorStateTransition anyToAttack = sm.AddAnyStateTransition(attackState);
         anyToAttack.hasExitTime = false;
         anyToAttack.duration = 0f;
         anyToAttack.AddCondition(AnimatorConditionMode.IfNot, 0f, "isDead");
         anyToAttack.AddCondition(AnimatorConditionMode.If, 0f, "attack");
 
-        AnimatorStateTransition attackToIdle = attack.AddTransition(idle);
+        AnimatorStateTransition attackToIdle = attackState.AddTransition(idleState);
         attackToIdle.hasExitTime = true;
         attackToIdle.exitTime = 0.95f;
-        attackToIdle.duration = 0.04f;
+        attackToIdle.duration = 0.05f;
         attackToIdle.AddCondition(AnimatorConditionMode.IfNot, 0f, "isDead");
         attackToIdle.AddCondition(AnimatorConditionMode.IfNot, 0f, "isMoving");
 
-        AnimatorStateTransition attackToRun = attack.AddTransition(run);
-        attackToRun.hasExitTime = true;
-        attackToRun.exitTime = 0.95f;
-        attackToRun.duration = 0.04f;
-        attackToRun.AddCondition(AnimatorConditionMode.IfNot, 0f, "isDead");
-        attackToRun.AddCondition(AnimatorConditionMode.If, 0f, "isMoving");
+        AnimatorStateTransition attackToWalk = attackState.AddTransition(walkState);
+        attackToWalk.hasExitTime = true;
+        attackToWalk.exitTime = 0.95f;
+        attackToWalk.duration = 0.05f;
+        attackToWalk.AddCondition(AnimatorConditionMode.IfNot, 0f, "isDead");
+        attackToWalk.AddCondition(AnimatorConditionMode.If, 0f, "isMoving");
 
-        AnimatorStateTransition anyToDeath = sm.AddAnyStateTransition(death);
+        AnimatorStateTransition anyToDeath = sm.AddAnyStateTransition(deathState);
         anyToDeath.hasExitTime = false;
         anyToDeath.duration = 0f;
         anyToDeath.AddCondition(AnimatorConditionMode.If, 0f, "isDead");
@@ -337,35 +418,31 @@ public static class DefenderKnightAuthoringBuilder
         GameObject root = PrefabUtility.LoadPrefabContents(PrefabPath);
         try
         {
-            SpriteRenderer sr = root.GetComponent<SpriteRenderer>();
-            if (sr != null)
-                sr.sprite = idleSprite;
+            root.name = "DefenderSpartan";
+
+            SpriteRenderer spriteRenderer = root.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+                spriteRenderer.sprite = idleSprite;
 
             Animator animator = root.GetComponent<Animator>();
             if (animator != null)
                 animator.runtimeAnimatorController = controller;
 
             BoxCollider2D collider = root.GetComponent<BoxCollider2D>();
-            if (collider != null && (collider.size.x < 0.1f || collider.size.y < 0.1f))
-            {
-                collider.size = new Vector2(0.42f, 0.56f);
-                collider.offset = new Vector2(0f, -0.03f);
-            }
-
             DefenderUnit defender = root.GetComponent<DefenderUnit>();
             if (defender != null)
             {
-                SerializedObject serializedDefender = new SerializedObject(defender);
-                SerializedProperty blockerCollider = serializedDefender.FindProperty("blockerCollider");
-                SerializedProperty animatorRef = serializedDefender.FindProperty("animator");
+                SerializedObject so = new SerializedObject(defender);
+                SerializedProperty blockerCollider = so.FindProperty("blockerCollider");
+                SerializedProperty animatorRef = so.FindProperty("animator");
 
-                if (blockerCollider != null && blockerCollider.objectReferenceValue == null && collider != null)
+                if (blockerCollider != null && collider != null)
                     blockerCollider.objectReferenceValue = collider;
 
-                if (animatorRef != null && animatorRef.objectReferenceValue == null && animator != null)
+                if (animatorRef != null && animator != null)
                     animatorRef.objectReferenceValue = animator;
 
-                serializedDefender.ApplyModifiedPropertiesWithoutUndo();
+                so.ApplyModifiedPropertiesWithoutUndo();
             }
 
             PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
@@ -388,6 +465,7 @@ public static class DefenderKnightAuthoringBuilder
             string next = $"{current}/{parts[i]}";
             if (!AssetDatabase.IsValidFolder(next))
                 AssetDatabase.CreateFolder(current, parts[i]);
+
             current = next;
         }
     }
