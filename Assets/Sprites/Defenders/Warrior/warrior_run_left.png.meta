@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 403bb01ed0e718a49a320313b23bdd55
+guid: ae0a0584dd7ec5e438c50745da61f166
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,190 +110,169 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DefenderSpartanSpritesheetWalkLeft_00
+      name: warrior_run_left_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
-        height: 68
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d6993e5f790def300800000000000000
-      internalID: 287896777282263405
+      spriteID: b9c978c7c3fa36b448192f46fe43a085
+      internalID: 88229192
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DefenderSpartanSpritesheetWalkLeft_01
+      name: warrior_run_left_1
       rect:
         serializedVersion: 2
-        x: 64
+        x: 128
         y: 0
-        width: 65
-        height: 68
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ae73e124cf5719b80800000000000000
-      internalID: -8389794904513038358
+      spriteID: 53a1afb150fa69f48a75cfb761480909
+      internalID: -1946550646
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DefenderSpartanSpritesheetWalkLeft_02
+      name: warrior_run_left_2
       rect:
         serializedVersion: 2
-        x: 129
+        x: 256
         y: 0
-        width: 64
-        height: 68
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6a89fbe128692c90800000000000000
-      internalID: -7194104434845447570
+      spriteID: b6f4dc34cc6a09c4a977f3fbec244d2f
+      internalID: -1698007177
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DefenderSpartanSpritesheetWalkLeft_03
+      name: warrior_run_left_3
       rect:
         serializedVersion: 2
-        x: 193
+        x: 384
         y: 0
-        width: 65
-        height: 68
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a14cdf1900d501770800000000000000
-      internalID: 8579459547171505178
+      spriteID: 70ca883978840724dad8799055443a27
+      internalID: 788361944
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DefenderSpartanSpritesheetWalkLeft_04
+      name: warrior_run_left_4
       rect:
         serializedVersion: 2
-        x: 258
+        x: 512
         y: 0
-        width: 64
-        height: 68
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b8362f9a74ee96a80800000000000000
-      internalID: -8472979232359554165
+      spriteID: c524f7f4f70729c4aa62b929e44e635b
+      internalID: 1053269047
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DefenderSpartanSpritesheetWalkLeft_05
+      name: warrior_run_left_5
       rect:
         serializedVersion: 2
-        x: 322
+        x: 640
         y: 0
-        width: 65
-        height: 68
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f02f4f95d581dd3e0800000000000000
-      internalID: -2027437468026605041
+      spriteID: 952eb8f2fb65782419a396b97f292af2
+      internalID: 991527664
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DefenderSpartanSpritesheetWalkLeft_06
+      name: warrior_run_left_6
       rect:
         serializedVersion: 2
-        x: 387
+        x: 768
         y: 0
-        width: 64
-        height: 68
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a73be4c34c0c35560800000000000000
-      internalID: 7301391369955619706
+      spriteID: fb9a36d72c9a04842bd990ea353c4125
+      internalID: -1283921904
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: DefenderSpartanSpritesheetWalkLeft_07
+      name: warrior_run_left_7
       rect:
         serializedVersion: 2
-        x: 451
+        x: 896
         y: 0
-        width: 65
-        height: 68
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d423287b29cededb0800000000000000
-      internalID: -4760889116172602803
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DefenderSpartanSpritesheetWalkLeft_08
-      rect:
-        serializedVersion: 2
-        x: 516
-        y: 0
-        width: 64
-        height: 68
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8024b675a685e3330800000000000000
-      internalID: 3692485958246810120
+      spriteID: 296bbdfac6f181542b29a08010c33f8a
+      internalID: -489234227
       vertices: []
       indices: 
       edges: []
@@ -309,15 +288,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      DefenderSpartanSpritesheetWalkLeft_00: 287896777282263405
-      DefenderSpartanSpritesheetWalkLeft_01: -8389794904513038358
-      DefenderSpartanSpritesheetWalkLeft_02: -7194104434845447570
-      DefenderSpartanSpritesheetWalkLeft_03: 8579459547171505178
-      DefenderSpartanSpritesheetWalkLeft_04: -8472979232359554165
-      DefenderSpartanSpritesheetWalkLeft_05: -2027437468026605041
-      DefenderSpartanSpritesheetWalkLeft_06: 7301391369955619706
-      DefenderSpartanSpritesheetWalkLeft_07: -4760889116172602803
-      DefenderSpartanSpritesheetWalkLeft_08: 3692485958246810120
+      warrior_run_left_0: 88229192
+      warrior_run_left_1: -1946550646
+      warrior_run_left_2: -1698007177
+      warrior_run_left_3: 788361944
+      warrior_run_left_4: 1053269047
+      warrior_run_left_5: 991527664
+      warrior_run_left_6: -1283921904
+      warrior_run_left_7: -489234227
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
