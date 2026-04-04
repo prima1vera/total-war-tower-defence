@@ -48,7 +48,17 @@ MonoBehaviour:
   barsRoot: {fileID: 0}
   barViewPrefab: {fileID: 526004700367021085, guid: 3b9f3d6a403844c4c9a76df42bbf63e6, type: 3}
   prewarmCount: 32
-  visibleDuration: 1.15
-  worldVerticalOffset: 0.35
+  enemyVisibleDuration: 1.05
+  defenderVisibleDuration: 1.25
+  enemyWorldVerticalOffset: 0.28
+  defenderWorldVerticalOffset: 0.18
+  delayedFillHoldDuration: 0.2
+  delayedFillCatchupSpeed: 2.2
+  enemyBarScale: 0.72
+  defenderBarScale: 0.6
+  defenderMinWidthScale: 0.65
   fillColor: {r: 0.22, g: 0.9, b: 0.34, a: 1}
   lowHealthColor: {r: 1, g: 0.28, b: 0.2, a: 1}
+  defenderFillColor: {r: 0.3, g: 0.78, b: 1, a: 1}
+  defenderLowHealthColor: {r: 0.22, g: 0.46, b: 1, a: 1}
+  delayedFillColor: {r: 0.8490566, g: 0, b: 0, a: 1}

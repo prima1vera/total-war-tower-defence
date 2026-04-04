@@ -181,14 +181,18 @@ MonoBehaviour:
   maxHealth: 40
   moveSpeed: 1.5
   stopDistance: 0.01
-  engageRange: 2
+  engageRange: 2.4
   chaseLimitFromGuard: 1
-  attackRange: 0.45
-  attackDamage: 2
+  attackRange: 0.6
+  attackDamage: 10
   attackInterval: 0.75
   attackKnockback: 0.04
   targetRefreshInterval: 0.12
+  notifyEnemyAggroOnHit: 0
+  holdFormationLine: 1
+  formationHoldRadius: 0.16
   blockRadius: 0.35
   pathPriority: 50
+  maxAttackersPerDefender: 2
   blockerCollider: {fileID: 211212325863951469}
   animator: {fileID: 8455280624236355907}

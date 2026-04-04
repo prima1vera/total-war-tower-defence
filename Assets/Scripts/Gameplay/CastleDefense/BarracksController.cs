@@ -9,8 +9,11 @@ using UnityEditor;
 [DisallowMultipleComponent]
 public sealed class BarracksController : MonoBehaviour
 {
-    private const float RoadFormationSpacing = 0.52f;
-    private const float RoadFormationForwardOffset = -0.18f;
+    private const float RoadFormationSpacing = 0.4f;
+    private const float RoadFormationRowDepth = 0.24f;
+    private const float RoadFormationFrontOffset = 0.02f;
+    private const float RoadFormationHalfWidth = 1.08f;
+    private const int RoadFormationMaxPerRow = 4;
     private const int RallyCircleSegments = 40;
     private const float RallyPointAnimationFps = 10f;
     private static readonly Color RallyCircleColor = new Color(1f, 0.92f, 0.35f, 0.72f);
@@ -71,9 +74,11 @@ public sealed class BarracksController : MonoBehaviour
     private bool roadFormationCached;
     private Vector3 roadFormationAnchor;
     private Vector2 roadFormationNormal;
+    private Vector2 roadFormationTangent;
     private bool hasManualRallyPoint;
     private Vector3 manualRallyPoint;
     private Vector2 manualRallyNormal;
+    private Vector2 manualRallyTangent;
     private bool rallyPlacementPreviewActive;
     private bool isSelectedInUi;
     private LineRenderer rallyCircleRenderer;
@@ -109,7 +114,7 @@ public sealed class BarracksController : MonoBehaviour
             return;
 
         DisableLegacyRallyVisuals();
-        roadFormationCached = TryResolveRallyAnchor(out roadFormationAnchor, out roadFormationNormal);
+        roadFormationCached = TryResolveRallyAnchor(out roadFormationAnchor, out roadFormationNormal, out roadFormationTangent);
 
         UpdateRallyPointVisual();
         EnsureRuntimeBuffers(ResolveActiveSlotCount());
@@ -184,10 +189,12 @@ public sealed class BarracksController : MonoBehaviour
         hasManualRallyPoint = true;
         manualRallyPoint = snappedPoint;
         manualRallyNormal = normal;
+        manualRallyTangent = tangent.sqrMagnitude > 0.0001f ? tangent.normalized : Vector2.down;
 
         roadFormationCached = true;
         roadFormationAnchor = snappedPoint;
         roadFormationNormal = normal;
+        roadFormationTangent = manualRallyTangent;
         UpdateRallyPointVisual();
         ReassignDefenderGuardPoints(resetTargets: true);
         return true;
@@ -313,44 +320,56 @@ public sealed class BarracksController : MonoBehaviour
         }
 
         if (!roadFormationCached)
-            roadFormationCached = TryResolveRallyAnchor(out roadFormationAnchor, out roadFormationNormal);
+            roadFormationCached = TryResolveRallyAnchor(out roadFormationAnchor, out roadFormationNormal, out roadFormationTangent);
 
         if (!roadFormationCached)
             return transform.position;
 
         int slotCount = Mathf.Max(1, totalSlots);
-        float center = (slotCount - 1) * 0.5f;
-        float sideOffset = (slotIndex - center) * RoadFormationSpacing;
+        int defendersPerRow = Mathf.Clamp(RoadFormationMaxPerRow, 1, slotCount);
+        int rowIndex = slotIndex / defendersPerRow;
+        int slotIndexInRow = slotIndex % defendersPerRow;
+        int rowStart = rowIndex * defendersPerRow;
+        int countInRow = Mathf.Min(defendersPerRow, slotCount - rowStart);
+
+        float rowCenter = (countInRow - 1) * 0.5f;
+        float sideOffset = (slotIndexInRow - rowCenter) * RoadFormationSpacing;
+        float sideClamp = Mathf.Max(RoadFormationSpacing * 0.5f, RoadFormationHalfWidth);
+        sideOffset = Mathf.Clamp(sideOffset, -sideClamp, sideClamp);
+
+        float rowDepth = RoadFormationFrontOffset + rowIndex * RoadFormationRowDepth;
         Vector3 lateral = (Vector3)(roadFormationNormal * sideOffset);
-        Vector3 forward = new Vector3(0f, RoadFormationForwardOffset, 0f);
-        return roadFormationAnchor + lateral + forward;
+        Vector3 longitudinal = (Vector3)(roadFormationTangent * rowDepth);
+        return roadFormationAnchor + lateral + longitudinal;
     }
 
-    private bool TryResolveRallyAnchor(out Vector3 anchor, out Vector2 normal)
+    private bool TryResolveRallyAnchor(out Vector3 anchor, out Vector2 normal, out Vector2 tangent)
     {
         if (hasManualRallyPoint)
         {
             anchor = manualRallyPoint;
             normal = manualRallyNormal.sqrMagnitude > 0.0001f ? manualRallyNormal : Vector2.right;
+            tangent = manualRallyTangent.sqrMagnitude > 0.0001f ? manualRallyTangent : Vector2.down;
             return true;
         }
 
-        return TryComputeRoadFormationAnchor(out anchor, out normal);
+        return TryComputeRoadFormationAnchor(out anchor, out normal, out tangent);
     }
 
-    private bool TryComputeRoadFormationAnchor(out Vector3 anchor, out Vector2 normal)
+    private bool TryComputeRoadFormationAnchor(out Vector3 anchor, out Vector2 normal, out Vector2 tangent)
     {
         anchor = transform.position;
         normal = Vector2.right;
+        tangent = Vector2.down;
 
-        if (!TryFindClosestRoadPoint(transform.position, out Vector3 closestPoint, out Vector2 tangent, out float _))
+        if (!TryFindClosestRoadPoint(transform.position, out Vector3 closestPoint, out Vector2 closestTangent, out float _))
             return false;
 
         anchor = closestPoint;
-        if (tangent.sqrMagnitude < 0.0001f)
-            tangent = Vector2.down;
+        if (closestTangent.sqrMagnitude < 0.0001f)
+            closestTangent = Vector2.down;
 
-        tangent.Normalize();
+        tangent = closestTangent.normalized;
         normal = new Vector2(-tangent.y, tangent.x).normalized;
         return true;
     }
@@ -546,6 +565,9 @@ public sealed class BarracksController : MonoBehaviour
             if (defender == null || !defender.IsAlive || i >= activeSlotCount)
                 continue;
 
+            if (defender.HasEngagingAttackers)
+                continue;
+
             Vector3 guardPosition = ResolveDefensePoint(i, activeSlotCount);
             defender.UpdateGuardPoint(guardPosition, resetTargets);
         }
@@ -559,7 +581,7 @@ public sealed class BarracksController : MonoBehaviour
         if (rallyCircleRenderer == null)
             return;
 
-        bool hasAnchor = TryResolveRallyAnchor(out Vector3 rallyAnchor, out Vector2 _);
+        bool hasAnchor = TryResolveRallyAnchor(out Vector3 rallyAnchor, out Vector2 unusedNormal, out Vector2 unusedTangent);
         bool shouldShowCircle = rallyPlacementPreviewActive;
         rallyCircleRenderer.enabled = shouldShowCircle;
 

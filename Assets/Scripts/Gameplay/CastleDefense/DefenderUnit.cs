@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
+public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlockerEngagement
 {
     private static readonly int MoveXHash = Animator.StringToHash("moveX");
     private static readonly int MoveYHash = Animator.StringToHash("moveY");
@@ -12,11 +12,11 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
     private static readonly int IsDeadHash = Animator.StringToHash("isDead");
     private const float SeparationRefreshInterval = 0.08f;
     private const float SeparationRefreshJitter = 0.015f;
-    private const float DefenderSeparationRadius = 0.34f;
-    private const float DefenderSeparationWeight = 0.24f;
+    private const float DefenderSeparationRadius = 0.28f;
+    private const float DefenderSeparationWeight = 0.12f;
     private const int MaxSeparationColliders = 16;
-    private const float EngagementOrbitBaseRadius = 0.24f;
-    private static readonly Dictionary<int, List<DefenderUnit>> DefendersByTarget = new Dictionary<int, List<DefenderUnit>>(64);
+    private const float CombatRadiusLongAxisBlend = 0.35f;
+    private const float FormationHitDistanceScale = 0.82f;
 
     [Header("Health")]
     [SerializeField, Min(1)] private int maxHealth = 40;
@@ -26,17 +26,23 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
     [SerializeField, Min(0f)] private float stopDistance = 0.06f;
 
     [Header("Melee Combat")]
-    [SerializeField, Min(0.2f)] private float engageRange = 2.1f;
+    [SerializeField, Min(0.2f)] private float engageRange = 2.4f;
     [SerializeField, Min(0.2f)] private float chaseLimitFromGuard = 3.2f;
-    [SerializeField, Min(0.1f)] private float attackRange = 0.45f;
+    [SerializeField, Min(0.1f)] private float attackRange = 0.65f;
     [SerializeField, Min(1)] private int attackDamage = 2;
     [SerializeField, Min(0.05f)] private float attackInterval = 0.75f;
     [SerializeField, Min(0f)] private float attackKnockback = 0.04f;
     [SerializeField, Min(0.02f)] private float targetRefreshInterval = 0.12f;
+    [SerializeField] private bool notifyEnemyAggroOnHit = false;
+    [SerializeField, Tooltip("Keep this defender anchored to its guard slot instead of lunging forward alone.")]
+    private bool holdFormationLine = true;
+    [SerializeField, Min(0.02f), Tooltip("Allowed drift radius around guard slot while holding formation.")]
+    private float formationHoldRadius = 0.16f;
 
     [Header("Blocking")]
     [SerializeField, Min(0.1f)] private float blockRadius = 0.35f;
     [SerializeField] private int pathPriority = 50;
+    [SerializeField, Min(1)] private int maxAttackersPerDefender = 2;
 
     [Header("Scene Wiring")]
     [SerializeField] private Collider2D blockerCollider;
@@ -61,6 +67,10 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
     private float separationRefreshTimer;
     private Vector2 cachedSeparation;
     private Collider2D[] separationBuffer;
+    private readonly HashSet<UnitHealth> engagingAttackers = new HashSet<UnitHealth>();
+    private bool hasPendingGuardPoint;
+    private bool pendingGuardResetTarget;
+    private Vector3 pendingGuardPoint;
 
     public event Action<DefenderUnit> Died;
     public event Action<DefenderDamageFeedbackEvent> DamageTaken;
@@ -74,6 +84,14 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
     public float BlockRadius => ResolveBlockRadius();
     public int PathPriority => pathPriority;
     public float ChaseLimitFromGuard => chaseLimitFromGuard;
+    public bool HasEngagingAttackers
+    {
+        get
+        {
+            CleanupEngagingAttackers();
+            return engagingAttackers.Count > 0;
+        }
+    }
     public int CurrentHealth => Mathf.Max(0, currentHealth);
     public int MaxHealth => Mathf.Max(1, maxHealth);
     public float NormalizedHealth => Mathf.Clamp01((float)CurrentHealth / MaxHealth);
@@ -98,6 +116,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
 
     private void OnDisable()
     {
+        engagingAttackers.Clear();
         SetCurrentEnemyTarget(null);
         EnemyPathBlockerRegistry.Unregister(this);
     }
@@ -119,6 +138,19 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
     }
 
     public void UpdateGuardPoint(Vector3 guardPosition, bool resetTarget)
+    {
+        if (HasEngagingAttackers)
+        {
+            hasPendingGuardPoint = true;
+            pendingGuardPoint = guardPosition;
+            pendingGuardResetTarget |= resetTarget;
+            return;
+        }
+
+        ApplyGuardPointInternal(guardPosition, resetTarget);
+    }
+
+    private void ApplyGuardPointInternal(Vector3 guardPosition, bool resetTarget)
     {
         guardPoint = null;
         useStaticGuardPoint = true;
@@ -147,6 +179,45 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         Die();
     }
 
+    public bool CanAcceptBlockerAttacker(UnitHealth attacker)
+    {
+        if (!IsAlive || attacker == null)
+            return false;
+
+        CleanupEngagingAttackers();
+        if (engagingAttackers.Contains(attacker))
+            return true;
+
+        int capacity = Mathf.Max(1, maxAttackersPerDefender);
+        return engagingAttackers.Count < capacity;
+    }
+
+    public bool HasBlockerAttacker(UnitHealth attacker)
+    {
+        if (attacker == null)
+            return false;
+
+        CleanupEngagingAttackers();
+        return engagingAttackers.Contains(attacker);
+    }
+
+    public bool TryAcquireBlockerAttacker(UnitHealth attacker)
+    {
+        if (!CanAcceptBlockerAttacker(attacker))
+            return false;
+
+        engagingAttackers.Add(attacker);
+        return true;
+    }
+
+    public void ReleaseBlockerAttacker(UnitHealth attacker)
+    {
+        if (attacker == null)
+            return;
+
+        engagingAttackers.Remove(attacker);
+    }
+
     private void ActivateInternal()
     {
         SetCurrentEnemyTarget(null);
@@ -157,6 +228,8 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         attackTimer = 0f;
         separationRefreshTimer = UnityEngine.Random.Range(0f, SeparationRefreshInterval);
         cachedSeparation = Vector2.zero;
+        hasPendingGuardPoint = false;
+        pendingGuardResetTarget = false;
 
         if (blockerCollider != null && !blockerCollider.enabled)
             blockerCollider.enabled = true;
@@ -182,9 +255,42 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             separationRefreshTimer = Mathf.Max(0.02f, SeparationRefreshInterval + jitter);
         }
 
-        if (ShouldRefreshTarget())
+        CleanupEngagingAttackers();
+        if (hasPendingGuardPoint && engagingAttackers.Count == 0)
         {
-            RefreshTarget();
+            ApplyGuardPointInternal(pendingGuardPoint, pendingGuardResetTarget);
+            hasPendingGuardPoint = false;
+            pendingGuardResetTarget = false;
+        }
+
+        if (!TryGetGuardPoint(out Vector3 guardWorldPosition))
+            return;
+
+        float distanceToGuard = Vector2.Distance(transform.position, guardWorldPosition);
+        float combatAnchorRadius = holdFormationLine
+            ? Mathf.Max(stopDistance + 0.02f, formationHoldRadius)
+            : Mathf.Max(attackRange + 0.18f, 0.55f);
+        float hardAnchorPadding = holdFormationLine ? 0.28f : 0.45f;
+        float hardAnchorRadius = Mathf.Max(chaseLimitFromGuard, combatAnchorRadius + hardAnchorPadding);
+        if (distanceToGuard > hardAnchorRadius)
+        {
+            SetCurrentEnemyTarget(null);
+            MoveToGuardPoint();
+            SetAttackAnimation(false);
+            return;
+        }
+
+        if (distanceToGuard > combatAnchorRadius && engagingAttackers.Count == 0)
+        {
+            SetCurrentEnemyTarget(null);
+            MoveToGuardPoint();
+            SetAttackAnimation(false);
+            return;
+        }
+
+        if (ShouldRefreshTarget(guardWorldPosition))
+        {
+            RefreshTarget(guardWorldPosition);
             targetRefreshTimer = targetRefreshInterval;
         }
 
@@ -195,59 +301,105 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             target = null;
         }
 
-        if (target != null && TryGetGuardPoint(out Vector3 guardForLeash))
+        if (target != null)
         {
-            float hardLeashDistance = Mathf.Max(0.2f, chaseLimitFromGuard + 0.15f);
-            float selfDistanceFromGuard = Vector2.Distance(transform.position, guardForLeash);
-            if (selfDistanceFromGuard > hardLeashDistance)
+            float targetDistanceFromGuard = Vector2.Distance(target.transform.position, guardWorldPosition);
+            float allowedTargetDistance = engagingAttackers.Contains(target)
+                ? Mathf.Max(chaseLimitFromGuard + 0.6f, attackRange + 0.45f)
+                : holdFormationLine
+                    ? Mathf.Max(attackRange + combatAnchorRadius + 0.2f, attackRange + 0.35f)
+                    : Mathf.Max(attackRange + 0.2f, chaseLimitFromGuard);
+
+            if (targetDistanceFromGuard > allowedTargetDistance)
             {
                 SetCurrentEnemyTarget(null);
-                MoveToGuardPoint();
-                return;
+                target = null;
             }
         }
 
         if (target == null)
         {
-            MoveToGuardPoint();
+            ApplyMovingAnimation(false);
+            SetAttackAnimation(false);
             return;
         }
 
-        Vector2 toTarget = target.transform.position - transform.position;
-        float distance = toTarget.magnitude;
-        float targetColliderPadding = 0f;
+        Vector2 selfPosition = WorldPosition;
+        Vector2 targetPosition = target.transform.position;
         Collider2D targetCollider = target.CachedCollider;
         if (targetCollider != null)
-            targetColliderPadding = Mathf.Min(targetCollider.bounds.extents.x, targetCollider.bounds.extents.y) * 0.4f;
+            targetPosition = targetCollider.bounds.center;
 
-        float hitDistance = Mathf.Max(0.1f, attackRange + targetColliderPadding);
-        Vector3 chaseDestination = ResolveChaseDestination(target);
-        float distanceToSlot = Vector2.Distance(transform.position, chaseDestination);
-
-        if (distance > hitDistance || distanceToSlot > Mathf.Max(stopDistance, 0.08f))
+        Vector2 toTarget = targetPosition - selfPosition;
+        float distance = toTarget.magnitude;
+        float targetColliderPadding = 0f;
+        float targetColliderRadius = 0.1f;
+        if (targetCollider != null)
         {
-            MoveTowards(chaseDestination);
+            float footprintRadius = ResolveCombatFootprintRadius(targetCollider.bounds);
+            targetColliderPadding = footprintRadius * 0.4f;
+            targetColliderRadius = footprintRadius;
+        }
+
+        float effectiveAttackRange = holdFormationLine ? attackRange * FormationHitDistanceScale : attackRange;
+        float hitDistance = Mathf.Max(0.1f, effectiveAttackRange + targetColliderPadding);
+        if (engagingAttackers.Contains(target))
+        {
+            float meleeContactPadding = holdFormationLine ? 0.03f : 0.08f;
+            float meleeContactDistance = ResolveBlockRadius() + targetColliderRadius + meleeContactPadding;
+            hitDistance = Mathf.Max(hitDistance, meleeContactDistance);
+        }
+        if (distance > hitDistance)
+        {
+            if (!holdFormationLine)
+            {
+                bool isEngagedTarget = engagingAttackers.Contains(target);
+                if (toTarget.sqrMagnitude > 0.0001f)
+                {
+                    float maxStepDistance = hitDistance + (isEngagedTarget ? 0.45f : 0.32f);
+                    if (distance <= maxStepDistance)
+                    {
+                        Vector2 desiredContactPoint = targetPosition - toTarget.normalized * Mathf.Max(0.08f, hitDistance * 0.9f);
+                        float contactDistanceFromGuard = Vector2.Distance(desiredContactPoint, guardWorldPosition);
+                        float allowedContactRadius = combatAnchorRadius + (isEngagedTarget ? 0.08f : 0.02f);
+                        if (contactDistanceFromGuard <= allowedContactRadius)
+                        {
+                            MoveTowards(new Vector3(desiredContactPoint.x, desiredContactPoint.y, transform.position.z), applySeparation: false);
+                            SetAttackAnimation(false);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            ApplyMovingAnimation(false);
+            SetAttackAnimation(false);
+            UpdateAnimatorDirection(toTarget.sqrMagnitude > 0.0001f ? toTarget.normalized : Vector2.down);
             return;
         }
 
         ApplyMovingAnimation(false);
         UpdateAnimatorDirection(toTarget);
+        SetAttackAnimation(true);
         if (attackTimer > 0f)
             return;
 
         Vector2 hitDirection = toTarget.sqrMagnitude > 0.001f ? toTarget.normalized : Vector2.down;
         float appliedKnockback = attackKnockback >= 0.08f ? attackKnockback : 0f;
         target.TakeDamage(attackDamage, DamageType.Normal, hitDirection, appliedKnockback);
-        if (target != null && target.TryGetComponent(out UnitMovement movement))
+        if (notifyEnemyAggroOnHit && target != null && target.TryGetComponent(out UnitMovement movement))
             movement.NotifyBlockerAggro(this);
         TriggerAttackAnimation();
         attackTimer = attackInterval;
     }
 
-    private bool ShouldRefreshTarget()
+    private bool ShouldRefreshTarget(Vector3 guardWorldPosition)
     {
         if (targetRefreshTimer > 0f)
             return false;
+
+        if (engagingAttackers.Count > 0 && (currentEnemyTarget == null || !engagingAttackers.Contains(currentEnemyTarget)))
+            return true;
 
         if (currentEnemyTarget == null)
             return true;
@@ -255,28 +407,66 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         if (currentEnemyTarget.IsDead)
             return true;
 
-        if (!TryGetGuardPoint(out Vector3 guardWorldPosition))
-            return false;
-
-        float distFromGuard = Vector2.Distance(currentEnemyTarget.transform.position, guardWorldPosition);
-        if (distFromGuard > chaseLimitFromGuard)
+        float distFromSelf = Vector2.Distance(currentEnemyTarget.transform.position, WorldPosition);
+        if (distFromSelf > Mathf.Max(attackRange + 0.35f, engageRange + 0.8f))
             return true;
 
-        float selfDistFromGuard = Vector2.Distance(transform.position, guardWorldPosition);
-        return selfDistFromGuard > chaseLimitFromGuard + 0.15f;
+        float distFromGuard = Vector2.Distance(currentEnemyTarget.transform.position, guardWorldPosition);
+        float maxGuardTargetDistance = holdFormationLine
+            ? Mathf.Max(attackRange + formationHoldRadius + 0.25f, attackRange + 0.4f)
+            : Mathf.Max(attackRange + 0.2f, engageRange);
+        if (distFromGuard > maxGuardTargetDistance)
+            return true;
+
+        return !currentEnemyTarget.gameObject.activeInHierarchy;
     }
 
-    private void RefreshTarget()
+    private void RefreshTarget(Vector3 guardWorldPosition)
     {
-        if (!TryGetGuardPoint(out Vector3 guardWorldPosition))
+        if (TryGetNearestEngagingAttacker(out UnitHealth engagingTarget))
         {
-            SetCurrentEnemyTarget(null);
+            SetCurrentEnemyTarget(engagingTarget);
             return;
         }
 
-        float searchRadius = Mathf.Max(0.2f, Mathf.Min(engageRange, chaseLimitFromGuard + 0.35f));
-        EnemyRegistry.TryGetNearestEnemy(guardWorldPosition, searchRadius, out UnitHealth refreshedTarget);
+        Vector2 searchOrigin = holdFormationLine ? (Vector2)guardWorldPosition : WorldPosition;
+        float searchRadius = holdFormationLine
+            ? Mathf.Max(0.4f, attackRange + formationHoldRadius + 0.45f)
+            : Mathf.Max(0.3f, engageRange + 0.35f);
+        EnemyRegistry.TryGetNearestEnemy(searchOrigin, searchRadius, out UnitHealth refreshedTarget);
         SetCurrentEnemyTarget(refreshedTarget);
+    }
+
+    private bool TryGetNearestEngagingAttacker(out UnitHealth nearest)
+    {
+        nearest = null;
+        if (engagingAttackers.Count == 0)
+            return false;
+
+        float bestDistanceSqr = float.MaxValue;
+        Vector2 selfPosition = transform.position;
+
+        using var iterator = engagingAttackers.GetEnumerator();
+        while (iterator.MoveNext())
+        {
+            UnitHealth attacker = iterator.Current;
+            if (attacker == null || attacker.IsDead || !attacker.gameObject.activeInHierarchy)
+                continue;
+
+            Vector2 attackerPosition = attacker.transform.position;
+            Collider2D attackerCollider = attacker.CachedCollider;
+            if (attackerCollider != null)
+                attackerPosition = attackerCollider.bounds.center;
+
+            float distanceSqr = (attackerPosition - selfPosition).sqrMagnitude;
+            if (distanceSqr >= bestDistanceSqr)
+                continue;
+
+            bestDistanceSqr = distanceSqr;
+            nearest = attacker;
+        }
+
+        return nearest != null;
     }
 
     private void MoveToGuardPoint()
@@ -284,10 +474,10 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         if (!TryGetGuardPoint(out Vector3 guardWorldPosition))
             return;
 
-        MoveTowards(guardWorldPosition);
+        MoveTowards(guardWorldPosition, applySeparation: true);
     }
 
-    private void MoveTowards(Vector3 targetPosition)
+    private void MoveTowards(Vector3 targetPosition, bool applySeparation)
     {
         Vector2 current = transform.position;
         Vector2 destination = targetPosition;
@@ -299,7 +489,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         }
 
         Vector2 direction = toTarget.normalized;
-        if (cachedSeparation.sqrMagnitude > 0.0001f)
+        if (applySeparation && cachedSeparation.sqrMagnitude > 0.0001f)
         {
             // Keep defenders shoulder-to-shoulder without obvious "magnet" behavior.
             float separationBlend = Mathf.InverseLerp(stopDistance * 1.5f, stopDistance * 6f, toTarget.magnitude);
@@ -311,56 +501,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         transform.position = new Vector3(next.x, next.y, transform.position.z);
         ApplyMovingAnimation(true);
         UpdateAnimatorDirection(direction);
-    }
-
-    private Vector2 ResolveEngagementOffset(UnitHealth target)
-    {
-        if (target == null)
-            return Vector2.zero;
-
-        float radius = EngagementOrbitBaseRadius;
-        Collider2D targetCollider = target.CachedCollider;
-        if (targetCollider != null)
-        {
-            Bounds bounds = targetCollider.bounds;
-            radius += Mathf.Min(bounds.extents.x, bounds.extents.y) * 0.35f;
-        }
-
-        int seed = Mathf.Abs((GetInstanceID() * 73856093) ^ (target.GetInstanceID() * 19349663));
-        int slotIndex = 0;
-        int slotCount = 1;
-        ResolveSlotAroundTarget(target, out slotIndex, out slotCount);
-
-        const int slotsPerRing = 4;
-        int ringIndex = Mathf.Max(0, slotIndex / slotsPerRing);
-        int indexInRing = Mathf.Max(0, slotIndex % slotsPerRing);
-        int firstIndexInRing = ringIndex * slotsPerRing;
-        int remaining = Mathf.Max(1, slotCount - firstIndexInRing);
-        int ringCount = Mathf.Min(slotsPerRing, remaining);
-
-        float slotStep = Mathf.PI * 2f / Mathf.Max(1, ringCount);
-        float startAngle = (seed % 360) * Mathf.Deg2Rad;
-        float angle = startAngle + slotStep * indexInRing + ringIndex * 0.31f;
-
-        radius += ringIndex * 0.16f;
-        return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
-    }
-
-    private Vector3 ResolveChaseDestination(UnitHealth target)
-    {
-        if (target == null)
-            return transform.position;
-
-        Vector3 chaseDestination = target.transform.position + (Vector3)ResolveEngagementOffset(target);
-        if (TryGetGuardPoint(out Vector3 guardForClamp))
-        {
-            Vector2 fromGuard = (Vector2)(chaseDestination - guardForClamp);
-            float leashDistance = Mathf.Max(0.2f, chaseLimitFromGuard);
-            if (fromGuard.sqrMagnitude > leashDistance * leashDistance)
-                chaseDestination = guardForClamp + (Vector3)(fromGuard.normalized * leashDistance);
-        }
-
-        return chaseDestination;
     }
 
     private Vector2 CalculateSeparation()
@@ -438,8 +578,15 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             return Mathf.Max(0.1f, blockRadius);
 
         Bounds bounds = blockerCollider.bounds;
-        float radius = Mathf.Max(bounds.extents.x, bounds.extents.y);
+        float radius = ResolveCombatFootprintRadius(bounds);
         return Mathf.Max(0.1f, Mathf.Max(blockRadius, radius));
+    }
+
+    private static float ResolveCombatFootprintRadius(Bounds bounds)
+    {
+        float shortAxis = Mathf.Min(bounds.extents.x, bounds.extents.y);
+        float longAxis = Mathf.Max(bounds.extents.x, bounds.extents.y);
+        return Mathf.Max(0.05f, Mathf.Lerp(shortAxis, longAxis, CombatRadiusLongAxisBlend));
     }
 
     private void Die()
@@ -448,6 +595,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             return;
 
         dead = true;
+        engagingAttackers.Clear();
         SetCurrentEnemyTarget(null);
         ApplyMovingAnimation(false);
         ApplyDeadAnimation(true);
@@ -458,6 +606,30 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
         Died?.Invoke(this);
         GlobalDefenderDied?.Invoke(this);
         gameObject.SetActive(false);
+    }
+
+    private void CleanupEngagingAttackers()
+    {
+        if (engagingAttackers.Count == 0)
+            return;
+
+        using var iterator = engagingAttackers.GetEnumerator();
+        List<UnitHealth> stale = null;
+        while (iterator.MoveNext())
+        {
+            UnitHealth attacker = iterator.Current;
+            if (attacker == null || attacker.IsDead || !attacker.gameObject.activeInHierarchy)
+            {
+                stale ??= new List<UnitHealth>(4);
+                stale.Add(attacker);
+            }
+        }
+
+        if (stale == null)
+            return;
+
+        for (int i = 0; i < stale.Count; i++)
+            engagingAttackers.Remove(stale[i]);
     }
 
     private void RaiseDamageTaken(int amount)
@@ -475,72 +647,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
 
     private void SetCurrentEnemyTarget(UnitHealth newTarget)
     {
-        if (currentEnemyTarget == newTarget)
-            return;
-
-        UpdateTargetSlotting(currentEnemyTarget, false);
         currentEnemyTarget = newTarget;
-        UpdateTargetSlotting(currentEnemyTarget, true);
-    }
-
-    private void UpdateTargetSlotting(UnitHealth target, bool add)
-    {
-        if (target == null)
-            return;
-
-        int targetId = target.GetInstanceID();
-        if (add)
-        {
-            if (!DefendersByTarget.TryGetValue(targetId, out List<DefenderUnit> defenders))
-            {
-                defenders = new List<DefenderUnit>(8);
-                DefendersByTarget[targetId] = defenders;
-            }
-
-            if (!defenders.Contains(this))
-                defenders.Add(this);
-
-            return;
-        }
-
-        if (!DefendersByTarget.TryGetValue(targetId, out List<DefenderUnit> existingDefenders))
-            return;
-        
-
-        existingDefenders.Remove(this);
-        if (existingDefenders.Count == 0)
-            DefendersByTarget.Remove(targetId);
-    }
-
-    private void ResolveSlotAroundTarget(UnitHealth target, out int slotIndex, out int slotCount)
-    {
-        slotIndex = 0;
-        slotCount = 1;
-        if (target == null)
-            return;
-
-        int targetId = target.GetInstanceID();
-        if (!DefendersByTarget.TryGetValue(targetId, out List<DefenderUnit> defenders) || defenders == null)
-            return;
-
-        for (int i = defenders.Count - 1; i >= 0; i--)
-        {
-            DefenderUnit defender = defenders[i];
-            if (defender == null || !defender.IsAlive || defender.currentEnemyTarget != target)
-                defenders.RemoveAt(i);
-        }
-
-        if (defenders.Count == 0)
-        {
-            DefendersByTarget.Remove(targetId);
-            return;
-        }
-
-        defenders.Sort((a, b) => a.GetInstanceID().CompareTo(b.GetInstanceID()));
-
-        slotCount = defenders.Count;
-        int index = defenders.IndexOf(this);
-        slotIndex = index >= 0 ? index : 0;
     }
 
     private void CacheAnimatorBindings()
@@ -597,6 +704,14 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker
             return;
 
         animator.SetBool(IsDeadHash, isDead);
+    }
+
+    private void SetAttackAnimation(bool isAttacking)
+    {
+        if (animator == null || !hasAttackBoolParam)
+            return;
+
+        animator.SetBool(AttackHash, isAttacking);
     }
 
     private void TriggerAttackAnimation()
