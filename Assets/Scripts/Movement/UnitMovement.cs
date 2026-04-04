@@ -21,6 +21,9 @@ public class UnitMovement : MonoBehaviour
     private const float BlockerFrontLateralSpacing = 0.24f;
     private const float BlockerQueueJitter = 0.08f;
     private const float BlockerSlotTolerance = 0.08f;
+    private const float BlockerFrontContactDistanceScale = 0.72f;
+    private const float BlockerFrontContactGapScale = 0.5f;
+    private const float BlockerFrontContactMinDistance = 0.08f;
     private const int BlockerQueueColumns = 3;
     private const int BlockerQueueRows = 10;
     private const float MinEffectiveBlockerScanRange = 2.2f;
@@ -602,7 +605,9 @@ public class UnitMovement : MonoBehaviour
             approachDirection = Vector2.up;
 
         Vector2 lateralDirection = new Vector2(-approachDirection.y, approachDirection.x);
-        float baseDistance = Mathf.Max(0.1f, currentBlocker.BlockRadius + blockerAttackRange);
+        float baseDistance = Mathf.Max(
+            BlockerFrontContactMinDistance,
+            currentBlocker.BlockRadius * BlockerFrontContactDistanceScale + blockerAttackRange * BlockerFrontContactGapScale);
 
         int seed = BuildStableBlockerSeed();
         if (hasReservation)

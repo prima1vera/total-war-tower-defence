@@ -36296,7 +36296,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 80538573}
   - {fileID: 1754711693}
   - {fileID: 1816141524}
   - {fileID: 834607243}
@@ -36307,6 +36306,7 @@ Transform:
   - {fileID: 8084696636833073138}
   - {fileID: 61109561}
   - {fileID: 1335606587}
+  - {fileID: 80538573}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1715384404 stripped
@@ -39223,15 +39223,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7772645064596684207, guid: c76406c6b23fc764f986b0eb29481d90, type: 3}
       propertyPath: delayedFillColor.b
-      value: 0
+      value: 0.019134922
       objectReference: {fileID: 0}
     - target: {fileID: 7772645064596684207, guid: c76406c6b23fc764f986b0eb29481d90, type: 3}
       propertyPath: delayedFillColor.g
-      value: 0
+      value: 0.019134922
       objectReference: {fileID: 0}
     - target: {fileID: 7772645064596684207, guid: c76406c6b23fc764f986b0eb29481d90, type: 3}
       propertyPath: delayedFillColor.r
-      value: 0.6132076
+      value: 0.8113208
       objectReference: {fileID: 0}
     - target: {fileID: 7772645064596684207, guid: c76406c6b23fc764f986b0eb29481d90, type: 3}
       propertyPath: defenderFillColor.a

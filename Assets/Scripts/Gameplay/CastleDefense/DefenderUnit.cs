@@ -15,6 +15,8 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     private const float DefenderSeparationRadius = 0.28f;
     private const float DefenderSeparationWeight = 0.12f;
     private const int MaxSeparationColliders = 16;
+    private const float CombatRadiusLongAxisBlend = 0.35f;
+    private const float FormationHitDistanceScale = 0.82f;
 
     [Header("Health")]
     [SerializeField, Min(1)] private int maxHealth = 40;
@@ -334,14 +336,17 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         float targetColliderRadius = 0.1f;
         if (targetCollider != null)
         {
-            targetColliderPadding = Mathf.Min(targetCollider.bounds.extents.x, targetCollider.bounds.extents.y) * 0.4f;
-            targetColliderRadius = Mathf.Max(targetCollider.bounds.extents.x, targetCollider.bounds.extents.y);
+            float footprintRadius = ResolveCombatFootprintRadius(targetCollider.bounds);
+            targetColliderPadding = footprintRadius * 0.4f;
+            targetColliderRadius = footprintRadius;
         }
 
-        float hitDistance = Mathf.Max(0.1f, attackRange + targetColliderPadding);
+        float effectiveAttackRange = holdFormationLine ? attackRange * FormationHitDistanceScale : attackRange;
+        float hitDistance = Mathf.Max(0.1f, effectiveAttackRange + targetColliderPadding);
         if (engagingAttackers.Contains(target))
         {
-            float meleeContactDistance = ResolveBlockRadius() + targetColliderRadius + 0.08f;
+            float meleeContactPadding = holdFormationLine ? 0.03f : 0.08f;
+            float meleeContactDistance = ResolveBlockRadius() + targetColliderRadius + meleeContactPadding;
             hitDistance = Mathf.Max(hitDistance, meleeContactDistance);
         }
         if (distance > hitDistance)
@@ -573,8 +578,15 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
             return Mathf.Max(0.1f, blockRadius);
 
         Bounds bounds = blockerCollider.bounds;
-        float radius = Mathf.Max(bounds.extents.x, bounds.extents.y);
+        float radius = ResolveCombatFootprintRadius(bounds);
         return Mathf.Max(0.1f, Mathf.Max(blockRadius, radius));
+    }
+
+    private static float ResolveCombatFootprintRadius(Bounds bounds)
+    {
+        float shortAxis = Mathf.Min(bounds.extents.x, bounds.extents.y);
+        float longAxis = Mathf.Max(bounds.extents.x, bounds.extents.y);
+        return Mathf.Max(0.05f, Mathf.Lerp(shortAxis, longAxis, CombatRadiusLongAxisBlend));
     }
 
     private void Die()
