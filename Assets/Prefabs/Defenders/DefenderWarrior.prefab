@@ -145,7 +145,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1.28, y: 1.28}
     newSize: {x: 0.64, y: 0.64}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -181,22 +181,22 @@ MonoBehaviour:
   maxHealth: 40
   moveSpeed: 1.5
   stopDistance: 0.01
-  engageRange: 2.4
+  engageRange: 2
   chaseLimitFromGuard: 1
-  attackRange: 0.6
+  attackRange: 0.8
   attackDamage: 10
-  attackInterval: 0.75
+  attackInterval: 0.6
   attackKnockback: 0.04
   targetRefreshInterval: 0.12
   notifyEnemyAggroOnHit: 0
   holdFormationLine: 1
-  formationHoldRadius: 0.16
+  formationHoldRadius: 0.25
   useFourDirectionFacing: 1
   lockFacingDuringAttack: 1
   attackFacingLockDuration: 0.18
   facingAxisDeadZone: 0.08
   blockRadius: 0.35
   pathPriority: 50
-  maxAttackersPerDefender: 2
+  maxAttackersPerDefender: 3
   blockerCollider: {fileID: 211212325863951469}
   animator: {fileID: 8455280624236355907}

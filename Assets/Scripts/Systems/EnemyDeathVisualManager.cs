@@ -213,7 +213,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 deathBloodFlowDistanceRange = new Vector2(0.08f, 0.18f);
                 deathBloodFlowVerticalJitterRange = new Vector2(-0.02f, 0.03f);
                 deathBloodSettleHorizontalOffsetRange = new Vector2(-0.06f, 0.02f);
-                deathBloodFlowDurationMultiplierRange = new Vector2(25.8f, 35.2f);
+                deathBloodFlowDurationMultiplierRange = new Vector2(6.8f, 10.2f);
                 deathBloodFlowStartDelayRange = new Vector2(0f, 0.12f);
                 deathBloodFlowEndAlphaRange = new Vector2(0.79f, 0.9f);
                 deathBloodFlowRightToLeft = true;
@@ -235,7 +235,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 deathBloodFlowDistanceRange = new Vector2(0.12f, 0.26f);
                 deathBloodFlowVerticalJitterRange = new Vector2(-0.03f, 0.05f);
                 deathBloodSettleHorizontalOffsetRange = new Vector2(-0.1f, 0.02f);
-                deathBloodFlowDurationMultiplierRange = new Vector2(25.8f, 35.2f);
+                deathBloodFlowDurationMultiplierRange = new Vector2(10.8f, 15.8f);
                 deathBloodFlowStartDelayRange = new Vector2(0f, 0.16f);
                 deathBloodFlowEndAlphaRange = new Vector2(0.85f, 1f);
                 deathBloodFlowRightToLeft = true;
