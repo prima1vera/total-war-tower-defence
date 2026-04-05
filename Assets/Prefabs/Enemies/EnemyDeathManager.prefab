@@ -45,11 +45,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   authoringPreset: 0
-  autoApplySelectedPresetInEditor: 0
-  maxTrackedDeaths: 80
-  maxTrackedRemains: 140
-  overflowToRemainsTransitionDuration: 1
-  overflowBloodFadeDuration: 8
+  autoApplySelectedPresetInEditor: 1
+  maxTrackedDeaths: 130
+  maxTrackedRemains: 260
+  overflowToRemainsTransitionDuration: 1.15
+  overflowBloodFadeDuration: 1.8
   remainsVariants:
   - SourceSprite: {fileID: -868966910, guid: ca1cfbc2cad744941a7bc463777d9a01, type: 3}
     RemainsSprite: {fileID: 21300000, guid: e2ae0418badb4d94b992b89d6db5fa46, type: 3}
@@ -71,29 +71,27 @@ MonoBehaviour:
   bloodPoolPrewarmPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
   bloodPoolPrewarmCount: 140
   bloodDecalVariants:
-  - {fileID: 904556495, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: 1359364042, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: 127719275, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -25850772, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -1465256451, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -2122540427, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -8707995, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: -1228684913, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: 2038799502, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: 622022122, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  - {fileID: 669430243, guid: 48bb27d13e8e0d44c80da845550b06df, type: 3}
-  bloodDecalScaleRange: {x: 0.22, y: 0.33}
-  maxTrackedGroundBloodDecals: 260
-  deathBloodSpawnChance: 0.85
-  clusterBloodChance: 0.85
+  - {fileID: 28532599, guid: 6b2f4ff0bb4c86448981cf00e797d5bc, type: 3}
+  - {fileID: -1614560138, guid: 6b2f4ff0bb4c86448981cf00e797d5bc, type: 3}
+  - {fileID: 1778817472, guid: 6b2f4ff0bb4c86448981cf00e797d5bc, type: 3}
+  - {fileID: -963390923, guid: 6b2f4ff0bb4c86448981cf00e797d5bc, type: 3}
+  - {fileID: -1113903031, guid: 6b2f4ff0bb4c86448981cf00e797d5bc, type: 3}
+  - {fileID: 522715736, guid: 6b2f4ff0bb4c86448981cf00e797d5bc, type: 3}
+  - {fileID: 1292034355, guid: 6b2f4ff0bb4c86448981cf00e797d5bc, type: 3}
+  - {fileID: -1459205086, guid: 6b2f4ff0bb4c86448981cf00e797d5bc, type: 3}
+  - {fileID: -253776872, guid: 6b2f4ff0bb4c86448981cf00e797d5bc, type: 3}
+  bloodDecalScaleRange: {x: 0.85, y: 1.33}
+  maxTrackedGroundBloodDecals: 330
+  deathBloodSpawnChance: 1
+  clusterBloodChance: 1
   clusterWindowSeconds: 2
   clusterScanRadius: 1.5
-  clusterThreshold: 6
-  clusterBloodScaleRange: {x: 0.2, y: 0.3}
+  clusterThreshold: 5
+  clusterBloodScaleRange: {x: 1.33, y: 1.88}
   deathBloodFlowRightToLeft: 1
-  deathBloodFlowDistanceRange: {x: 0.08, y: 0.18}
-  deathBloodFlowVerticalJitterRange: {x: -0.02, y: 0.02}
-  deathBloodSettleHorizontalOffsetRange: {x: -0.06, y: 0.06}
-  deathBloodFlowDurationMultiplierRange: {x: 25, y: 50}
-  deathBloodFlowStartDelayRange: {x: 0, y: 0.8}
-  deathBloodFlowEndAlphaRange: {x: 0.8, y: 0.95}
+  deathBloodFlowDistanceRange: {x: 0.12, y: 0.26}
+  deathBloodFlowVerticalJitterRange: {x: -0.03, y: 0.05}
+  deathBloodSettleHorizontalOffsetRange: {x: 0.05, y: 0.1}
+  deathBloodFlowDurationMultiplierRange: {x: 10.8, y: 15.8}
+  deathBloodFlowStartDelayRange: {x: 0, y: 0.16}
+  deathBloodFlowEndAlphaRange: {x: 0.85, y: 1}
