@@ -9867,6 +9867,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitEffects
   fireTint: {r: 1, g: 0.5, b: 0.2, a: 1}
   freezeTint: {r: 0.4, g: 0.8, b: 1, a: 1}
+  baseTint: {r: 0.82, g: 0.82, b: 0.82, a: 1}
   hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
   hitFlashDuration: 0.1
   hitFlashStrength: 0.8

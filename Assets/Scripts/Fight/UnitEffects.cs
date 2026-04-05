@@ -6,9 +6,10 @@ public class UnitEffects : MonoBehaviour
     [Header("Status Visuals")]
     [SerializeField] private Color fireTint = new Color(1f, 0.5f, 0.2f, 1f);
     [SerializeField] private Color freezeTint = new Color(0.4f, 0.8f, 1f, 1f);
+    [SerializeField] private Color baseTint = Color.white;
 
     [Header("Damage Feedback")]
-    [SerializeField] private Color hitFlashColor = Color.white;
+    [SerializeField] private Color hitFlashColor = new Color(1f, 0.95f, 0.85f, 1f);
     [SerializeField, Min(0.02f)] private float hitFlashDuration = 0.08f;
     [SerializeField, Range(0f, 1f)] private float hitFlashStrength = 0.85f;
     [SerializeField] private Color burnTickColor = new Color(1f, 0.9f, 0.35f, 1f);
@@ -195,12 +196,12 @@ public class UnitEffects : MonoBehaviour
         if (nearWhiteBase && nearWhiteFlash)
             resolvedHitFlashColor = Color.white;
 
-        if (nearWhiteBase && hitFactor > 0f)
-        {
-            // Base white sprites need pre-contrast so direct-hit flash is visible
-            // even for fast-hit sources (archers/melee/catapult splash).
-            composed = Color.Lerp(composed, new Color(0.18f, 0.18f, 0.18f, 1f), hitFactor * 0.9f);
-        }
+        //if (nearWhiteBase && hitFactor > 0f)
+        //{
+        //    // Base white sprites need pre-contrast so direct-hit flash is visible
+        //    // even for fast-hit sources (archers/melee/catapult splash).
+        //    composed = Color.Lerp(composed, new Color(0.18f, 0.18f, 0.18f, 1f), hitFactor * 0.9f);
+        //}
 
         composed = Color.Lerp(composed, resolvedHitFlashColor, hitFactor);
         composed.a = 1f;
@@ -223,7 +224,7 @@ public class UnitEffects : MonoBehaviour
         if (freezeActive)
             return freezeTint;
 
-        return Color.white;
+        return baseTint;
     }
 
     private static bool Approximately(Color a, Color b)
