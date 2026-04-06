@@ -9870,10 +9870,10 @@ MonoBehaviour:
   baseTint: {r: 0.82, g: 0.82, b: 0.82, a: 1}
   hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
   hitFlashDuration: 0.1
-  hitFlashStrength: 0.8
+  hitFlashStrength: 1
   burnTickColor: {r: 1, g: 0.9060749, b: 0, a: 1}
   burnTickDuration: 0.2
-  burnTickStrength: 0.8
+  burnTickStrength: 1
   fireEffect: {fileID: 5612103475390632513}
   frostEffectPrefab: {fileID: 5414637662414537946}
   useBurnLoopSprite: 1

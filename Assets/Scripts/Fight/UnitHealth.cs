@@ -238,11 +238,15 @@ internal sealed class UnitDeathLifecycle
         if (delay > 0f)
             yield return WaitForSecondsCache.Get(delay);
 
+
         if (EnemyDeathVisualManager.TryGetInstance(out EnemyDeathVisualManager deathVisualManager))
         {
+            Color corpseTint = spriteRenderer != null ? spriteRenderer.color : Color.white;
+
             deathVisualManager.SpawnDeathVisuals(
                 spriteRenderer != null ? spriteRenderer.sprite : null,
                 spriteRenderer != null && spriteRenderer.flipX,
+                corpseTint,
                 owner.transform.position,
                 owner.transform.localScale,
                 deadOrder,

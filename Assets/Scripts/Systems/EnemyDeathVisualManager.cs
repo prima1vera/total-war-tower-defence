@@ -225,8 +225,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 maxTrackedGroundBloodDecals = 330;
                 overflowToRemainsTransitionDuration = 1.15f;
                 overflowBloodFadeDuration = 1.8f;
-                deathBloodSpawnChance = 1f;
-                clusterBloodChance = 1f;
+                deathBloodSpawnChance = 0.85f;
+                clusterBloodChance = 0.75f;
                 clusterWindowSeconds = 2f;
                 clusterScanRadius = 1.5f;
                 clusterThreshold = 5;
@@ -285,6 +285,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
     public void SpawnDeathVisuals(
         Sprite corpseSprite,
         bool corpseFlipX,
+        Color corpseTint,
         Vector3 corpsePosition,
         Vector3 corpseScale,
         int corpseSortingOrder,
@@ -307,7 +308,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
             corpseObject.transform.localScale = corpseScale;
 
             corpseRenderer = corpseObject.GetComponent<SpriteRenderer>();
-            corpseRenderer.color = Color.white;
+            corpseRenderer.color = corpseTint;
             corpseRenderer.sprite = corpseSprite;
             corpseRenderer.flipX = corpseFlipX;
             corpseRenderer.sortingLayerName = "Units_Dead";
