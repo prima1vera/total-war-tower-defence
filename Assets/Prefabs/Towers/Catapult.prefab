@@ -213,8 +213,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 500341947
-  m_SortingLayer: 4
+  m_SortingLayerID: -9025213
+  m_SortingLayer: 6
   m_SortingOrder: 1
   m_Sprite: {fileID: -1232438078, guid: 63b181e635764ce4aa9b2a24db693d77, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -352,6 +352,7 @@ MonoBehaviour:
   tower: {fileID: 1551700000000000002}
   archerTower: {fileID: 0}
   archerEmitter: {fileID: 0}
+  barracksController: {fileID: 0}
   upgradeTree: {fileID: 11400000, guid: 78e0f560f8604f8dbf62963e3260d5fb, type: 2}
   startLevelOverride: 0
   initializeOnAwake: 1
