@@ -241,7 +241,8 @@ internal sealed class UnitDeathLifecycle
 
         if (EnemyDeathVisualManager.TryGetInstance(out EnemyDeathVisualManager deathVisualManager))
         {
-            Color corpseTint = spriteRenderer != null ? spriteRenderer.color : Color.white;
+            UnitEffects effects = owner.GetComponent<UnitEffects>();
+            Color corpseTint = effects != null ? effects.GetCorpseTint() : (spriteRenderer != null ? spriteRenderer.color : Color.white);
 
             deathVisualManager.SpawnDeathVisuals(
                 spriteRenderer != null ? spriteRenderer.sprite : null,

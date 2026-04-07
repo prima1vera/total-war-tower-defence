@@ -9722,7 +9722,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 633532f122f9ee54a8c63333815185e7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9873,7 +9873,7 @@ MonoBehaviour:
   hitFlashStrength: 1
   burnTickColor: {r: 0.99215686, g: 0.92229563, b: 0, a: 1}
   burnTickDuration: 0.2
-  burnTickStrength: 1
+  burnTickStrength: 0.9
   fireEffect: {fileID: 6702332221611775603}
   frostEffectPrefab: {fileID: 4952141576655577673}
   useBurnLoopSprite: 1
