@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 211212325863951469}
   - component: {fileID: 851888596654604266}
   - component: {fileID: 3914141438623587621}
+  - component: {fileID: 1981597998136847897}
   m_Layer: 21
   m_Name: DefenderWarrior
   m_TagString: Untagged
@@ -56,7 +57,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 633532f122f9ee54a8c63333815185e7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -179,6 +180,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 40
+  bloodPoolPrefab: {fileID: 7924102300927368246, guid: b6d59c3344c8b4f4ba0aecaade57ebeb, type: 3}
+  bloodSplashPrefab: {fileID: 6567675628769267437, guid: bcdc8edaa307d5941a4f80c7fd13bf4f, type: 3}
+  despawnToPoolDelay: 2
   moveSpeed: 1.5
   stopDistance: 0.01
   engageRange: 2
@@ -200,3 +204,34 @@ MonoBehaviour:
   maxAttackersPerDefender: 2
   blockerCollider: {fileID: 211212325863951469}
   animator: {fileID: 8455280624236355907}
+  spriteRenderer: {fileID: 0}
+--- !u!114 &1981597998136847897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8600750394382599522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8026eae8aaf85de46bc0550bd9c3bd5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireTint: {r: 1, g: 0.5, b: 0.2, a: 1}
+  freezeTint: {r: 0.4, g: 0.8, b: 1, a: 1}
+  baseTint: {r: 1, g: 1, b: 1, a: 1}
+  hitFlashColor: {r: 1, g: 0.95, b: 0.85, a: 1}
+  hitFlashDuration: 0.06
+  hitFlashStrength: 0.8
+  burnTickColor: {r: 1, g: 0.9, b: 0.35, a: 1}
+  burnTickDuration: 0.12
+  burnTickStrength: 0.35
+  fireEffect: {fileID: 0}
+  frostEffectPrefab: {fileID: 0}
+  useBurnLoopSprite: 0
+  burnLoopFrames: []
+  burnLoopFps: 12
+  burnLoopLocalOffset: {x: 0, y: -0.06, z: 0}
+  burnLoopScaleRange: {x: 0.62, y: 0.86}
+  burnLoopAlpha: 0.92
+  burnLoopSortingOffset: 1

@@ -71,9 +71,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 500341947
-  m_SortingLayer: 5
-  m_SortingOrder: 5
+  m_SortingLayerID: -9025213
+  m_SortingLayer: 6
+  m_SortingOrder: 2
   m_Sprite: {fileID: 1754353890466002187, guid: 0a4434907b71556419fa90f4875ea738, type: 3}
   m_Color: {r: 0.87, g: 0.89, b: 0.81, a: 1}
   m_FlipX: 0
@@ -175,7 +175,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
-  m_SortingLayer: 5
+  m_SortingLayer: 4
   m_SortingOrder: 4
   m_Sprite: {fileID: 1754353890466002187, guid: 0a4434907b71556419fa90f4875ea738, type: 3}
   m_Color: {r: 0.87, g: 0.89, b: 0.81, a: 1}
@@ -278,7 +278,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 500341947
-  m_SortingLayer: 5
+  m_SortingLayer: 4
   m_SortingOrder: 3
   m_Sprite: {fileID: 1754353890466002187, guid: 0a4434907b71556419fa90f4875ea738, type: 3}
   m_Color: {r: 0.87, g: 0.89, b: 0.81, a: 1}
@@ -387,9 +387,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 500341947
-  m_SortingLayer: 5
-  m_SortingOrder: 2
+  m_SortingLayerID: -9025213
+  m_SortingLayer: 6
+  m_SortingOrder: 1
   m_Sprite: {fileID: -795851427, guid: f4ea9a52c08b08a4083e7cbdb18deb69, type: 3}
   m_Color: {r: 0.84, g: 0.79, b: 0.69, a: 1}
   m_FlipX: 0
@@ -554,7 +554,7 @@ MonoBehaviour:
   tower: {fileID: 0}
   archerTower: {fileID: 9012200566944679112}
   archerEmitter: {fileID: 9022200566944679112}
+  barracksController: {fileID: 0}
   upgradeTree: {fileID: 11400000, guid: 42f210e227883564991a4a71a3f5f177, type: 2}
   startLevelOverride: -1
   initializeOnAwake: 1
-

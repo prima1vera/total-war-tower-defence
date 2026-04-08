@@ -3,6 +3,11 @@ using Random = UnityEngine.Random;
 
 public class UnitEffects : MonoBehaviour
 {
+    private static readonly int FlashColorId = Shader.PropertyToID("_FlashColor");
+    private static readonly int FlashAmountId = Shader.PropertyToID("_FlashAmount");
+
+    private MaterialPropertyBlock propertyBlock;
+
     [Header("Status Visuals")]
     [SerializeField] private Color fireTint = new Color(1f, 0.5f, 0.2f, 1f);
     [SerializeField] private Color freezeTint = new Color(0.4f, 0.8f, 1f, 1f);
@@ -31,6 +36,7 @@ public class UnitEffects : MonoBehaviour
 
     private SpriteRenderer sr;
     private UnitHealth health;
+    private DefenderUnit defender;
     private SpriteRenderer burnLoopRenderer;
     private Sprite[] burnLoopResolvedFrames;
     private ParticleSystem[] fireParticleSystems;
@@ -49,8 +55,10 @@ public class UnitEffects : MonoBehaviour
 
     void Awake()
     {
+        propertyBlock = new MaterialPropertyBlock();
         sr = GetComponent<SpriteRenderer>();
         health = GetComponent<UnitHealth>();
+        defender = GetComponent<DefenderUnit>();
         ResolveLinkedEffectsIfMissing();
 
         CacheFireVisualComponents();
@@ -66,18 +74,23 @@ public class UnitEffects : MonoBehaviour
     {
         if (health != null)
             health.DamageTaken += HandleDamageTaken;
+        if (defender != null)
+            defender.DamageTaken += HandleDefenderDamageTaken;
 
         hitFlashTimer = 0f;
         burnTickTimer = 0f;
         needsAnimatedUpdate = false;
 
         ApplyCompositeColor(true);
+        ApplyShaderFlash(0f, hitFlashColor);
     }
 
     void OnDisable()
     {
         if (health != null)
             health.DamageTaken -= HandleDamageTaken;
+        if (defender != null)
+            defender.DamageTaken -= HandleDefenderDamageTaken;
 
         needsAnimatedUpdate = false;
     }
@@ -96,6 +109,11 @@ public class UnitEffects : MonoBehaviour
         if (burnTickTimer > 0f)
             burnTickTimer = Mathf.Max(0f, burnTickTimer - dt);
 
+        float hitFactor = hitFlashDuration > 0f ? Mathf.Clamp01(hitFlashTimer / hitFlashDuration) : 0f;
+        hitFactor = Mathf.Pow(hitFactor, 0.65f) * hitFlashStrength;
+
+        ApplyShaderFlash(hitFactor, hitFlashColor);
+
         ApplyCompositeColor(false);
 
         if (hitFlashTimer <= 0f && burnTickTimer <= 0f)
@@ -110,6 +128,17 @@ public class UnitEffects : MonoBehaviour
     void OnWillRenderObject()
     {
         SyncBurnLoopSorting(false);
+    }
+
+    private void ApplyShaderFlash(float amount, Color color)
+    {
+        if (sr == null)
+            return;
+
+        sr.GetPropertyBlock(propertyBlock);
+        propertyBlock.SetColor(FlashColorId, color);
+        propertyBlock.SetFloat(FlashAmountId, amount);
+        sr.SetPropertyBlock(propertyBlock);
     }
 
     public void SetFireVisual(bool state)
@@ -161,6 +190,12 @@ public class UnitEffects : MonoBehaviour
             TriggerHitFlash();
     }
 
+    private void HandleDefenderDamageTaken(DefenderDamageFeedbackEvent damageEvent)
+    {
+        if (damageEvent.Amount > 0)
+            TriggerHitFlash();
+    }
+
     private void TriggerHitFlash()
     {
         hitFlashTimer = hitFlashDuration;
@@ -181,30 +216,11 @@ public class UnitEffects : MonoBehaviour
             return;
 
         Color baseColor = ResolveStatusColor();
-        bool nearWhiteBase = IsNearWhite(baseColor);
-        bool nearWhiteFlash = IsNearWhite(hitFlashColor);
 
         float burnFactor = burnTickDuration > 0f ? Mathf.Clamp01(burnTickTimer / burnTickDuration) : 0f;
         burnFactor *= burnTickStrength;
 
         Color composed = Color.Lerp(baseColor, burnTickColor, burnFactor);
-
-        float hitFactor = hitFlashDuration > 0f ? Mathf.Clamp01(hitFlashTimer / hitFlashDuration) : 0f;
-        hitFactor = Mathf.Pow(hitFactor, 0.65f) * hitFlashStrength;
-
-        Color resolvedHitFlashColor = hitFlashColor;
-        if (nearWhiteBase && nearWhiteFlash)
-            resolvedHitFlashColor = Color.white;
-
-        //if (nearWhiteBase && hitFactor > 0f)
-        //{
-        //    // Base white sprites need pre-contrast so direct-hit flash is visible
-        //    // even for fast-hit sources (archers/melee/catapult splash).
-        //    composed = Color.Lerp(composed, new Color(0.18f, 0.18f, 0.18f, 1f), hitFactor * 0.9f);
-        //}
-
-        composed = Color.Lerp(composed, resolvedHitFlashColor, hitFactor);
-        composed.a = 1f;
 
         if (force || !Approximately(appliedColor, composed))
         {
@@ -227,17 +243,19 @@ public class UnitEffects : MonoBehaviour
         return baseTint;
     }
 
+    public Color GetCorpseTint()
+    {
+        Color c = baseTint;
+        c.a = 1f;
+        return c;
+    }
+
     private static bool Approximately(Color a, Color b)
     {
         return Mathf.Abs(a.r - b.r) <= 0.001f
             && Mathf.Abs(a.g - b.g) <= 0.001f
             && Mathf.Abs(a.b - b.b) <= 0.001f
             && Mathf.Abs(a.a - b.a) <= 0.001f;
-    }
-
-    private static bool IsNearWhite(Color color)
-    {
-        return color.r >= 0.95f && color.g >= 0.95f && color.b >= 0.95f;
     }
 
     private void CacheFireVisualComponents()

@@ -279,6 +279,8 @@ public sealed class BarracksController : MonoBehaviour
         defender.transform.rotation = Quaternion.identity;
         defender.Died -= HandleDefenderDied;
         defender.Died += HandleDefenderDied;
+        defender.ReadyForPooling -= HandleDefenderReadyForPooling;
+        defender.ReadyForPooling += HandleDefenderReadyForPooling;
         defender.ActivateAt(ResolveDefensePoint(slotIndex, ResolveActiveSlotCount()));
 
         activeDefenders[slotIndex] = defender;
@@ -379,15 +381,15 @@ public sealed class BarracksController : MonoBehaviour
     {
         int slotIndex = FindSlotOfDefender(defender);
         if (slotIndex < 0)
-        {
-            if (defender != null)
-                ReturnDefenderToPool(defender);
             return;
-        }
 
         activeDefenders[slotIndex] = null;
-        ReturnDefenderToPool(defender);
         ScheduleRespawn(slotIndex);
+    }
+
+    private void HandleDefenderReadyForPooling(DefenderUnit defender)
+    {
+        ReturnDefenderToPool(defender);
     }
 
     private int FindSlotOfDefender(DefenderUnit defender)
@@ -461,8 +463,12 @@ public sealed class BarracksController : MonoBehaviour
             return;
 
         defender.Died -= HandleDefenderDied;
+        defender.ReadyForPooling -= HandleDefenderReadyForPooling;
         if (defender.gameObject.activeSelf)
             defender.gameObject.SetActive(false);
+
+        if (pooledDefenders.Contains(defender))
+            return;
 
         pooledDefenders.Enqueue(defender);
     }
