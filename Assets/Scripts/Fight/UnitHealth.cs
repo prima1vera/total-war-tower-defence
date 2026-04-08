@@ -153,6 +153,7 @@ internal sealed class UnitDeathLifecycle
     private SpriteRenderer spriteRenderer;
     private TopDownSorter topDownSorter;
     private EnemyPoolMember enemyPoolMember;
+    private UnitEffects effects;
 
     private string defaultSortingLayerName;
     private int defaultSortingOrder;
@@ -171,6 +172,7 @@ internal sealed class UnitDeathLifecycle
         spriteRenderer = owner.GetComponent<SpriteRenderer>();
         topDownSorter = owner.GetComponent<TopDownSorter>();
         enemyPoolMember = owner.GetComponent<EnemyPoolMember>();
+        effects = owner.GetComponent<UnitEffects>();
 
         if (spriteRenderer != null)
         {
@@ -238,23 +240,14 @@ internal sealed class UnitDeathLifecycle
         if (delay > 0f)
             yield return WaitForSecondsCache.Get(delay);
 
-
-        if (EnemyDeathVisualManager.TryGetInstance(out EnemyDeathVisualManager deathVisualManager))
-        {
-            UnitEffects effects = owner.GetComponent<UnitEffects>();
-            Color corpseTint = effects != null ? effects.GetCorpseTint() : (spriteRenderer != null ? spriteRenderer.color : Color.white);
-
-            deathVisualManager.SpawnDeathVisuals(
-                spriteRenderer != null ? spriteRenderer.sprite : null,
-                spriteRenderer != null && spriteRenderer.flipX,
-                corpseTint,
-                owner.transform.position,
-                owner.transform.localScale,
-                deadOrder,
-                owner.bloodPoolPrefab,
-                bloodPosition
-            );
-        }
+        ManagedDeathVisuals.TrySpawn(
+            owner.transform,
+            spriteRenderer,
+            effects,
+            owner.bloodPoolPrefab,
+            bloodPosition,
+            deadOrder
+        );
 
         if (enemyPoolMember != null && enemyPoolMember.TryDespawnToPool())
         {
@@ -285,6 +278,43 @@ internal sealed class UnitDeathLifecycle
             Cache[roundedSeconds] = created;
             return created;
         }
+    }
+}
+
+internal static class ManagedDeathVisuals
+{
+    public static bool TrySpawn(
+        Transform ownerTransform,
+        SpriteRenderer corpseRenderer,
+        UnitEffects effects,
+        GameObject bloodPoolPrefab,
+        Vector3 bloodPosition,
+        int corpseSortingOrder)
+    {
+        if (ownerTransform == null)
+            return false;
+
+        if (!EnemyDeathVisualManager.TryGetInstance(out EnemyDeathVisualManager deathVisualManager))
+            return false;
+
+        Sprite corpseSprite = corpseRenderer != null ? corpseRenderer.sprite : null;
+        if (corpseSprite == null && bloodPoolPrefab == null)
+            return false;
+
+        Color corpseTint = effects != null ? effects.GetCorpseTint() : Color.white;
+
+        deathVisualManager.SpawnDeathVisuals(
+            corpseSprite,
+            corpseRenderer != null && corpseRenderer.flipX,
+            corpseTint,
+            ownerTransform.position,
+            ownerTransform.localScale,
+            corpseSortingOrder,
+            bloodPoolPrefab,
+            bloodPosition
+        );
+
+        return true;
     }
 }
 

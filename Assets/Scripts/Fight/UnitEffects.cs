@@ -36,6 +36,7 @@ public class UnitEffects : MonoBehaviour
 
     private SpriteRenderer sr;
     private UnitHealth health;
+    private DefenderUnit defender;
     private SpriteRenderer burnLoopRenderer;
     private Sprite[] burnLoopResolvedFrames;
     private ParticleSystem[] fireParticleSystems;
@@ -57,6 +58,7 @@ public class UnitEffects : MonoBehaviour
         propertyBlock = new MaterialPropertyBlock();
         sr = GetComponent<SpriteRenderer>();
         health = GetComponent<UnitHealth>();
+        defender = GetComponent<DefenderUnit>();
         ResolveLinkedEffectsIfMissing();
 
         CacheFireVisualComponents();
@@ -72,6 +74,8 @@ public class UnitEffects : MonoBehaviour
     {
         if (health != null)
             health.DamageTaken += HandleDamageTaken;
+        if (defender != null)
+            defender.DamageTaken += HandleDefenderDamageTaken;
 
         hitFlashTimer = 0f;
         burnTickTimer = 0f;
@@ -85,6 +89,8 @@ public class UnitEffects : MonoBehaviour
     {
         if (health != null)
             health.DamageTaken -= HandleDamageTaken;
+        if (defender != null)
+            defender.DamageTaken -= HandleDefenderDamageTaken;
 
         needsAnimatedUpdate = false;
     }
@@ -184,6 +190,12 @@ public class UnitEffects : MonoBehaviour
             TriggerHitFlash();
     }
 
+    private void HandleDefenderDamageTaken(DefenderDamageFeedbackEvent damageEvent)
+    {
+        if (damageEvent.Amount > 0)
+            TriggerHitFlash();
+    }
+
     private void TriggerHitFlash()
     {
         hitFlashTimer = hitFlashDuration;
@@ -244,11 +256,6 @@ public class UnitEffects : MonoBehaviour
             && Mathf.Abs(a.g - b.g) <= 0.001f
             && Mathf.Abs(a.b - b.b) <= 0.001f
             && Mathf.Abs(a.a - b.a) <= 0.001f;
-    }
-
-    private static bool IsNearWhite(Color color)
-    {
-        return color.r >= 0.95f && color.g >= 0.95f && color.b >= 0.95f;
     }
 
     private void CacheFireVisualComponents()

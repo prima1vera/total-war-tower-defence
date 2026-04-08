@@ -9889,7 +9889,7 @@ MonoBehaviour:
   burnLoopFps: 11
   burnLoopLocalOffset: {x: 0, y: -0.06, z: 0}
   burnLoopScaleRange: {x: 1.1, y: 1.55}
-  burnLoopAlpha: 0.96
+  burnLoopAlpha: 0.7
   burnLoopSortingOffset: 1
 --- !u!114 &971570653440779581
 MonoBehaviour:

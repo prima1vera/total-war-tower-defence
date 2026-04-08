@@ -21,6 +21,10 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     [Header("Health")]
     [SerializeField, Min(1)] private int maxHealth = 40;
 
+    [Header("Death Visuals")]
+    [SerializeField] private GameObject bloodPoolPrefab;
+    [SerializeField] private GameObject bloodSplashPrefab;
+
     [Header("Movement")]
     [SerializeField, Min(0.1f)] private float moveSpeed = 2.2f;
     [SerializeField, Min(0f)] private float stopDistance = 0.06f;
@@ -57,6 +61,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     [Header("Scene Wiring")]
     [SerializeField] private Collider2D blockerCollider;
     [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private bool hasMoveXParam;
     private bool hasMoveYParam;
@@ -83,6 +88,8 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     private Vector3 pendingGuardPoint;
     private Vector2 currentFacingDirection = Vector2.down;
     private float attackFacingLockTimer;
+    private TopDownSorter topDownSorter;
+    private UnitEffects unitEffects;
 
     public event Action<DefenderUnit> Died;
     public event Action<DefenderDamageFeedbackEvent> DamageTaken;
@@ -116,7 +123,12 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         if (animator == null)
             animator = GetComponent<Animator>();
 
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
         separationBuffer = new Collider2D[MaxSeparationColliders];
+        topDownSorter = GetComponent<TopDownSorter>();
+        unitEffects = GetComponent<UnitEffects>();
 
         CacheAnimatorBindings();
     }
@@ -248,6 +260,9 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
 
         if (blockerCollider != null && !blockerCollider.enabled)
             blockerCollider.enabled = true;
+
+        if (topDownSorter != null && !topDownSorter.enabled)
+            topDownSorter.enabled = true;
 
         ApplyDeadAnimation(false);
         ApplyMovingAnimation(false);
@@ -670,6 +685,25 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         SetCurrentEnemyTarget(null);
         ApplyMovingAnimation(false);
         ApplyDeadAnimation(true);
+
+        Vector3 bloodPosition = blockerCollider != null ? blockerCollider.bounds.min : transform.position;
+        bloodPosition.z = 0f;
+        int deadOrder = Mathf.RoundToInt(-bloodPosition.y * 100f) + UnityEngine.Random.Range(-1, 2);
+
+        if (bloodSplashPrefab != null && VfxPool.TryGetInstance(out VfxPool vfxPool))
+            vfxPool.Spawn(bloodSplashPrefab, transform.position, Quaternion.identity);
+
+        if (topDownSorter != null)
+            topDownSorter.enabled = false;
+
+        ManagedDeathVisuals.TrySpawn(
+            transform,
+            spriteRenderer,
+            unitEffects,
+            bloodPoolPrefab,
+            bloodPosition,
+            deadOrder
+        );
 
         if (blockerCollider != null)
             blockerCollider.enabled = false;
