@@ -9,7 +9,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     private static readonly int MoveYHash = Animator.StringToHash("moveY");
     private static readonly int IsMovingHash = Animator.StringToHash("isMoving");
     private static readonly int AttackHash = Animator.StringToHash("attack");
-    private static readonly int IsDeadHash = Animator.StringToHash("isDead");
     private const float SeparationRefreshInterval = 0.08f;
     private const float SeparationRefreshJitter = 0.015f;
     private const float DefenderSeparationRadius = 0.28f;
@@ -20,6 +19,12 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
 
     [Header("Health")]
     [SerializeField, Min(1)] private int maxHealth = 40;
+
+    [Header("Death Visuals")]
+    [SerializeField] private GameObject bloodPoolPrefab;
+    [SerializeField] private GameObject bloodSplashPrefab;
+    [SerializeField, Min(0f), Tooltip("Delay before deactivation to allow death animation playback.")]
+    private float despawnToPoolDelay = 0.6f;
 
     [Header("Movement")]
     [SerializeField, Min(0.1f)] private float moveSpeed = 2.2f;
@@ -39,6 +44,16 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     [SerializeField, Min(0.02f), Tooltip("Allowed drift radius around guard slot while holding formation.")]
     private float formationHoldRadius = 0.16f;
 
+    [Header("Animation Facing")]
+    [SerializeField, Tooltip("Snap movement facing to cardinal directions (Right/Left/Up/Down).")]
+    private bool useFourDirectionFacing = true;
+    [SerializeField, Tooltip("Keep facing stable for a short time after strike trigger.")]
+    private bool lockFacingDuringAttack = true;
+    [SerializeField, Min(0f), Tooltip("Duration of facing lock after each melee hit trigger.")]
+    private float attackFacingLockDuration = 0.18f;
+    [SerializeField, Min(0f), Tooltip("Dead-zone for facing updates to avoid jitter near zero vector.")]
+    private float facingAxisDeadZone = 0.08f;
+
     [Header("Blocking")]
     [SerializeField, Min(0.1f)] private float blockRadius = 0.35f;
     [SerializeField] private int pathPriority = 50;
@@ -47,13 +62,13 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     [Header("Scene Wiring")]
     [SerializeField] private Collider2D blockerCollider;
     [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private bool hasMoveXParam;
     private bool hasMoveYParam;
     private bool hasIsMovingParam;
     private bool hasAttackTriggerParam;
     private bool hasAttackBoolParam;
-    private bool hasIsDeadParam;
 
     private Transform guardPoint;
     private Vector3 staticGuardPoint;
@@ -71,8 +86,14 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     private bool hasPendingGuardPoint;
     private bool pendingGuardResetTarget;
     private Vector3 pendingGuardPoint;
+    private Vector2 currentFacingDirection = Vector2.down;
+    private float attackFacingLockTimer;
+    private TopDownSorter topDownSorter;
+    private UnitEffects unitEffects;
+    private ManagedUnitDeathLifecycle deathLifecycle;
 
     public event Action<DefenderUnit> Died;
+    public event Action<DefenderUnit> ReadyForPooling;
     public event Action<DefenderDamageFeedbackEvent> DamageTaken;
 
     public static event Action<DefenderDamageFeedbackEvent> GlobalDamageTaken;
@@ -104,7 +125,33 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         if (animator == null)
             animator = GetComponent<Animator>();
 
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
         separationBuffer = new Collider2D[MaxSeparationColliders];
+        topDownSorter = GetComponent<TopDownSorter>();
+        unitEffects = GetComponent<UnitEffects>();
+
+        deathLifecycle = new ManagedUnitDeathLifecycle(new ManagedUnitDeathLifecycle.Config
+        {
+            Owner = this,
+            Animator = animator,
+            Collider = blockerCollider,
+            SpriteRenderer = spriteRenderer,
+            TopDownSorter = topDownSorter,
+            Effects = unitEffects,
+            ResolveDespawnDelay = ResolveDespawnDelay,
+            ResolveBloodPoolPrefab = () => bloodPoolPrefab,
+            ResolveBloodSplashPrefab = () => bloodSplashPrefab,
+            DeactivateFallback = () =>
+            {
+                if (gameObject.activeSelf)
+                    gameObject.SetActive(false);
+            },
+            NotifyLifecycleFinished = NotifyReadyForPooling,
+            RandomizeDeathIndex = false,
+            DeathIndexVariants = 1
+        });
 
         CacheAnimatorBindings();
     }
@@ -118,6 +165,8 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     {
         engagingAttackers.Clear();
         SetCurrentEnemyTarget(null);
+        attackFacingLockTimer = 0f;
+        deathLifecycle.CancelPendingDespawn();
         EnemyPathBlockerRegistry.Unregister(this);
     }
 
@@ -230,12 +279,16 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         cachedSeparation = Vector2.zero;
         hasPendingGuardPoint = false;
         pendingGuardResetTarget = false;
+        currentFacingDirection = Vector2.down;
+        attackFacingLockTimer = 0f;
 
         if (blockerCollider != null && !blockerCollider.enabled)
             blockerCollider.enabled = true;
 
-        ApplyDeadAnimation(false);
+        deathLifecycle.ResetForSpawn();
+
         ApplyMovingAnimation(false);
+        ApplyAnimatorFacing(currentFacingDirection);
         gameObject.SetActive(true);
     }
 
@@ -247,6 +300,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         targetRefreshTimer -= Time.deltaTime;
         attackTimer -= Time.deltaTime;
         separationRefreshTimer -= Time.deltaTime;
+        attackFacingLockTimer = Mathf.Max(0f, attackFacingLockTimer - Time.deltaTime);
 
         if (separationRefreshTimer <= 0f)
         {
@@ -389,6 +443,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         target.TakeDamage(attackDamage, DamageType.Normal, hitDirection, appliedKnockback);
         if (notifyEnemyAggroOnHit && target != null && target.TryGetComponent(out UnitMovement movement))
             movement.NotifyBlockerAggro(this);
+        LockAttackFacing(toTarget);
         TriggerAttackAnimation();
         attackTimer = attackInterval;
     }
@@ -562,14 +617,19 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
 
     private void UpdateAnimatorDirection(Vector2 direction)
     {
-        if (animator == null || direction.sqrMagnitude <= 0.0001f)
+        if (animator == null)
             return;
 
-        if (hasMoveXParam)
-            animator.SetFloat(MoveXHash, direction.x);
+        if (lockFacingDuringAttack && attackFacingLockTimer > 0f)
+        {
+            ApplyAnimatorFacing(currentFacingDirection);
+            return;
+        }
 
-        if (hasMoveYParam)
-            animator.SetFloat(MoveYHash, direction.y);
+        if (direction.sqrMagnitude > 0.0001f)
+            currentFacingDirection = ResolveFacingDirection(direction);
+
+        ApplyAnimatorFacing(currentFacingDirection);
     }
 
     private float ResolveBlockRadius()
@@ -589,6 +649,54 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         return Mathf.Max(0.05f, Mathf.Lerp(shortAxis, longAxis, CombatRadiusLongAxisBlend));
     }
 
+    private void LockAttackFacing(Vector2 attackDirection)
+    {
+        if (!lockFacingDuringAttack || attackFacingLockDuration <= 0f)
+            return;
+
+        if (attackDirection.sqrMagnitude > 0.0001f)
+            currentFacingDirection = ResolveFacingDirection(attackDirection);
+
+        attackFacingLockTimer = Mathf.Max(attackFacingLockTimer, attackFacingLockDuration);
+        ApplyAnimatorFacing(currentFacingDirection);
+    }
+
+    private Vector2 ResolveFacingDirection(Vector2 rawDirection)
+    {
+        if (rawDirection.sqrMagnitude <= 0.0001f)
+            return currentFacingDirection.sqrMagnitude > 0.0001f ? currentFacingDirection : Vector2.down;
+
+        Vector2 normalized = rawDirection.normalized;
+        if (!useFourDirectionFacing)
+            return normalized;
+
+        float absX = Mathf.Abs(normalized.x);
+        float absY = Mathf.Abs(normalized.y);
+        float deadZone = Mathf.Max(0f, facingAxisDeadZone);
+
+        if (absX <= deadZone && absY <= deadZone)
+            return currentFacingDirection.sqrMagnitude > 0.0001f ? currentFacingDirection : Vector2.down;
+
+        if (absX >= absY)
+            return new Vector2(Mathf.Sign(normalized.x), 0f);
+
+        return new Vector2(0f, Mathf.Sign(normalized.y));
+    }
+
+    private void ApplyAnimatorFacing(Vector2 facingDirection)
+    {
+        if (animator == null)
+            return;
+
+        Vector2 facing = facingDirection.sqrMagnitude > 0.0001f ? facingDirection : Vector2.down;
+
+        if (hasMoveXParam)
+            animator.SetFloat(MoveXHash, facing.x);
+
+        if (hasMoveYParam)
+            animator.SetFloat(MoveYHash, facing.y);
+    }
+
     private void Die()
     {
         if (dead)
@@ -598,14 +706,22 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         engagingAttackers.Clear();
         SetCurrentEnemyTarget(null);
         ApplyMovingAnimation(false);
-        ApplyDeadAnimation(true);
+        SetAttackAnimation(false);
 
-        if (blockerCollider != null)
-            blockerCollider.enabled = false;
+        deathLifecycle.HandleDeath();
 
         Died?.Invoke(this);
         GlobalDefenderDied?.Invoke(this);
-        gameObject.SetActive(false);
+    }
+
+    private float ResolveDespawnDelay()
+    {
+        return Mathf.Max(0f, despawnToPoolDelay);
+    }
+
+    private void NotifyReadyForPooling()
+    {
+        ReadyForPooling?.Invoke(this);
     }
 
     private void CleanupEngagingAttackers()
@@ -657,7 +773,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         hasIsMovingParam = false;
         hasAttackTriggerParam = false;
         hasAttackBoolParam = false;
-        hasIsDeadParam = false;
 
         if (animator == null)
             return;
@@ -683,9 +798,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
                 case int nameHash when nameHash == AttackHash && parameter.type == AnimatorControllerParameterType.Bool:
                     hasAttackBoolParam = true;
                     break;
-                case int nameHash when nameHash == IsDeadHash && parameter.type == AnimatorControllerParameterType.Bool:
-                    hasIsDeadParam = true;
-                    break;
             }
         }
     }
@@ -696,14 +808,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
             return;
 
         animator.SetBool(IsMovingHash, isMoving);
-    }
-
-    private void ApplyDeadAnimation(bool isDead)
-    {
-        if (animator == null || !hasIsDeadParam)
-            return;
-
-        animator.SetBool(IsDeadHash, isDead);
     }
 
     private void SetAttackAnimation(bool isAttacking)

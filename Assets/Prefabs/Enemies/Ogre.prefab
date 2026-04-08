@@ -9722,7 +9722,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 633532f122f9ee54a8c63333815185e7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9867,11 +9867,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitEffects
   fireTint: {r: 1, g: 0.5, b: 0.2, a: 1}
   freezeTint: {r: 0.4, g: 0.8, b: 1, a: 1}
+  baseTint: {r: 0.85, g: 0.85, b: 0.85, a: 1}
   hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
-  hitFlashDuration: 0.1
-  hitFlashStrength: 0.8
+  hitFlashDuration: 0.08
+  hitFlashStrength: 1
   burnTickColor: {r: 0.99215686, g: 0.92229563, b: 0, a: 1}
-  burnTickDuration: 0.2
+  burnTickDuration: 0.06
   burnTickStrength: 0.8
   fireEffect: {fileID: 6702332221611775603}
   frostEffectPrefab: {fileID: 4952141576655577673}
@@ -9888,8 +9889,8 @@ MonoBehaviour:
   burnLoopFps: 11
   burnLoopLocalOffset: {x: 0, y: -0.06, z: 0}
   burnLoopScaleRange: {x: 1.1, y: 1.55}
-  burnLoopAlpha: 0.96
-  burnLoopSortingOffset: 5
+  burnLoopAlpha: 0.7
+  burnLoopSortingOffset: 1
 --- !u!114 &649036997620235078
 MonoBehaviour:
   m_ObjectHideFlags: 0

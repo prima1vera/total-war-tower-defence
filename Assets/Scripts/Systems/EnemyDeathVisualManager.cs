@@ -181,19 +181,19 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 maxTrackedGroundBloodDecals = 110;
                 overflowToRemainsTransitionDuration = 0.7f;
                 overflowBloodFadeDuration = 0.85f;
-                deathBloodSpawnChance = 0.45f;
-                clusterBloodChance = 0.2f;
+                deathBloodSpawnChance = 0.5f;
+                clusterBloodChance = 0.4f;
                 clusterWindowSeconds = 1.2f;
                 clusterScanRadius = 1.0f;
-                clusterThreshold = 6;
-                bloodDecalScaleRange = new Vector2(0.16f, 0.25f);
-                clusterBloodScaleRange = new Vector2(0.2f, 0.32f);
+                clusterThreshold = 8;
+                bloodDecalScaleRange = new Vector2(0.4f, 0.5f);
+                clusterBloodScaleRange = new Vector2(0.5f, 0.6f);
                 deathBloodFlowDistanceRange = new Vector2(0.04f, 0.10f);
                 deathBloodFlowVerticalJitterRange = new Vector2(-0.015f, 0.02f);
                 deathBloodSettleHorizontalOffsetRange = new Vector2(-0.04f, 0.015f);
                 deathBloodFlowDurationMultiplierRange = new Vector2(1.6f, 2.6f);
                 deathBloodFlowStartDelayRange = new Vector2(0f, 0.06f);
-                deathBloodFlowEndAlphaRange = new Vector2(0.55f, 0.75f);
+                deathBloodFlowEndAlphaRange = new Vector2(0.65f, 0.75f);
                 deathBloodFlowRightToLeft = true;
                 break;
 
@@ -203,19 +203,19 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 maxTrackedGroundBloodDecals = 220;
                 overflowToRemainsTransitionDuration = 1f;
                 overflowBloodFadeDuration = 1.25f;
-                deathBloodSpawnChance = 0.75f;
-                clusterBloodChance = 0.6f;
+                deathBloodSpawnChance = 0.85f;
+                clusterBloodChance = 0.75f;
                 clusterWindowSeconds = 1.8f;
                 clusterScanRadius = 1.3f;
                 clusterThreshold = 6;
-                bloodDecalScaleRange = new Vector2(0.2f, 0.32f);
-                clusterBloodScaleRange = new Vector2(0.2f, 0.3f);
+                bloodDecalScaleRange = new Vector2(0.75f, 0.85f);
+                clusterBloodScaleRange = new Vector2(0.85f, 0.95f);
                 deathBloodFlowDistanceRange = new Vector2(0.08f, 0.18f);
                 deathBloodFlowVerticalJitterRange = new Vector2(-0.02f, 0.03f);
                 deathBloodSettleHorizontalOffsetRange = new Vector2(-0.06f, 0.02f);
-                deathBloodFlowDurationMultiplierRange = new Vector2(25.8f, 35.2f);
+                deathBloodFlowDurationMultiplierRange = new Vector2(5.8f, 8.2f);
                 deathBloodFlowStartDelayRange = new Vector2(0f, 0.12f);
-                deathBloodFlowEndAlphaRange = new Vector2(0.79f, 0.9f);
+                deathBloodFlowEndAlphaRange = new Vector2(0.75f, 0.8f);
                 deathBloodFlowRightToLeft = true;
                 break;
 
@@ -225,19 +225,19 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 maxTrackedGroundBloodDecals = 330;
                 overflowToRemainsTransitionDuration = 1.15f;
                 overflowBloodFadeDuration = 1.8f;
-                deathBloodSpawnChance = 1f;
-                clusterBloodChance = 1f;
+                deathBloodSpawnChance = 0.95f;
+                clusterBloodChance = 0.85f;
                 clusterWindowSeconds = 2f;
                 clusterScanRadius = 1.5f;
                 clusterThreshold = 5;
-                bloodDecalScaleRange = new Vector2(0.22f, 0.33f);
-                clusterBloodScaleRange = new Vector2(0.22f, 0.33f);
+                bloodDecalScaleRange = new Vector2(0.82f, 0.95f);
+                clusterBloodScaleRange = new Vector2(0.95f, 1.08f);
                 deathBloodFlowDistanceRange = new Vector2(0.12f, 0.26f);
                 deathBloodFlowVerticalJitterRange = new Vector2(-0.03f, 0.05f);
                 deathBloodSettleHorizontalOffsetRange = new Vector2(-0.1f, 0.02f);
-                deathBloodFlowDurationMultiplierRange = new Vector2(25.8f, 35.2f);
+                deathBloodFlowDurationMultiplierRange = new Vector2(8.8f, 12.8f);
                 deathBloodFlowStartDelayRange = new Vector2(0f, 0.16f);
-                deathBloodFlowEndAlphaRange = new Vector2(0.85f, 1f);
+                deathBloodFlowEndAlphaRange = new Vector2(0.84f, 0.92f);
                 deathBloodFlowRightToLeft = true;
                 break;
         }
@@ -285,6 +285,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
     public void SpawnDeathVisuals(
         Sprite corpseSprite,
         bool corpseFlipX,
+        Color corpseTint,
         Vector3 corpsePosition,
         Vector3 corpseScale,
         int corpseSortingOrder,
@@ -300,6 +301,12 @@ public class EnemyDeathVisualManager : MonoBehaviour
         GameObject corpseObject = null;
         SpriteRenderer corpseRenderer = null;
 
+        Color deadTint = corpseTint;
+        deadTint.r *= 0.9f;
+        deadTint.g *= 0.9f;
+        deadTint.b *= 0.9f;
+        deadTint.a = 0.9f;
+
         if (corpseSprite != null)
         {
             corpseObject = AcquireCorpseVisual();
@@ -307,7 +314,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
             corpseObject.transform.localScale = corpseScale;
 
             corpseRenderer = corpseObject.GetComponent<SpriteRenderer>();
-            corpseRenderer.color = Color.white;
+            corpseRenderer.color = deadTint;
             corpseRenderer.sprite = corpseSprite;
             corpseRenderer.flipX = corpseFlipX;
             corpseRenderer.sortingLayerName = "Units_Dead";
@@ -849,7 +856,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
         float duration = Mathf.Lerp(0.25f, 0.95f, Mathf.InverseLerp(0.35f, 1.05f, targetScale));
         duration *= ResolveRangeValue(deathBloodFlowDurationMultiplierRange, 0.1f);
 
-        float startAlpha = 0.7f;
+        float startAlpha = 0.6f;
         float endAlpha = Mathf.Clamp01(ResolveRangeValue(deathBloodFlowEndAlphaRange, 0f));
 
         if (spriteRenderer != null)
