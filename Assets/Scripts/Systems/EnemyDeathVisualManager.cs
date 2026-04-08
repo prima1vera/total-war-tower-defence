@@ -302,10 +302,10 @@ public class EnemyDeathVisualManager : MonoBehaviour
         SpriteRenderer corpseRenderer = null;
 
         Color deadTint = corpseTint;
-        deadTint.r *= 0.85f;
-        deadTint.g *= 0.85f;
-        deadTint.b *= 0.85f;
-        deadTint.a = 0.85f;
+        deadTint.r *= 0.9f;
+        deadTint.g *= 0.9f;
+        deadTint.b *= 0.9f;
+        deadTint.a = 0.9f;
 
         if (corpseSprite != null)
         {

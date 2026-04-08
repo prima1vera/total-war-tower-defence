@@ -9867,13 +9867,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitEffects
   fireTint: {r: 1, g: 0.5, b: 0.2, a: 1}
   freezeTint: {r: 0.4, g: 0.8, b: 1, a: 1}
-  baseTint: {r: 0.82, g: 0.82, b: 0.82, a: 1}
+  baseTint: {r: 0.85, g: 0.85, b: 0.85, a: 1}
   hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
-  hitFlashDuration: 0.1
+  hitFlashDuration: 0.08
   hitFlashStrength: 1
   burnTickColor: {r: 1, g: 0.9060749, b: 0, a: 1}
-  burnTickDuration: 0.2
-  burnTickStrength: 0.9
+  burnTickDuration: 0.06
+  burnTickStrength: 0.8
   fireEffect: {fileID: 6702332221611775603}
   frostEffectPrefab: {fileID: 4952141576655577673}
   useBurnLoopSprite: 1

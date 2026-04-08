@@ -204,23 +204,11 @@ public class UnitEffects : MonoBehaviour
             return;
 
         Color baseColor = ResolveStatusColor();
-        //bool nearWhiteBase = IsNearWhite(baseColor);
-        //bool nearWhiteFlash = IsNearWhite(hitFlashColor);
 
         float burnFactor = burnTickDuration > 0f ? Mathf.Clamp01(burnTickTimer / burnTickDuration) : 0f;
         burnFactor *= burnTickStrength;
 
         Color composed = Color.Lerp(baseColor, burnTickColor, burnFactor);
-
-        //float hitFactor = hitFlashDuration > 0f ? Mathf.Clamp01(hitFlashTimer / hitFlashDuration) : 0f;
-        //hitFactor = Mathf.Pow(hitFactor, 0.65f) * hitFlashStrength;
-
-        //Color resolvedHitFlashColor = hitFlashColor;
-        //if (nearWhiteBase && nearWhiteFlash)
-        //    resolvedHitFlashColor = Color.white;
-
-        //composed = Color.Lerp(composed, resolvedHitFlashColor, hitFactor);
-        //composed.a = 1f;
 
         if (force || !Approximately(appliedColor, composed))
         {
