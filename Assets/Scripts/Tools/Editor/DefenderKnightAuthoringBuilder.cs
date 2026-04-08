@@ -407,6 +407,7 @@ public static class DefenderKnightAuthoringBuilder
         AnimatorStateTransition anyToDeath = sm.AddAnyStateTransition(deathState);
         anyToDeath.hasExitTime = false;
         anyToDeath.duration = 0f;
+        anyToDeath.canTransitionToSelf = false;
         anyToDeath.AddCondition(AnimatorConditionMode.If, 0f, "isDead");
 
         EditorUtility.SetDirty(controller);

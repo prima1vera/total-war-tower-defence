@@ -25,7 +25,7 @@ public class UnitHealth : MonoBehaviour
 
     private Collider2D col;
     private UnitMovement movement;
-    private UnitDeathLifecycle deathLifecycle;
+    private ManagedUnitDeathLifecycle deathLifecycle;
 
     public StatusEffectHandler StatusEffectHandler { get; private set; }
 
@@ -40,8 +40,32 @@ public class UnitHealth : MonoBehaviour
         movement = GetComponent<UnitMovement>();
         StatusEffectHandler = GetComponent<StatusEffectHandler>();
 
-        deathLifecycle = new UnitDeathLifecycle(this);
-        deathLifecycle.Initialize();
+        Animator animator = GetComponent<Animator>();
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        TopDownSorter topDownSorter = GetComponent<TopDownSorter>();
+        UnitEffects effects = GetComponent<UnitEffects>();
+        EnemyPoolMember enemyPoolMember = GetComponent<EnemyPoolMember>();
+
+        deathLifecycle = new ManagedUnitDeathLifecycle(new ManagedUnitDeathLifecycle.Config
+        {
+            Owner = this,
+            Animator = animator,
+            Collider = col,
+            SpriteRenderer = spriteRenderer,
+            TopDownSorter = topDownSorter,
+            Effects = effects,
+            ResolveDespawnDelay = GetDespawnDelay,
+            ResolveBloodPoolPrefab = () => bloodPoolPrefab,
+            ResolveBloodSplashPrefab = () => bloodSplashPrefab,
+            TryDespawnToPool = () => enemyPoolMember != null && enemyPoolMember.TryDespawnToPool(),
+            DeactivateFallback = () =>
+            {
+                if (gameObject.activeSelf)
+                    gameObject.SetActive(false);
+            },
+            RandomizeDeathIndex = true,
+            DeathIndexVariants = 4
+        });
     }
 
     void OnEnable()
@@ -144,40 +168,46 @@ public class UnitHealth : MonoBehaviour
     internal float GetDespawnDelay() => Mathf.Max(0f, despawnToPoolDelay);
 }
 
-internal sealed class UnitDeathLifecycle
+internal sealed class ManagedUnitDeathLifecycle
 {
-    private readonly UnitHealth owner;
+    private static readonly int IsDeadHash = Animator.StringToHash("isDead");
+    private static readonly int DeathIndexHash = Animator.StringToHash("deathIndex");
 
-    private Animator animator;
-    private Collider2D collider;
-    private SpriteRenderer spriteRenderer;
-    private TopDownSorter topDownSorter;
-    private EnemyPoolMember enemyPoolMember;
-    private UnitEffects effects;
-
-    private string defaultSortingLayerName;
-    private int defaultSortingOrder;
-
-    private Coroutine despawnRoutine;
-
-    public UnitDeathLifecycle(UnitHealth owner)
+    internal sealed class Config
     {
-        this.owner = owner;
+        public MonoBehaviour Owner;
+        public Animator Animator;
+        public Collider2D Collider;
+        public SpriteRenderer SpriteRenderer;
+        public TopDownSorter TopDownSorter;
+        public UnitEffects Effects;
+        public Func<float> ResolveDespawnDelay;
+        public Func<GameObject> ResolveBloodPoolPrefab;
+        public Func<GameObject> ResolveBloodSplashPrefab;
+        public Func<bool> TryDespawnToPool;
+        public Action DeactivateFallback;
+        public Action NotifyLifecycleFinished;
+        public bool RandomizeDeathIndex;
+        public int DeathIndexVariants;
     }
 
-    public void Initialize()
-    {
-        animator = owner.GetComponent<Animator>();
-        collider = owner.GetComponent<Collider2D>();
-        spriteRenderer = owner.GetComponent<SpriteRenderer>();
-        topDownSorter = owner.GetComponent<TopDownSorter>();
-        enemyPoolMember = owner.GetComponent<EnemyPoolMember>();
-        effects = owner.GetComponent<UnitEffects>();
+    private readonly Config config;
+    private readonly bool hasIsDeadBoolParameter;
+    private readonly bool hasDeathIndexIntParameter;
+    private string defaultSortingLayerName;
+    private int defaultSortingOrder;
+    private Coroutine despawnRoutine;
 
-        if (spriteRenderer != null)
+    public ManagedUnitDeathLifecycle(Config config)
+    {
+        this.config = config;
+        hasIsDeadBoolParameter = HasAnimatorParameter(config.Animator, IsDeadHash, AnimatorControllerParameterType.Bool);
+        hasDeathIndexIntParameter = HasAnimatorParameter(config.Animator, DeathIndexHash, AnimatorControllerParameterType.Int);
+
+        if (config.SpriteRenderer != null)
         {
-            defaultSortingLayerName = spriteRenderer.sortingLayerName;
-            defaultSortingOrder = spriteRenderer.sortingOrder;
+            defaultSortingLayerName = config.SpriteRenderer.sortingLayerName;
+            defaultSortingOrder = config.SpriteRenderer.sortingOrder;
         }
     }
 
@@ -185,80 +215,111 @@ internal sealed class UnitDeathLifecycle
     {
         CancelPendingDespawn();
 
-        if (topDownSorter != null)
-            topDownSorter.enabled = true;
+        if (config.TopDownSorter != null)
+            config.TopDownSorter.enabled = true;
 
-        if (spriteRenderer != null)
+        if (config.SpriteRenderer != null)
         {
-            spriteRenderer.sortingLayerName = defaultSortingLayerName;
-            spriteRenderer.sortingOrder = defaultSortingOrder;
+            config.SpriteRenderer.sortingLayerName = defaultSortingLayerName;
+            config.SpriteRenderer.sortingOrder = defaultSortingOrder;
         }
 
-        if (animator != null)
-            animator.SetBool("isDead", false);
+        if (config.Animator != null && hasIsDeadBoolParameter)
+            config.Animator.SetBool(IsDeadHash, false);
     }
 
     public void HandleDeath()
     {
-        if (animator != null)
+        if (config.Animator != null)
         {
-            int randomDeath = Random.Range(0, 4);
-            animator.SetInteger("deathIndex", randomDeath);
-            animator.SetBool("isDead", true);
+            if (config.RandomizeDeathIndex && hasDeathIndexIntParameter)
+            {
+                int variants = Mathf.Max(1, config.DeathIndexVariants);
+                int randomDeath = Random.Range(0, variants);
+                config.Animator.SetInteger(DeathIndexHash, randomDeath);
+            }
+
+            if (hasIsDeadBoolParameter)
+                config.Animator.SetBool(IsDeadHash, true);
         }
 
-        if (owner.bloodSplashPrefab != null && VfxPool.TryGetInstance(out VfxPool vfxPool))
-            vfxPool.Spawn(owner.bloodSplashPrefab, owner.transform.position, Quaternion.identity);
+        GameObject bloodSplashPrefab = config.ResolveBloodSplashPrefab != null ? config.ResolveBloodSplashPrefab() : null;
+        if (bloodSplashPrefab != null && VfxPool.TryGetInstance(out VfxPool vfxPool) && config.Owner != null)
+            vfxPool.Spawn(bloodSplashPrefab, config.Owner.transform.position, Quaternion.identity);
 
-        if (topDownSorter != null)
-            topDownSorter.enabled = false;
+        if (config.TopDownSorter != null)
+            config.TopDownSorter.enabled = false;
 
-        Vector3 bloodPosition = collider != null ? collider.bounds.min : owner.transform.position;
+        Vector3 ownerPosition = config.Owner != null ? config.Owner.transform.position : Vector3.zero;
+        Vector3 bloodPosition = config.Collider != null ? config.Collider.bounds.min : ownerPosition;
         bloodPosition.z = 0f;
 
-        if (collider != null)
-            collider.enabled = false;
+        if (config.Collider != null)
+            config.Collider.enabled = false;
 
         int deadOrder = Mathf.RoundToInt(-bloodPosition.y * 100f) + Random.Range(-1, 2);
 
         CancelPendingDespawn();
-        despawnRoutine = owner.StartCoroutine(DespawnToPoolAfterDelay(deadOrder, bloodPosition));
+        if (config.Owner != null && config.Owner.gameObject.activeInHierarchy)
+            despawnRoutine = config.Owner.StartCoroutine(DespawnToPoolAfterDelay(deadOrder, bloodPosition));
     }
 
     public void CancelPendingDespawn()
     {
-        if (despawnRoutine == null)
+        if (despawnRoutine == null || config.Owner == null)
             return;
 
-        owner.StopCoroutine(despawnRoutine);
+        config.Owner.StopCoroutine(despawnRoutine);
         despawnRoutine = null;
     }
 
     private IEnumerator DespawnToPoolAfterDelay(int deadOrder, Vector3 bloodPosition)
     {
-        float delay = owner.GetDespawnDelay();
+        float delay = config.ResolveDespawnDelay != null ? Mathf.Max(0f, config.ResolveDespawnDelay()) : 0f;
         if (delay > 0f)
             yield return WaitForSecondsCache.Get(delay);
 
-        ManagedDeathVisuals.TrySpawn(
-            owner.transform,
-            spriteRenderer,
-            effects,
-            owner.bloodPoolPrefab,
-            bloodPosition,
-            deadOrder
-        );
-
-        if (enemyPoolMember != null && enemyPoolMember.TryDespawnToPool())
+        if (config.Owner == null)
         {
             despawnRoutine = null;
             yield break;
         }
 
-        if (owner.gameObject.activeSelf)
-            owner.gameObject.SetActive(false);
+        ManagedDeathVisuals.TrySpawn(
+            config.Owner.transform,
+            config.SpriteRenderer,
+            config.Effects,
+            config.ResolveBloodPoolPrefab != null ? config.ResolveBloodPoolPrefab() : null,
+            bloodPosition,
+            deadOrder
+        );
 
         despawnRoutine = null;
+
+        if (config.TryDespawnToPool != null && config.TryDespawnToPool())
+        {
+            config.NotifyLifecycleFinished?.Invoke();
+            yield break;
+        }
+
+        config.DeactivateFallback?.Invoke();
+        config.NotifyLifecycleFinished?.Invoke();
+    }
+
+    private static bool HasAnimatorParameter(Animator animator, int hash, AnimatorControllerParameterType type)
+    {
+        if (animator == null)
+            return false;
+
+        AnimatorControllerParameter[] parameters = animator.parameters;
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            AnimatorControllerParameter parameter = parameters[i];
+            if (parameter.nameHash == hash && parameter.type == type)
+                return true;
+        }
+
+        return false;
     }
 
     private static class WaitForSecondsCache

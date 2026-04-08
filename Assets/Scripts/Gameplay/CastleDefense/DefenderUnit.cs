@@ -9,7 +9,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     private static readonly int MoveYHash = Animator.StringToHash("moveY");
     private static readonly int IsMovingHash = Animator.StringToHash("isMoving");
     private static readonly int AttackHash = Animator.StringToHash("attack");
-    private static readonly int IsDeadHash = Animator.StringToHash("isDead");
     private const float SeparationRefreshInterval = 0.08f;
     private const float SeparationRefreshJitter = 0.015f;
     private const float DefenderSeparationRadius = 0.28f;
@@ -24,6 +23,8 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     [Header("Death Visuals")]
     [SerializeField] private GameObject bloodPoolPrefab;
     [SerializeField] private GameObject bloodSplashPrefab;
+    [SerializeField, Min(0f), Tooltip("Delay before deactivation to allow death animation playback.")]
+    private float despawnToPoolDelay = 0.6f;
 
     [Header("Movement")]
     [SerializeField, Min(0.1f)] private float moveSpeed = 2.2f;
@@ -68,7 +69,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     private bool hasIsMovingParam;
     private bool hasAttackTriggerParam;
     private bool hasAttackBoolParam;
-    private bool hasIsDeadParam;
 
     private Transform guardPoint;
     private Vector3 staticGuardPoint;
@@ -90,8 +90,10 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
     private float attackFacingLockTimer;
     private TopDownSorter topDownSorter;
     private UnitEffects unitEffects;
+    private ManagedUnitDeathLifecycle deathLifecycle;
 
     public event Action<DefenderUnit> Died;
+    public event Action<DefenderUnit> ReadyForPooling;
     public event Action<DefenderDamageFeedbackEvent> DamageTaken;
 
     public static event Action<DefenderDamageFeedbackEvent> GlobalDamageTaken;
@@ -130,6 +132,27 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         topDownSorter = GetComponent<TopDownSorter>();
         unitEffects = GetComponent<UnitEffects>();
 
+        deathLifecycle = new ManagedUnitDeathLifecycle(new ManagedUnitDeathLifecycle.Config
+        {
+            Owner = this,
+            Animator = animator,
+            Collider = blockerCollider,
+            SpriteRenderer = spriteRenderer,
+            TopDownSorter = topDownSorter,
+            Effects = unitEffects,
+            ResolveDespawnDelay = ResolveDespawnDelay,
+            ResolveBloodPoolPrefab = () => bloodPoolPrefab,
+            ResolveBloodSplashPrefab = () => bloodSplashPrefab,
+            DeactivateFallback = () =>
+            {
+                if (gameObject.activeSelf)
+                    gameObject.SetActive(false);
+            },
+            NotifyLifecycleFinished = NotifyReadyForPooling,
+            RandomizeDeathIndex = false,
+            DeathIndexVariants = 1
+        });
+
         CacheAnimatorBindings();
     }
 
@@ -143,6 +166,7 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         engagingAttackers.Clear();
         SetCurrentEnemyTarget(null);
         attackFacingLockTimer = 0f;
+        deathLifecycle.CancelPendingDespawn();
         EnemyPathBlockerRegistry.Unregister(this);
     }
 
@@ -261,10 +285,8 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         if (blockerCollider != null && !blockerCollider.enabled)
             blockerCollider.enabled = true;
 
-        if (topDownSorter != null && !topDownSorter.enabled)
-            topDownSorter.enabled = true;
+        deathLifecycle.ResetForSpawn();
 
-        ApplyDeadAnimation(false);
         ApplyMovingAnimation(false);
         ApplyAnimatorFacing(currentFacingDirection);
         gameObject.SetActive(true);
@@ -684,33 +706,22 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         engagingAttackers.Clear();
         SetCurrentEnemyTarget(null);
         ApplyMovingAnimation(false);
-        ApplyDeadAnimation(true);
+        SetAttackAnimation(false);
 
-        Vector3 bloodPosition = blockerCollider != null ? blockerCollider.bounds.min : transform.position;
-        bloodPosition.z = 0f;
-        int deadOrder = Mathf.RoundToInt(-bloodPosition.y * 100f) + UnityEngine.Random.Range(-1, 2);
-
-        if (bloodSplashPrefab != null && VfxPool.TryGetInstance(out VfxPool vfxPool))
-            vfxPool.Spawn(bloodSplashPrefab, transform.position, Quaternion.identity);
-
-        if (topDownSorter != null)
-            topDownSorter.enabled = false;
-
-        ManagedDeathVisuals.TrySpawn(
-            transform,
-            spriteRenderer,
-            unitEffects,
-            bloodPoolPrefab,
-            bloodPosition,
-            deadOrder
-        );
-
-        if (blockerCollider != null)
-            blockerCollider.enabled = false;
+        deathLifecycle.HandleDeath();
 
         Died?.Invoke(this);
         GlobalDefenderDied?.Invoke(this);
-        gameObject.SetActive(false);
+    }
+
+    private float ResolveDespawnDelay()
+    {
+        return Mathf.Max(0f, despawnToPoolDelay);
+    }
+
+    private void NotifyReadyForPooling()
+    {
+        ReadyForPooling?.Invoke(this);
     }
 
     private void CleanupEngagingAttackers()
@@ -762,7 +773,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
         hasIsMovingParam = false;
         hasAttackTriggerParam = false;
         hasAttackBoolParam = false;
-        hasIsDeadParam = false;
 
         if (animator == null)
             return;
@@ -788,9 +798,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
                 case int nameHash when nameHash == AttackHash && parameter.type == AnimatorControllerParameterType.Bool:
                     hasAttackBoolParam = true;
                     break;
-                case int nameHash when nameHash == IsDeadHash && parameter.type == AnimatorControllerParameterType.Bool:
-                    hasIsDeadParam = true;
-                    break;
             }
         }
     }
@@ -801,14 +808,6 @@ public sealed class DefenderUnit : MonoBehaviour, IEnemyPathBlocker, IEnemyBlock
             return;
 
         animator.SetBool(IsMovingHash, isMoving);
-    }
-
-    private void ApplyDeadAnimation(bool isDead)
-    {
-        if (animator == null || !hasIsDeadParam)
-            return;
-
-        animator.SetBool(IsDeadHash, isDead);
     }
 
     private void SetAttackAnimation(bool isAttacking)
