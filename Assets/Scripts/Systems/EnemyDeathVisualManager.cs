@@ -48,6 +48,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [SerializeField] private Sprite[] bloodDecalVariants;
     [Tooltip("Scale range for regular death blood decals.")]
     [SerializeField] private Vector2 bloodDecalScaleRange = new Vector2(0.22f, 0.36f);
+    [Tooltip("Small random Z rotation range for blood decals to reduce repetitive striping.")]
+    [SerializeField] private Vector2 bloodDecalRotationRange = new Vector2(-8f, 8f);
     [Tooltip("Legacy total cap for all persistent ground blood decals (fresh + old pools combined).")]
     [SerializeField, Min(1)] private int maxTrackedGroundBloodDecals = 220;
     [Tooltip("How many decals can stay in fresh blood pool before oldest fresh decals move into old pool.")]
@@ -94,6 +96,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [SerializeField] private Color driedBloodTint = new Color(0.45f, 0.15f, 0.13f, 1f);
     [Tooltip("Stale blood tint used as darker bound for old-pool conversion.")]
     [SerializeField] private Color staleBloodTint = new Color(0.32f, 0.10f, 0.09f, 1f);
+    [Tooltip("Per-instance wetness intensity for fresh blood only. Old blood is forced dry.")]
+    [SerializeField] private Vector2 freshBloodWetnessRange = new Vector2(0.58f, 0.84f);
     [Tooltip("Brightness jitter to avoid identical blood puddles while keeping the same palette.")]
     [SerializeField] private Vector2 bloodTintBrightnessJitterRange = new Vector2(0.9f, 1.08f);
 
@@ -143,7 +147,11 @@ public class EnemyDeathVisualManager : MonoBehaviour
         maxTrackedGroundBloodDecals = Mathf.Max(1, maxTrackedGroundBloodDecals);
         maxTrackedGroundBloodDecals = Mathf.Max(maxTrackedGroundBloodDecals, maxTrackedFreshGroundBloodDecals + maxTrackedOldGroundBloodDecals);
         deathBloodFlowEndAlphaRange = SanitizeRange(deathBloodFlowEndAlphaRange, 0f, 1f);
+        freshBloodWetnessRange = SanitizeRange(freshBloodWetnessRange, 0f, 1f);
         bloodTintBrightnessJitterRange = SanitizeRange(bloodTintBrightnessJitterRange, 0.4f);
+        bloodDecalRotationRange = new Vector2(
+            Mathf.Clamp(Mathf.Min(bloodDecalRotationRange.x, bloodDecalRotationRange.y), -180f, 180f),
+            Mathf.Clamp(Mathf.Max(bloodDecalRotationRange.x, bloodDecalRotationRange.y), -180f, 180f));
     }
 
     [ContextMenu("Presets/Apply Selected Preset")]
@@ -219,7 +227,9 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 freshBloodTint = new Color(0.53f, 0.18f, 0.18f, 1f);
                 driedBloodTint = new Color(0.31f, 0.1f, 0.1f, 1f);
                 staleBloodTint = new Color(0.21f, 0.065f, 0.065f, 1f);
+                freshBloodWetnessRange = new Vector2(0.45f, 0.64f);
                 bloodTintBrightnessJitterRange = new Vector2(0.95f, 1.06f);
+                bloodDecalRotationRange = new Vector2(-5f, 5f);
                 deathBloodFlowRightToLeft = true;
                 break;
 
@@ -247,7 +257,9 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 freshBloodTint = new Color(0.55f, 0.18f, 0.18f, 1f);
                 driedBloodTint = new Color(0.28f, 0.08f, 0.08f, 1f);
                 staleBloodTint = new Color(0.18f, 0.05f, 0.05f, 1f);
+                freshBloodWetnessRange = new Vector2(0.56f, 0.76f);
                 bloodTintBrightnessJitterRange = new Vector2(0.94f, 1.08f);
+                bloodDecalRotationRange = new Vector2(-9f, 9f);
                 deathBloodFlowRightToLeft = true;
                 break;
 
@@ -260,7 +272,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 overflowToRemainsTransitionDuration = 1.15f;
                 overflowBloodFadeDuration = 1.8f;
                 deathBloodSpawnChance = 1.0f;
-                clusterBloodChance = 0.95f;
+                clusterBloodChance = 0.8f;
                 clusterWindowSeconds = 2f;
                 clusterScanRadius = 1.5f;
                 clusterThreshold = 4;
@@ -268,14 +280,16 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 clusterBloodScaleRange = new Vector2(1.05f, 1.22f);
                 deathBloodFlowDistanceRange = new Vector2(0.12f, 0.26f);
                 deathBloodFlowVerticalJitterRange = new Vector2(-0.03f, 0.05f);
-                deathBloodSettleHorizontalOffsetRange = new Vector2(-0.1f, 0.02f);
+                deathBloodSettleHorizontalOffsetRange = new Vector2(-0.14f, 0.05f);
                 deathBloodFlowDurationMultiplierRange = new Vector2(8.8f, 12.8f);
                 deathBloodFlowStartDelayRange = new Vector2(0f, 0.16f);
                 deathBloodFlowEndAlphaRange = new Vector2(0.92f, 1f);
                 freshBloodTint = new Color(0.65f, 0.22f, 0.22f, 1f);
                 driedBloodTint = new Color(0.45f, 0.15f, 0.13f, 1f);
-                staleBloodTint = new Color(0.32f, 0.10f, 0.09f, 1f);
+                staleBloodTint = new Color(0.36f, 0.12f, 0.11f, 1f);
+                freshBloodWetnessRange = new Vector2(0.28f, 0.46f);
                 bloodTintBrightnessJitterRange = new Vector2(0.98f, 1.14f);
+                bloodDecalRotationRange = new Vector2(-14f, 14f);
                 deathBloodFlowRightToLeft = true;
                 break;
         }
@@ -492,8 +506,12 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
         for (int i = 0; i < spawnCount; i++)
         {
-            Vector2 jitter = Random.insideUnitCircle * Mathf.Lerp(0.08f, 0.35f, density01);
-            Vector3 spawnPosition = new Vector3(bloodPosition.x + jitter.x, bloodPosition.y + jitter.y - 0.02f, 0f);
+            float jitterRadius = Mathf.Lerp(0.10f, 0.46f, density01) * Random.Range(0.86f, 1.28f);
+            Vector2 jitter = Random.insideUnitCircle * jitterRadius;
+            jitter.x *= Random.Range(0.85f, 1.30f);
+            jitter.y *= Random.Range(0.75f, 1.35f);
+            float rowBreakOffsetY = ResolveSignedRange(deathBloodFlowVerticalJitterRange) * 0.9f;
+            Vector3 spawnPosition = new Vector3(bloodPosition.x + jitter.x, bloodPosition.y + jitter.y + rowBreakOffsetY - 0.02f, 0f);
             float scale = ResolveRangeValue(clusterBloodScaleRange, 0.1f) * Mathf.Lerp(1f, 1.35f, density01);
 
             GameObject clusterBlood = AcquireBloodVisual(sourcePrefab);
@@ -682,6 +700,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
             ResolveBloodTint(freshBloodTint, brightness),
             ResolveBloodTint(driedBloodTint, brightness),
             ResolveBloodTint(staleBloodTint, brightness),
+            ResolveRangeValue(freshBloodWetnessRange, 0f),
             targetAlpha);
         return visual;
     }
@@ -977,8 +996,10 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 bloodRenderer.sprite = variant;
         }
 
-        // Decals are authored with desired orientation.
-        bloodTransform.rotation = Quaternion.identity;
+        float minRotation = Mathf.Min(bloodDecalRotationRange.x, bloodDecalRotationRange.y);
+        float maxRotation = Mathf.Max(bloodDecalRotationRange.x, bloodDecalRotationRange.y);
+        float zRotation = UnityEngine.Random.Range(minRotation, maxRotation);
+        bloodTransform.rotation = Quaternion.Euler(0f, 0f, zRotation);
     }
 
     private float ResolveBloodDecalScale()
@@ -1149,6 +1170,7 @@ internal sealed class BloodAgingVisual : MonoBehaviour
 {
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
     private static readonly int ColorId = Shader.PropertyToID("_Color");
+    private static readonly int BloodWetnessId = Shader.PropertyToID("_BloodWetness");
     private const float OldAgeDurationMin = 8f;
     private const float OldAgeDurationMax = 18f;
 
@@ -1157,11 +1179,14 @@ internal sealed class BloodAgingVisual : MonoBehaviour
     private bool canUsePropertyBlock;
     private bool hasBaseColorProperty;
     private bool hasColorProperty;
+    private bool hasBloodWetnessProperty;
 
     private Color freshTint = Color.white;
     private Color driedTint = Color.white;
     private Color staleTint = Color.white;
     private float maxAlpha = 1f;
+    private float freshWetness = 0.7f;
+    private float currentWetness;
     private bool isOldPoolState;
     private Coroutine oldAgingRoutine;
     private Color currentColor = Color.white;
@@ -1173,6 +1198,7 @@ internal sealed class BloodAgingVisual : MonoBehaviour
         Color freshTintColor,
         Color driedTintColor,
         Color staleTintColor,
+        float freshWetnessAmount,
         float targetAlpha)
     {
         spriteRenderer = targetRenderer;
@@ -1182,6 +1208,8 @@ internal sealed class BloodAgingVisual : MonoBehaviour
         freshTint = freshTintColor;
         driedTint = driedTintColor;
         staleTint = staleTintColor;
+        freshWetness = Mathf.Clamp01(freshWetnessAmount);
+        currentWetness = freshWetness;
         maxAlpha = Mathf.Clamp01(targetAlpha);
 
         isOldPoolState = false;
@@ -1210,6 +1238,7 @@ internal sealed class BloodAgingVisual : MonoBehaviour
         Color dried = driedTint;
         dried.a = preservedAlpha;
         isOldPoolState = true;
+        currentWetness = 0f;
         ApplyColor(dried);
         oldAgingRoutine = StartCoroutine(AgeToStale(preservedAlpha));
     }
@@ -1217,6 +1246,8 @@ internal sealed class BloodAgingVisual : MonoBehaviour
     public void ApplyOverrideColor(Color color)
     {
         StopOldAgingRoutine();
+        if (isOldPoolState)
+            currentWetness = 0f;
         ApplyColor(color);
     }
 
@@ -1224,6 +1255,7 @@ internal sealed class BloodAgingVisual : MonoBehaviour
     {
         StopOldAgingRoutine();
         isOldPoolState = false;
+        currentWetness = 0f;
         currentColor = Color.white;
 
         if (spriteRenderer == null)
@@ -1290,13 +1322,15 @@ internal sealed class BloodAgingVisual : MonoBehaviour
             canUsePropertyBlock = false;
             hasBaseColorProperty = false;
             hasColorProperty = false;
+            hasBloodWetnessProperty = false;
             return;
         }
 
         Material sharedMaterial = spriteRenderer.sharedMaterial;
         hasBaseColorProperty = sharedMaterial != null && sharedMaterial.HasProperty(BaseColorId);
         hasColorProperty = sharedMaterial != null && sharedMaterial.HasProperty(ColorId);
-        canUsePropertyBlock = hasBaseColorProperty || hasColorProperty;
+        hasBloodWetnessProperty = sharedMaterial != null && sharedMaterial.HasProperty(BloodWetnessId);
+        canUsePropertyBlock = hasBaseColorProperty || hasColorProperty || hasBloodWetnessProperty;
 
         if (!canUsePropertyBlock)
             return;
@@ -1316,8 +1350,10 @@ internal sealed class BloodAgingVisual : MonoBehaviour
             spriteRenderer.GetPropertyBlock(propertyBlock);
             if (hasBaseColorProperty)
                 propertyBlock.SetColor(BaseColorId, color);
-            if (hasColorProperty)
+            else if (hasColorProperty)
                 propertyBlock.SetColor(ColorId, color);
+            if (hasBloodWetnessProperty)
+                propertyBlock.SetFloat(BloodWetnessId, Mathf.Clamp01(currentWetness));
             spriteRenderer.SetPropertyBlock(propertyBlock);
         }
         else

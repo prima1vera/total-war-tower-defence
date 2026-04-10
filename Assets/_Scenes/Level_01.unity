@@ -35068,11 +35068,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
       propertyPath: ogreSpawnShare
-      value: 0.05
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
       propertyPath: ogreWeightMultiplier
-      value: 0.1
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 5644099702483622768, guid: 3429550caddb41941942a7dae1263e2c, type: 3}
       propertyPath: controlledSpawners.Array.size
@@ -35942,15 +35942,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: staleBloodTint.b
-      value: 0.09
+      value: 0.11
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: staleBloodTint.g
-      value: 0.1
+      value: 0.12
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: staleBloodTint.r
-      value: 0.32
+      value: 0.36
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterScanRadius
@@ -35962,7 +35962,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterBloodChance
-      value: 0.95
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: prewarmCorpseCount
@@ -36011,6 +36011,22 @@ PrefabInstance:
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: clusterBloodScaleRange.y
       value: 1.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
+      propertyPath: freshBloodWetnessRange.x
+      value: 0.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
+      propertyPath: freshBloodWetnessRange.y
+      value: 0.92
+      objectReference: {fileID: 0}
+    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
+      propertyPath: bloodDecalRotationRange.x
+      value: -14
+      objectReference: {fileID: 0}
+    - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
+      propertyPath: bloodDecalRotationRange.y
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: bloodLateFadeDelayRange.x
@@ -36114,11 +36130,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: deathBloodSettleHorizontalOffsetRange.x
-      value: -0.1
+      value: -0.14
       objectReference: {fileID: 0}
     - target: {fileID: 9188115217899500902, guid: c1a983efd0a3f774fb7ac9af93b86e11, type: 3}
       propertyPath: deathBloodSettleHorizontalOffsetRange.y
-      value: 0.02
+      value: 0.05
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
