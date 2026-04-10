@@ -270,7 +270,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 maxTrackedGroundBloodDecals = 420;
                 overflowToRemainsTransitionDuration = 1.15f;
                 overflowBloodFadeDuration = 1.8f;
-                deathBloodSpawnChance = 0.95f;
+                deathBloodSpawnChance = 1.0f;
                 clusterBloodChance = 0.95f;
                 clusterWindowSeconds = 2f;
                 clusterScanRadius = 1.5f;
@@ -285,13 +285,13 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 deathBloodFlowEndAlphaRange = new Vector2(0.92f, 1f);
                 freshBloodTint = new Color(0.62f, 0.20f, 0.20f, 1f);
                 driedBloodTint = new Color(0.40f, 0.12f, 0.11f, 1f);
-                staleBloodTint = new Color(0.28f, 0.08f, 0.075f, 1f);
-                bloodDryDurationRange = new Vector2(10f, 14f);
-                bloodStaleDurationRange = new Vector2(28f, 42f);
+                staleBloodTint = new Color(0.32f, 0.08f, 0.07f, 1f);
+                bloodDryDurationRange = new Vector2(14f, 18f);
+                bloodStaleDurationRange = new Vector2(32f, 47f);
                 bloodLateFadeDelayRange = new Vector2(40f, 60f);
                 bloodLateFadeDurationRange = new Vector2(28f, 40f);
                 bloodLateFadeAlphaMultiplierRange = new Vector2(0.98f, 1f);
-                bloodTintBrightnessJitterRange = new Vector2(0.98f, 1.14f);
+                bloodTintBrightnessJitterRange = new Vector2(0.9f, 1.2f);
                 deathBloodFlowRightToLeft = true;
                 break;
         }
@@ -363,7 +363,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
         deadTint.r *= 0.9f;
         deadTint.g *= 0.9f;
         deadTint.b *= 0.9f;
-        deadTint.a = 0.9f;
+        deadTint.a = 0.85f;
 
         if (corpseSprite != null)
         {
