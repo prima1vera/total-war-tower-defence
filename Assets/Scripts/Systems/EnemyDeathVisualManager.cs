@@ -48,8 +48,12 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [SerializeField] private Sprite[] bloodDecalVariants;
     [Tooltip("Scale range for regular death blood decals.")]
     [SerializeField] private Vector2 bloodDecalScaleRange = new Vector2(0.22f, 0.36f);
-    [Tooltip("Global cap for all persistent ground blood decals on the battlefield.")]
+    [Tooltip("Legacy total cap for all persistent ground blood decals (fresh + old pools combined).")]
     [SerializeField, Min(1)] private int maxTrackedGroundBloodDecals = 220;
+    [Tooltip("How many decals can stay in fresh blood pool before oldest fresh decals move into old pool.")]
+    [SerializeField, Min(1)] private int maxTrackedFreshGroundBloodDecals = 80;
+    [Tooltip("How many decals can stay in old blood pool before oldest old decals are faded out and recycled.")]
+    [SerializeField, Min(1)] private int maxTrackedOldGroundBloodDecals = 140;
 
     [Header("Death Blood Behavior")]
     [Tooltip("Chance to spawn a death blood decal when an enemy dies (0 = never, 1 = always).")]
@@ -83,29 +87,20 @@ public class EnemyDeathVisualManager : MonoBehaviour
     [Tooltip("Final alpha range after blood settles. Keep this near-opaque; use tint aging for old blood look.")]
     [SerializeField] private Vector2 deathBloodFlowEndAlphaRange = new Vector2(0.9f, 0.98f);
 
-    [Header("Blood Aging")]
+    [Header("Blood Palette")]
     [Tooltip("Fresh blood tint right after spawn.")]
-    [SerializeField] private Color freshBloodTint = new Color(0.55f, 0.18f, 0.18f, 1f);
-    [Tooltip("Dried blood tint reached after a short delay.")]
-    [SerializeField] private Color driedBloodTint = new Color(0.28f, 0.08f, 0.08f, 1f);
-    [Tooltip("Very old blood tint used for late lifetime readability.")]
-    [SerializeField] private Color staleBloodTint = new Color(0.18f, 0.05f, 0.05f, 1f);
-    [Tooltip("Time range to transition from fresh to dried tint.")]
-    [SerializeField] private Vector2 bloodDryDurationRange = new Vector2(5f, 8f);
-    [Tooltip("Extra time range to transition from dried to stale tint.")]
-    [SerializeField] private Vector2 bloodStaleDurationRange = new Vector2(9f, 14f);
-    [Tooltip("Delay range before late alpha fade starts. Keep late to avoid early transparency loss.")]
-    [SerializeField] private Vector2 bloodLateFadeDelayRange = new Vector2(24f, 34f);
-    [Tooltip("Duration range for very soft late alpha fade before cap cleanup.")]
-    [SerializeField] private Vector2 bloodLateFadeDurationRange = new Vector2(18f, 28f);
-    [Tooltip("Random late alpha multiplier. Keep close to 1 so aging is mostly tint-driven.")]
-    [SerializeField] private Vector2 bloodLateFadeAlphaMultiplierRange = new Vector2(0.96f, 1f);
+    [SerializeField] private Color freshBloodTint = new Color(0.65f, 0.22f, 0.22f, 1f);
+    [Tooltip("Dried blood tint used as base for old-pool conversion.")]
+    [SerializeField] private Color driedBloodTint = new Color(0.45f, 0.15f, 0.13f, 1f);
+    [Tooltip("Stale blood tint used as darker bound for old-pool conversion.")]
+    [SerializeField] private Color staleBloodTint = new Color(0.32f, 0.10f, 0.09f, 1f);
     [Tooltip("Brightness jitter to avoid identical blood puddles while keeping the same palette.")]
     [SerializeField] private Vector2 bloodTintBrightnessJitterRange = new Vector2(0.9f, 1.08f);
 
     private readonly Queue<DeathVisualEntry> activeDeathVisuals = new Queue<DeathVisualEntry>(80);
     private readonly Queue<RemainsVisualEntry> activeRemains = new Queue<RemainsVisualEntry>(128);
-    private readonly Queue<GroundBloodEntry> activeGroundBlood = new Queue<GroundBloodEntry>(256);
+    private readonly Queue<GroundBloodEntry> activeFreshGroundBlood = new Queue<GroundBloodEntry>(128);
+    private readonly Queue<GroundBloodEntry> activeOldGroundBlood = new Queue<GroundBloodEntry>(256);
 
     private readonly Dictionary<Sprite, Sprite> remainsVariantLookup = new Dictionary<Sprite, Sprite>(8);
     private readonly Dictionary<GameObject, Stack<GameObject>> bloodPoolByPrefab = new Dictionary<GameObject, Stack<GameObject>>(4);
@@ -143,13 +138,11 @@ public class EnemyDeathVisualManager : MonoBehaviour
         RebuildRemainsVariantLookup();
         maxTrackedDeaths = Mathf.Max(1, maxTrackedDeaths);
         maxTrackedRemains = Mathf.Max(1, maxTrackedRemains);
+        maxTrackedFreshGroundBloodDecals = Mathf.Max(1, maxTrackedFreshGroundBloodDecals);
+        maxTrackedOldGroundBloodDecals = Mathf.Max(1, maxTrackedOldGroundBloodDecals);
         maxTrackedGroundBloodDecals = Mathf.Max(1, maxTrackedGroundBloodDecals);
+        maxTrackedGroundBloodDecals = Mathf.Max(maxTrackedGroundBloodDecals, maxTrackedFreshGroundBloodDecals + maxTrackedOldGroundBloodDecals);
         deathBloodFlowEndAlphaRange = SanitizeRange(deathBloodFlowEndAlphaRange, 0f, 1f);
-        bloodDryDurationRange = SanitizeRange(bloodDryDurationRange, 0.1f);
-        bloodStaleDurationRange = SanitizeRange(bloodStaleDurationRange, 0.1f);
-        bloodLateFadeDelayRange = SanitizeRange(bloodLateFadeDelayRange, 0f);
-        bloodLateFadeDurationRange = SanitizeRange(bloodLateFadeDurationRange, 0.1f);
-        bloodLateFadeAlphaMultiplierRange = SanitizeRange(bloodLateFadeAlphaMultiplierRange, 0f, 1f);
         bloodTintBrightnessJitterRange = SanitizeRange(bloodTintBrightnessJitterRange, 0.4f);
     }
 
@@ -206,6 +199,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 maxTrackedDeaths = 70;
                 maxTrackedRemains = 110;
                 maxTrackedGroundBloodDecals = 110;
+                maxTrackedFreshGroundBloodDecals = 40;
+                maxTrackedOldGroundBloodDecals = 70;
                 overflowToRemainsTransitionDuration = 0.7f;
                 overflowBloodFadeDuration = 0.85f;
                 deathBloodSpawnChance = 0.5f;
@@ -224,11 +219,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 freshBloodTint = new Color(0.53f, 0.18f, 0.18f, 1f);
                 driedBloodTint = new Color(0.31f, 0.1f, 0.1f, 1f);
                 staleBloodTint = new Color(0.21f, 0.065f, 0.065f, 1f);
-                bloodDryDurationRange = new Vector2(5f, 8f);
-                bloodStaleDurationRange = new Vector2(12f, 20f);
-                bloodLateFadeDelayRange = new Vector2(20f, 30f);
-                bloodLateFadeDurationRange = new Vector2(16f, 24f);
-                bloodLateFadeAlphaMultiplierRange = new Vector2(0.94f, 1f);
                 bloodTintBrightnessJitterRange = new Vector2(0.95f, 1.06f);
                 deathBloodFlowRightToLeft = true;
                 break;
@@ -237,6 +227,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 maxTrackedDeaths = 100;
                 maxTrackedRemains = 180;
                 maxTrackedGroundBloodDecals = 220;
+                maxTrackedFreshGroundBloodDecals = 80;
+                maxTrackedOldGroundBloodDecals = 140;
                 overflowToRemainsTransitionDuration = 1f;
                 overflowBloodFadeDuration = 1.25f;
                 deathBloodSpawnChance = 0.85f;
@@ -255,11 +247,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 freshBloodTint = new Color(0.55f, 0.18f, 0.18f, 1f);
                 driedBloodTint = new Color(0.28f, 0.08f, 0.08f, 1f);
                 staleBloodTint = new Color(0.18f, 0.05f, 0.05f, 1f);
-                bloodDryDurationRange = new Vector2(6f, 9f);
-                bloodStaleDurationRange = new Vector2(14f, 24f);
-                bloodLateFadeDelayRange = new Vector2(24f, 34f);
-                bloodLateFadeDurationRange = new Vector2(18f, 28f);
-                bloodLateFadeAlphaMultiplierRange = new Vector2(0.96f, 1f);
                 bloodTintBrightnessJitterRange = new Vector2(0.94f, 1.08f);
                 deathBloodFlowRightToLeft = true;
                 break;
@@ -268,6 +255,8 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 maxTrackedDeaths = 130;
                 maxTrackedRemains = 260;
                 maxTrackedGroundBloodDecals = 420;
+                maxTrackedFreshGroundBloodDecals = 150;
+                maxTrackedOldGroundBloodDecals = 270;
                 overflowToRemainsTransitionDuration = 1.15f;
                 overflowBloodFadeDuration = 1.8f;
                 deathBloodSpawnChance = 1.0f;
@@ -283,15 +272,10 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 deathBloodFlowDurationMultiplierRange = new Vector2(8.8f, 12.8f);
                 deathBloodFlowStartDelayRange = new Vector2(0f, 0.16f);
                 deathBloodFlowEndAlphaRange = new Vector2(0.92f, 1f);
-                freshBloodTint = new Color(0.62f, 0.20f, 0.20f, 1f);
-                driedBloodTint = new Color(0.40f, 0.12f, 0.11f, 1f);
-                staleBloodTint = new Color(0.32f, 0.08f, 0.07f, 1f);
-                bloodDryDurationRange = new Vector2(14f, 18f);
-                bloodStaleDurationRange = new Vector2(32f, 47f);
-                bloodLateFadeDelayRange = new Vector2(40f, 60f);
-                bloodLateFadeDurationRange = new Vector2(28f, 40f);
-                bloodLateFadeAlphaMultiplierRange = new Vector2(0.98f, 1f);
-                bloodTintBrightnessJitterRange = new Vector2(0.9f, 1.2f);
+                freshBloodTint = new Color(0.65f, 0.22f, 0.22f, 1f);
+                driedBloodTint = new Color(0.45f, 0.15f, 0.13f, 1f);
+                staleBloodTint = new Color(0.32f, 0.10f, 0.09f, 1f);
+                bloodTintBrightnessJitterRange = new Vector2(0.98f, 1.14f);
                 deathBloodFlowRightToLeft = true;
                 break;
         }
@@ -334,7 +318,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
         float targetAlpha = ResolveBloodEndAlpha();
         BloodAgingVisual agingVisual = PrepareBloodAgingVisual(bloodObject, bloodRenderer, targetAlpha);
-        ApplyFreshBloodVisual(agingVisual, bloodRenderer, targetAlpha, startAgingImmediately: true);
+        ApplyFreshBloodVisual(agingVisual, targetAlpha);
 
         RegisterGroundBloodDecal(bloodObject, decalPrefab);
         return true;
@@ -402,12 +386,11 @@ public class EnemyDeathVisualManager : MonoBehaviour
                     float startScale = 0.01f; // Effect of flowing blood growing from a point, visually more impactful than scaling up from a small random value.
                     float endAlpha = ResolveBloodEndAlpha();
                     BloodAgingVisual agingVisual = PrepareBloodAgingVisual(deathBloodObject, bloodRenderer, endAlpha);
-                    ApplyFreshBloodVisual(agingVisual, bloodRenderer, 0f, startAgingImmediately: false);
+                    ApplyFreshBloodVisual(agingVisual, 0f);
                     InitializeBloodPoolVisualState(deathBloodObject.transform, startPosition, startScale);
 
                     StartCoroutine(AnimateBloodPool(
                         deathBloodObject.transform,
-                        bloodRenderer,
                         agingVisual,
                         startScale,
                         targetScale,
@@ -523,7 +506,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
             float targetAlpha = ResolveBloodEndAlpha();
             BloodAgingVisual agingVisual = PrepareBloodAgingVisual(clusterBlood, clusterRenderer, targetAlpha);
-            ApplyFreshBloodVisual(agingVisual, clusterRenderer, targetAlpha, startAgingImmediately: true);
+            ApplyFreshBloodVisual(agingVisual, targetAlpha);
 
             RegisterGroundBloodDecal(clusterBlood, sourcePrefab);
         }
@@ -544,23 +527,93 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
         DisableTimedAutoReturn(bloodObject);
 
-        activeGroundBlood.Enqueue(new GroundBloodEntry(bloodObject, sourcePrefab));
-        EnforceGroundBloodCap();
+        activeFreshGroundBlood.Enqueue(new GroundBloodEntry(bloodObject, sourcePrefab));
+        EnforceGroundBloodLifecycleCaps();
     }
 
-    private void EnforceGroundBloodCap()
+    private void EnforceGroundBloodLifecycleCaps()
     {
-        CompactQueue(activeGroundBlood, entry => entry.BloodObject != null && entry.BloodObject.activeInHierarchy);
+        CompactQueue(activeFreshGroundBlood, entry => entry.BloodObject != null && entry.BloodObject.activeInHierarchy);
+        CompactQueue(activeOldGroundBlood, entry => entry.BloodObject != null && entry.BloodObject.activeInHierarchy);
 
-        int cap = Mathf.Max(1, maxTrackedGroundBloodDecals);
-        while (activeGroundBlood.Count > cap)
+        int freshCap = ResolveFreshGroundBloodCap();
+        while (activeFreshGroundBlood.Count > freshCap)
         {
-            GroundBloodEntry oldest = activeGroundBlood.Dequeue();
-            if (oldest.BloodObject == null)
+            GroundBloodEntry oldestFresh = activeFreshGroundBlood.Dequeue();
+            if (oldestFresh.BloodObject == null || !oldestFresh.BloodObject.activeInHierarchy)
                 continue;
 
-            StartCoroutine(FadeOutAndReleaseBloodVisual(oldest.BloodObject, oldest.SourcePrefab));
+            MoveFreshBloodToOldPool(oldestFresh);
         }
+
+        int oldCap = ResolveOldGroundBloodCap();
+        while (activeOldGroundBlood.Count > oldCap)
+        {
+            GroundBloodEntry oldestOld = activeOldGroundBlood.Dequeue();
+            if (oldestOld.BloodObject == null)
+                continue;
+
+            StartCoroutine(FadeOutAndReleaseBloodVisual(oldestOld.BloodObject, oldestOld.SourcePrefab));
+        }
+
+        int totalCap = ResolveTotalGroundBloodCap();
+        while (activeFreshGroundBlood.Count + activeOldGroundBlood.Count > totalCap)
+        {
+            if (activeOldGroundBlood.Count > 0)
+            {
+                GroundBloodEntry oldestOld = activeOldGroundBlood.Dequeue();
+                if (oldestOld.BloodObject != null)
+                    StartCoroutine(FadeOutAndReleaseBloodVisual(oldestOld.BloodObject, oldestOld.SourcePrefab));
+                continue;
+            }
+
+            if (activeFreshGroundBlood.Count == 0)
+                break;
+
+            GroundBloodEntry oldestFresh = activeFreshGroundBlood.Dequeue();
+            if (oldestFresh.BloodObject != null)
+                StartCoroutine(FadeOutAndReleaseBloodVisual(oldestFresh.BloodObject, oldestFresh.SourcePrefab));
+        }
+    }
+
+    private void MoveFreshBloodToOldPool(GroundBloodEntry entry)
+    {
+        if (entry.BloodObject == null)
+            return;
+
+        ApplyOldBloodVisual(entry.BloodObject);
+        activeOldGroundBlood.Enqueue(entry);
+    }
+
+    private void ApplyOldBloodVisual(GameObject bloodObject)
+    {
+        if (bloodObject == null)
+            return;
+
+        BloodAgingVisual agingVisual = bloodObject.GetComponent<BloodAgingVisual>();
+        if (agingVisual == null)
+            return;
+
+        agingVisual.TransitionToOldPool();
+    }
+
+    private int ResolveTotalGroundBloodCap()
+    {
+        return Mathf.Max(1, maxTrackedGroundBloodDecals);
+    }
+
+    private int ResolveFreshGroundBloodCap()
+    {
+        int totalCap = ResolveTotalGroundBloodCap();
+        return Mathf.Clamp(Mathf.Max(1, maxTrackedFreshGroundBloodDecals), 1, totalCap);
+    }
+
+    private int ResolveOldGroundBloodCap()
+    {
+        int totalCap = ResolveTotalGroundBloodCap();
+        int freshCap = ResolveFreshGroundBloodCap();
+        int maxOldByTotal = Mathf.Max(1, totalCap - freshCap);
+        return Mathf.Clamp(Mathf.Max(1, maxTrackedOldGroundBloodDecals), 1, maxOldByTotal);
     }
 
     private static void DisableTimedAutoReturn(GameObject bloodObject)
@@ -624,40 +677,21 @@ public class EnemyDeathVisualManager : MonoBehaviour
             visual = bloodObject.AddComponent<BloodAgingVisual>();
 
         float brightness = ResolveRangeValue(bloodTintBrightnessJitterRange, 0.1f);
-        BloodAgingProfile profile = new BloodAgingProfile(
+        visual.Configure(
+            bloodRenderer,
             ResolveBloodTint(freshBloodTint, brightness),
             ResolveBloodTint(driedBloodTint, brightness),
             ResolveBloodTint(staleBloodTint, brightness),
-            targetAlpha,
-            ResolveRangeValue(bloodDryDurationRange, 0.1f),
-            ResolveRangeValue(bloodStaleDurationRange, 0.1f),
-            ResolveRangeValue(bloodLateFadeDelayRange, 0f),
-            ResolveRangeValue(bloodLateFadeDurationRange, 0.1f),
-            ResolveRangeValue(bloodLateFadeAlphaMultiplierRange, 0f));
-
-        visual.Configure(bloodRenderer, profile);
+            targetAlpha);
         return visual;
     }
 
-    private void ApplyFreshBloodVisual(BloodAgingVisual agingVisual, SpriteRenderer bloodRenderer, float alpha, bool startAgingImmediately)
+    private static void ApplyFreshBloodVisual(BloodAgingVisual agingVisual, float alpha)
     {
-        if (agingVisual != null)
-        {
-            agingVisual.ApplySpawnAlpha(alpha);
-            if (startAgingImmediately)
-                agingVisual.ResumeAging();
-            else
-                agingVisual.SuspendAging();
-
-            return;
-        }
-
-        if (bloodRenderer == null)
+        if (agingVisual == null)
             return;
 
-        Color color = freshBloodTint;
-        color.a = Mathf.Clamp01(alpha);
-        bloodRenderer.color = color;
+        agingVisual.ApplySpawnAlpha(alpha);
     }
 
     private float ResolveBloodEndAlpha()
@@ -834,8 +868,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
         Transform bloodTransform = bloodObject.transform;
         SpriteRenderer renderer = bloodObject.GetComponent<SpriteRenderer>();
         BloodAgingVisual agingVisual = bloodObject.GetComponent<BloodAgingVisual>();
-        if (agingVisual != null)
-            agingVisual.SuspendAging();
 
         Vector3 startScale = bloodTransform.localScale;
         Color startColor = Color.white;
@@ -986,7 +1018,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
     private IEnumerator AnimateBloodPool(
         Transform blood,
-        SpriteRenderer spriteRenderer,
         BloodAgingVisual agingVisual,
         float startScaleUniform,
         float targetScale,
@@ -1014,7 +1045,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
         duration *= ResolveRangeValue(deathBloodFlowDurationMultiplierRange, 0.1f);
 
         float startAlpha = 0f;
-        ApplyFreshBloodVisual(agingVisual, spriteRenderer, startAlpha, startAgingImmediately: false);
+        ApplyFreshBloodVisual(agingVisual, startAlpha);
 
         Vector3 startPosition = blood.position;
         blood.localScale = startScale;
@@ -1034,18 +1065,9 @@ public class EnemyDeathVisualManager : MonoBehaviour
             blood.position = Vector3.Lerp(startPosition, settlePosition, k);
             blood.localScale = Vector3.Lerp(startScale, endScale, k);
 
-            if (spriteRenderer != null)
-            {
-                float alpha = Mathf.Lerp(startAlpha, endAlpha, k);
-                if (agingVisual != null)
-                    agingVisual.ApplySpawnAlpha(alpha);
-                else
-                {
-                    Color color = freshBloodTint;
-                    color.a = alpha;
-                    spriteRenderer.color = color;
-                }
-            }
+            float alpha = Mathf.Lerp(startAlpha, endAlpha, k);
+            if (agingVisual != null)
+                agingVisual.ApplySpawnAlpha(alpha);
 
             yield return null;
         }
@@ -1056,7 +1078,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
         blood.position = settlePosition;
         blood.localScale = endScale;
 
-        ApplyFreshBloodVisual(agingVisual, spriteRenderer, endAlpha, startAgingImmediately: true);
+        ApplyFreshBloodVisual(agingVisual, endAlpha);
     }
 
     [Serializable]
@@ -1064,41 +1086,6 @@ public class EnemyDeathVisualManager : MonoBehaviour
     {
         [SerializeField] public Sprite SourceSprite;
         [SerializeField] public Sprite RemainsSprite;
-    }
-
-    internal readonly struct BloodAgingProfile
-    {
-        public readonly Color FreshTint;
-        public readonly Color DriedTint;
-        public readonly Color StaleTint;
-        public readonly float MaxAlpha;
-        public readonly float DryDuration;
-        public readonly float StaleDuration;
-        public readonly float LateFadeDelay;
-        public readonly float LateFadeDuration;
-        public readonly float LateFadeAlphaMultiplier;
-
-        public BloodAgingProfile(
-            Color freshTint,
-            Color driedTint,
-            Color staleTint,
-            float maxAlpha,
-            float dryDuration,
-            float staleDuration,
-            float lateFadeDelay,
-            float lateFadeDuration,
-            float lateFadeAlphaMultiplier)
-        {
-            FreshTint = freshTint;
-            DriedTint = driedTint;
-            StaleTint = staleTint;
-            MaxAlpha = Mathf.Clamp01(maxAlpha);
-            DryDuration = Mathf.Max(0.1f, dryDuration);
-            StaleDuration = Mathf.Max(0.1f, staleDuration);
-            LateFadeDelay = Mathf.Max(0f, lateFadeDelay);
-            LateFadeDuration = Mathf.Max(0.1f, lateFadeDuration);
-            LateFadeAlphaMultiplier = Mathf.Clamp01(lateFadeAlphaMultiplier);
-        }
     }
 
     private readonly struct DeathVisualEntry
@@ -1162,6 +1149,8 @@ internal sealed class BloodAgingVisual : MonoBehaviour
 {
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
     private static readonly int ColorId = Shader.PropertyToID("_Color");
+    private const float OldAgeDurationMin = 8f;
+    private const float OldAgeDurationMax = 18f;
 
     private SpriteRenderer spriteRenderer;
     private MaterialPropertyBlock propertyBlock;
@@ -1173,69 +1162,68 @@ internal sealed class BloodAgingVisual : MonoBehaviour
     private Color driedTint = Color.white;
     private Color staleTint = Color.white;
     private float maxAlpha = 1f;
-    private float dryDuration = 6f;
-    private float staleDuration = 10f;
-    private float lateFadeDelay = 12f;
-    private float lateFadeDuration = 8f;
-    private float lateFadeAlphaMultiplier = 0.6f;
-
-    private float ageTimer;
-    private bool agingActive;
-    private bool suspended;
+    private bool isOldPoolState;
+    private Coroutine oldAgingRoutine;
     private Color currentColor = Color.white;
 
     public Color CurrentColor => currentColor;
 
-    public void Configure(SpriteRenderer targetRenderer, EnemyDeathVisualManager.BloodAgingProfile profile)
+    public void Configure(
+        SpriteRenderer targetRenderer,
+        Color freshTintColor,
+        Color driedTintColor,
+        Color staleTintColor,
+        float targetAlpha)
     {
         spriteRenderer = targetRenderer;
         EnsureRendererCompatibility();
+        StopOldAgingRoutine();
 
-        freshTint = profile.FreshTint;
-        driedTint = profile.DriedTint;
-        staleTint = profile.StaleTint;
-        maxAlpha = Mathf.Clamp01(profile.MaxAlpha);
-        dryDuration = Mathf.Max(0.1f, profile.DryDuration);
-        staleDuration = Mathf.Max(0.1f, profile.StaleDuration);
-        lateFadeDelay = Mathf.Max(0f, profile.LateFadeDelay);
-        lateFadeDuration = Mathf.Max(0.1f, profile.LateFadeDuration);
-        lateFadeAlphaMultiplier = Mathf.Clamp01(profile.LateFadeAlphaMultiplier);
+        freshTint = freshTintColor;
+        driedTint = driedTintColor;
+        staleTint = staleTintColor;
+        maxAlpha = Mathf.Clamp01(targetAlpha);
 
-        ageTimer = 0f;
-        agingActive = false;
-        suspended = false;
+        isOldPoolState = false;
         ApplyColor(new Color(freshTint.r, freshTint.g, freshTint.b, 0f));
     }
 
     public void ApplySpawnAlpha(float alpha)
     {
+        if (isOldPoolState)
+            return;
+
         Color c = freshTint;
         c.a = Mathf.Clamp01(alpha);
         ApplyColor(c);
     }
 
-    public void ResumeAging()
+    public void TransitionToOldPool()
     {
-        agingActive = true;
-        suspended = false;
-    }
+        if (isOldPoolState)
+            return;
 
-    public void SuspendAging()
-    {
-        suspended = true;
+        StopOldAgingRoutine();
+        float preservedAlpha = currentColor.a > 0.001f ? currentColor.a : maxAlpha;
+        preservedAlpha = Mathf.Clamp01(preservedAlpha);
+
+        Color dried = driedTint;
+        dried.a = preservedAlpha;
+        isOldPoolState = true;
+        ApplyColor(dried);
+        oldAgingRoutine = StartCoroutine(AgeToStale(preservedAlpha));
     }
 
     public void ApplyOverrideColor(Color color)
     {
-        suspended = true;
+        StopOldAgingRoutine();
         ApplyColor(color);
     }
 
     public void ResetVisualState()
     {
-        agingActive = false;
-        suspended = false;
-        ageTimer = 0f;
+        StopOldAgingRoutine();
+        isOldPoolState = false;
         currentColor = Color.white;
 
         if (spriteRenderer == null)
@@ -1251,34 +1239,48 @@ internal sealed class BloodAgingVisual : MonoBehaviour
         spriteRenderer.color = Color.white;
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        if (!agingActive || suspended || spriteRenderer == null || !spriteRenderer.enabled || !spriteRenderer.gameObject.activeInHierarchy)
+        StopOldAgingRoutine();
+    }
+
+    private IEnumerator AgeToStale(float preservedAlpha)
+    {
+        float duration = Random.Range(OldAgeDurationMin, OldAgeDurationMax);
+        float t = 0f;
+
+        while (t < duration)
+        {
+            if (spriteRenderer == null || !gameObject.activeInHierarchy)
+            {
+                oldAgingRoutine = null;
+                yield break;
+            }
+
+            t += Time.deltaTime;
+            float k = Mathf.Clamp01(t / Mathf.Max(0.01f, duration));
+            k = k * k * (3f - 2f * k); // smoothstep
+
+            Color tint = Color.Lerp(driedTint, staleTint, k);
+            tint.a = preservedAlpha;
+            ApplyColor(tint);
+
+            yield return null;
+        }
+
+        Color stale = staleTint;
+        stale.a = preservedAlpha;
+        ApplyColor(stale);
+        oldAgingRoutine = null;
+    }
+
+    private void StopOldAgingRoutine()
+    {
+        if (oldAgingRoutine == null)
             return;
 
-        ageTimer += Time.deltaTime;
-
-        Color tint;
-        if (ageTimer <= dryDuration)
-        {
-            float dryT = Mathf.Clamp01(ageTimer / dryDuration);
-            tint = Color.Lerp(freshTint, driedTint, dryT);
-        }
-        else
-        {
-            float staleT = Mathf.Clamp01((ageTimer - dryDuration) / staleDuration);
-            tint = Color.Lerp(driedTint, staleTint, staleT);
-        }
-
-        float alpha = maxAlpha;
-        if (ageTimer > lateFadeDelay)
-        {
-            float fadeT = Mathf.Clamp01((ageTimer - lateFadeDelay) / lateFadeDuration);
-            alpha = Mathf.Lerp(maxAlpha, maxAlpha * lateFadeAlphaMultiplier, fadeT);
-        }
-
-        tint.a = alpha;
-        ApplyColor(tint);
+        StopCoroutine(oldAgingRoutine);
+        oldAgingRoutine = null;
     }
 
     private void EnsureRendererCompatibility()
