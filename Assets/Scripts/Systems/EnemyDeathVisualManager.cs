@@ -257,7 +257,7 @@ public class EnemyDeathVisualManager : MonoBehaviour
                 freshBloodTint = new Color(0.55f, 0.18f, 0.18f, 1f);
                 driedBloodTint = new Color(0.28f, 0.08f, 0.08f, 1f);
                 staleBloodTint = new Color(0.18f, 0.05f, 0.05f, 1f);
-                freshBloodWetnessRange = new Vector2(0.56f, 0.76f);
+                freshBloodWetnessRange = new Vector2(0.45f, 0.65f);
                 bloodTintBrightnessJitterRange = new Vector2(0.94f, 1.08f);
                 bloodDecalRotationRange = new Vector2(-9f, 9f);
                 deathBloodFlowRightToLeft = true;
@@ -520,11 +520,21 @@ public class EnemyDeathVisualManager : MonoBehaviour
 
             SpriteRenderer clusterRenderer = clusterBlood.GetComponent<SpriteRenderer>();
             ApplyBloodDecalVariant(clusterBlood.transform, clusterRenderer, null);
-            InitializeImmediateBloodPoolVisualState(clusterBlood.transform, spawnPosition, scale);
+            Vector3 settlePosition = spawnPosition;
+            Vector3 startPosition = ResolveDeathBloodStartPosition(settlePosition);
+            float startScale = 0.01f;
+            InitializeBloodPoolVisualState(clusterBlood.transform, startPosition, startScale);
 
             float targetAlpha = ResolveBloodEndAlpha();
             BloodAgingVisual agingVisual = PrepareBloodAgingVisual(clusterBlood, clusterRenderer, targetAlpha);
-            ApplyFreshBloodVisual(agingVisual, targetAlpha);
+            ApplyFreshBloodVisual(agingVisual, 0f);
+            StartCoroutine(AnimateBloodPool(
+                clusterBlood.transform,
+                agingVisual,
+                startScale,
+                scale,
+                settlePosition,
+                targetAlpha));
 
             RegisterGroundBloodDecal(clusterBlood, sourcePrefab);
         }

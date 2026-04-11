@@ -118,7 +118,7 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -139,7 +139,7 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -160,7 +160,7 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -181,7 +181,7 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -202,7 +202,7 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -223,7 +223,7 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -244,7 +244,7 @@ TextureImporter:
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -260,12 +260,12 @@ TextureImporter:
       name: warrior_idle128_10
       rect:
         serializedVersion: 2
-        x: 1792
+        x: 1280
         y: 0
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -281,12 +281,12 @@ TextureImporter:
       name: warrior_idle128_11
       rect:
         serializedVersion: 2
-        x: 1920
+        x: 1408
         y: 0
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -299,64 +299,64 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: warrior_idle128_12
+      name: warrior_idle128_7
       rect:
         serializedVersion: 2
-        x: 2048
+        x: 896
         y: 0
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c9441b3e0100ab44598abd1e75edac77
-      internalID: 1823511378
+      spriteID: 62a790e6b25924a4981c6c5dfa816cac
+      internalID: 141984243
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: warrior_idle128_13
+      name: warrior_idle128_8
       rect:
         serializedVersion: 2
-        x: 2176
+        x: 1024
         y: 0
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f531c5d9e0b9c0845b006d5a02025c2a
-      internalID: 1209604809
+      spriteID: ae9b69721885f5a4f8f57773c08fc7bd
+      internalID: 1572026068
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: warrior_idle128_14
+      name: warrior_idle128_9
       rect:
         serializedVersion: 2
-        x: 2304
+        x: 1152
         y: 0
         width: 128
         height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b7059438d230a1e42a5ccd70db02e7aa
-      internalID: -1356293350
+      spriteID: 59d3394e0bfdc834487cb55867557769
+      internalID: -1883040871
       vertices: []
       indices: 
       edges: []
@@ -376,9 +376,6 @@ TextureImporter:
       warrior_idle128_1: -1854874190
       warrior_idle128_10: 2105617156
       warrior_idle128_11: 1164674519
-      warrior_idle128_12: 1823511378
-      warrior_idle128_13: 1209604809
-      warrior_idle128_14: -1356293350
       warrior_idle128_2: -847369243
       warrior_idle128_3: -1110826720
       warrior_idle128_4: -649513752
