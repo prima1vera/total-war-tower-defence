@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2f251ece67764b14ea683283dcd2e15b
+guid: 91aa3b1f7c74468caf82e4fa36f5fe9f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -69,7 +69,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: warrior_idle128_0
+      name: warrior_run_up_0
       rect:
         serializedVersion: 2
         x: 0
@@ -124,14 +124,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cec84de219207c94ebac8993047f01fc
-      internalID: -966159733
+      spriteID: b7b071b6ec7d9a348ac24f805c82a9a4
+      internalID: 1621530836
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: warrior_idle128_1
+      name: warrior_run_up_1
       rect:
         serializedVersion: 2
         x: 128
@@ -145,14 +145,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 01f96c136864b6d449ed95bd0f415f56
-      internalID: -1854874190
+      spriteID: f6723e2be5a199740856ba74dad53e51
+      internalID: -988127064
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: warrior_idle128_2
+      name: warrior_run_up_2
       rect:
         serializedVersion: 2
         x: 256
@@ -166,14 +166,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: eedcbbdb56511a24f8cc3f9bd1852a0d
-      internalID: -847369243
+      spriteID: d5be7d6de03ba4f4ab1b5ba98f23febc
+      internalID: 666289989
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: warrior_idle128_3
+      name: warrior_run_up_3
       rect:
         serializedVersion: 2
         x: 384
@@ -187,14 +187,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5b532dc833011194ab33a8a308baeed4
-      internalID: -1110826720
+      spriteID: 27c7643f57f59d04c8baee0d84a417ad
+      internalID: -334899589
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: warrior_idle128_4
+      name: warrior_run_up_4
       rect:
         serializedVersion: 2
         x: 512
@@ -208,14 +208,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00b6671d54d92f042962aa91f1e6bf99
-      internalID: -649513752
+      spriteID: b4201134b98735d4aa6ee1e40416c944
+      internalID: -1789056042
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: warrior_idle128_5
+      name: warrior_run_up_5
       rect:
         serializedVersion: 2
         x: 640
@@ -229,14 +229,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f0f4ed380af20954183a9d690a5e91f3
-      internalID: -1577960338
+      spriteID: a0106aa641f5860418544b0dde7c3796
+      internalID: 616986110
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: warrior_idle128_6
+      name: warrior_run_up_6
       rect:
         serializedVersion: 2
         x: 768
@@ -250,56 +250,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2e0b29993d726344796c55b2c2adb147
-      internalID: 1250302134
+      spriteID: 8214a4096b3a2d546b8bc65e8e2cdc2b
+      internalID: -482741192
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: warrior_idle128_10
-      rect:
-        serializedVersion: 2
-        x: 1280
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 30885d807cd207b4c81ea21787c89a30
-      internalID: 2105617156
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: warrior_idle128_11
-      rect:
-        serializedVersion: 2
-        x: 1408
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 08b169770b3e4524bb292ac38197e4ef
-      internalID: 1164674519
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: warrior_idle128_7
+      name: warrior_run_up_7
       rect:
         serializedVersion: 2
         x: 896
@@ -313,50 +271,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 62a790e6b25924a4981c6c5dfa816cac
-      internalID: 141984243
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: warrior_idle128_8
-      rect:
-        serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ae9b69721885f5a4f8f57773c08fc7bd
-      internalID: 1572026068
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: warrior_idle128_9
-      rect:
-        serializedVersion: 2
-        x: 1152
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 59d3394e0bfdc834487cb55867557769
-      internalID: -1883040871
+      spriteID: b34c1afa607ead64990ba84cf8fcf666
+      internalID: -1649083517
       vertices: []
       indices: 
       edges: []
@@ -372,18 +288,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      warrior_idle128_0: -966159733
-      warrior_idle128_1: -1854874190
-      warrior_idle128_10: 2105617156
-      warrior_idle128_11: 1164674519
-      warrior_idle128_2: -847369243
-      warrior_idle128_3: -1110826720
-      warrior_idle128_4: -649513752
-      warrior_idle128_5: -1577960338
-      warrior_idle128_6: 1250302134
-      warrior_idle128_7: 141984243
-      warrior_idle128_8: 1572026068
-      warrior_idle128_9: -1883040871
+      warrior_run_up_0: 1621530836
+      warrior_run_up_1: -988127064
+      warrior_run_up_2: 666289989
+      warrior_run_up_3: -334899589
+      warrior_run_up_4: -1789056042
+      warrior_run_up_5: 616986110
+      warrior_run_up_6: -482741192
+      warrior_run_up_7: -1649083517
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
